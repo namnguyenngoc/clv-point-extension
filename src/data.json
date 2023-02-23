@@ -1,0 +1,101 @@
+[
+    {
+        "userId": "hiennguyen",
+        "fullName": "Hien Nguyen",
+        "pointOnHour": {
+            "standard": 25,
+            "expect": 25,
+            "description": ""
+        }
+    },
+    {
+        "userId": "duytrn",
+        "fullName": "Duy Tran Nhut",
+        "pointOnHour": {
+            "standard": 25,
+            "expect": 17,
+            "description": ""
+        }
+    },
+    {
+        "userId": "huynhnh",
+        "fullName": "Huynh Nguyen",
+        "pointOnHour": {
+            "standard": 25,
+            "expect": 17,
+            "description": ""
+        }
+    },
+    {
+        "userId": "vivo",
+        "fullName": "Vi Vo",
+        "pointOnHour": {
+            "standard": 25,
+            "expect": 25,
+            "description": ""
+        }
+    },
+    {
+        "userId": "anhtd",
+        "fullName": "Anh Truong Dinh",
+        "pointOnHour": {
+            "standard": 25,
+            "expect": 17,
+            "description": ""
+        }
+    },
+    {
+        "userId": "trinhle",
+        "fullName": "Trinh Le",
+        "pointOnHour": {
+            "standard": 25,
+            "expect": 28,
+            "description": ""
+        }
+    },
+    {
+        "userId": "thaito",
+        "fullName": "Thai To",
+        "pointOnHour": {
+            "standard": 25,
+            "expect": 23,
+            "description": ""
+        }
+    },
+    {
+        "userId": "haonn",
+        "fullName": "Hao Nguyen Nhat",
+        "pointOnHour": {
+            "standard": 25,
+            "expect": 23,
+            "description": ""
+        }
+    },
+    {
+        "userId": "aopham",
+        "fullName": "Ao Pham",
+        "pointOnHour": {
+            "standard": 25,
+            "expect": 23,
+            "description": ""
+        }
+    },
+    {
+        "userId": "phucnguyenhoang",
+        "fullName": "Phuc Hoang Nguyen",
+        "pointOnHour": {
+            "standard": 25,
+            "expect": 23,
+            "description": ""
+        }
+    },
+    {
+        "userId": "phamvo",
+        "fullName": "Pham Vo",
+        "pointOnHour": {
+            "standard": 25,
+            "expect": 25,
+            "description": ""
+        }
+    }
+]

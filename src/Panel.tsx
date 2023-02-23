@@ -1,7 +1,9 @@
 import React, { ReactElement, useEffect, useState } from 'react';
 import { APP_COLLAPSE_WIDTH, APP_EXTEND_WIDTH, URLS } from './const';
-import classNames from 'classnames';
 import Button from './components/Button';
+import TaskSearchForm from './components/TaskSearchForm';
+import StandardPointPharse from './components/StandardPointPharse';
+import classNames from 'classnames';
 
 export default function Panel({ onWidthChange, initialEnabled }: { onWidthChange: (value: number) => void, initialEnabled: boolean }): ReactElement {
   const [enabled, setEnabled] = useState(initialEnabled);
@@ -21,6 +23,17 @@ export default function Panel({ onWidthChange, initialEnabled }: { onWidthChange
     setEnabled(newValue);
     handleOnToggle(newValue);
   }
+  const [searchResults, setSearchResults] = useState([]);
+
+  const handleSearch = (condition) => {
+    // Perform search logic here based on the given condition
+    // and update the searchResults state with the result
+    setSearchResults([
+      { id: 1, title: "Task 1", result: "Result 1" },
+      { id: 2, title: "Task 2", result: "Result 2" },
+      { id: 3, title: "Task 3", result: "Result 3" },
+    ]);
+  };
 
   return (
     <div
@@ -30,14 +43,11 @@ export default function Panel({ onWidthChange, initialEnabled }: { onWidthChange
       }}
       className="absolute top-0 right-0 bottom-0 z-max bg-[#F5F8FA] ease-in-out duration-300 overflow-hidden"
     >
-      <iframe
-        className={classNames('absolute w-full h-full border-none ease-linear overflow-hidden', {
-          'opacity-0': !enabled,
-          '-z-10': !enabled,
-        })}
-        title={URLS[tabIndex].name}
-        src={URLS[tabIndex].url}
-      />
+      <div className="p-4">
+        <TaskSearchForm onSearch={handleSearch} />
+        
+      </div>
+    
       <div
         className={classNames('absolute h-full flex border-none flex-col ease-linear w-[50px] space-y-3 p-1', {
           'opacity-0': enabled,
