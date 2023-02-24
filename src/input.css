@@ -3,3 +3,46 @@
   @tailwind components;
   @tailwind utilities;
 }
+
+.table-container {
+  height: 40em;
+}
+table.custom-scroll.custom-scroll {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+  width: 100%;
+}
+table.custom-scroll thead {
+  /* head takes the height it requires, 
+  and it's not scaled when table.custom-scroll is resized */
+  flex: 0 0 auto;
+  width: calc(100% - 0.9em);
+}
+table.custom-scroll tbody {
+  /* body takes all the remaining available space */
+  flex: 1 1 auto;
+  display: block;
+  overflow-y: scroll;
+}
+table.custom-scroll tbody tr {
+  width: 100%;
+}
+table.custom-scroll thead,
+table.custom-scroll tbody tr {
+  display: table;
+  table-layout: fixed;
+}
+/* decorations */
+
+table.custom-scroll {
+  border: 1px solid lightgrey;
+}
+
+.w-170 {
+  width: 170px;
+}
+
+.w-100 {
+  width: 100px;
+}

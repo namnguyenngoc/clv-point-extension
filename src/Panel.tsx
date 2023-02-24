@@ -2,7 +2,7 @@ import React, { ReactElement, useEffect, useState } from 'react';
 import { APP_COLLAPSE_WIDTH, APP_EXTEND_WIDTH, URLS } from './const';
 import Button from './components/Button';
 import TaskSearchForm from './components/TaskSearchForm';
-import StandardPointPharse from './components/StandardPointPharse';
+import TaskListAddPoint from './components/TaskListAddPoint';
 import classNames from 'classnames';
 
 export default function Panel({ onWidthChange, initialEnabled }: { onWidthChange: (value: number) => void, initialEnabled: boolean }): ReactElement {
@@ -41,10 +41,14 @@ export default function Panel({ onWidthChange, initialEnabled }: { onWidthChange
         width: sidePanelWidth - 5,
         boxShadow: '0px 0px 5px #0000009e',
       }}
-      className="absolute top-0 right-0 bottom-0 z-max bg-[#F5F8FA] ease-in-out duration-300 overflow-hidden"
+      className="absolute top-0 right-0 bottom-0 z-max bg-[#F5F8FA] ease-in-out duration-300 overflow-hidden grid grid-flow-row gap-1"
     >
       <div className="p-4">
         <TaskSearchForm onSearch={handleSearch} />
+        
+      </div>
+      <div className="p-4">
+        <TaskListAddPoint onSearch={handleSearch} />
         
       </div>
     

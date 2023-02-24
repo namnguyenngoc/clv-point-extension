@@ -12,6 +12,8 @@ export default function TaskSearchForm() {
 
   const url = 'https://blueprint.cyberlogitec.com.vn/api';
   const currentURL = window.location.href // returns the absolute URL of a page
+  const pointDefaultByPharse = myData.pointDefaultByPharse;
+  const lsMember = myData.memList;
 
   const arr = currentURL.split("/");
   if(arr && arr.length > 0){
@@ -25,22 +27,6 @@ export default function TaskSearchForm() {
   const handlePointOnHourChange = (event) => {
     setPointOnHour(event.target.value);
   };
-
-  // const loadPrivateData = () => {
-  //   // const REACT_APP_GOOGLE_API_KEY10WPahmoB6Im1PyCdUZ_uda3fYijC8jKtHnRBasnTK3Y
-  //   const API_KEY = 'AIzaSyB5w2g5uiHeOFplu6-IZdVcd6rkjVrFEqA';
-  //   const shareUrl = 'https://docs.google.com/spreadsheets/d/10WPahmoB6Im1PyCdUZ_uda3fYijC8jKtHnRBasnTK3Y/edit?usp=sharing';
-  //   const sheetsOptions = [{ id: 'Member', headerRowIndex: 1 }];
-
-  //   // const { data, loading, error } = useGoogleSheets({
-  //   //   apiKey: REACT_APP_GOOGLE_API_KEY,
-  //   //   sheetId: REACT_APP_GOOGLE_SHEETS_ID,
-  //   //   sheetsOptions,
-  //   // });
-
-  //   const { data, loading, error } = useGoogleSpreadsheet(shareUrl, API_KEY, sheetsOptions);
-  //   console.log("rows", rows);
-  // }
 
   const searchRequirement = async () => {
     // https://blueprint.cyberlogitec.com.vn/api/uiPim001/searchRequirement
@@ -69,62 +55,88 @@ export default function TaskSearchForm() {
     ).then(res => {
       return res.data;
     });
-    console.log("requirementDetail", requirementDetail);
+    // console.log("requirementDetail", requirementDetail);
     console.log("myData", myData);
     
     axios.get(`${url}/task-details/get-actual-effort-point?reqId=${reqId}`)
     .then(res => {
-      console.log("lsPharseMember", lsPharseMember);
-      console.log("requeriment", requirement);
-      
+      // console.log("lsPharseMember", lsPharseMember);
+      // console.log("requeriment", requirement);
+      // await setTaskInfo(requirement);
       let lsReq = res.data;
       let tmpResult = new Array();
       if(lsReq.lstActEfrtPnt != undefined && lsReq.lstActEfrtPnt != null && lsReq.lstActEfrtPnt.length > 0) {
         console.log("----------------");
+        // let addedPoint = taskInfo.lstReq[0].pntNo;
+        let currentTotalPoint = 0;
         for(let idx = 0; idx < lsPharseMember.length; idx ++){
+          let item = lsPharseMember[idx];
           const userid = lsPharseMember[idx].usrId;
           const phsCd =  lsPharseMember[idx].phsCd;
+          const member = lsMember.find(mem => mem.userId == userid);
           const total = sumEffort(lsReq.lstActEfrtPnt, userid, phsCd);
-          // const pointInHour = 25;
-          // setPointOnHour()
-          console.log("total:", total);
-          let item = lsPharseMember[idx];
-          if("PIM_PHS_CDREG" == phsCd) {
-            item.effortHours = 10;
-          } else if ("PIM_PHS_CDIMP" == phsCd){
-            item.effortHours = total - 10;
-          } else if ("PIM_PHS_CDFIN" == phsCd){
-            item.effortHours = 5;
-          } else {
-            item.effortHours = total;
+       
+          let totalTask = total;
+
+          for(let idx = 0; idx < pointDefaultByPharse.length; idx ++){
+            totalTask += pointDefaultByPharse[idx].mins;
           }
 
+
+          //Check in default
+          let itemPointDefault = pointDefaultByPharse.filter(point => point.code == phsCd);
           let standardPoint = 25;
-          if(myData != undefined && myData != null) {
-            const obj = myData.find(mem => mem.userId == userid);
-            if(obj){
-              standardPoint = obj.pointOnHour.expect;
-            }
+          let expectPoint = 25;
+          if(member){
+            expectPoint = member.pointOnHour.expect;
+            standardPoint = member.pointOnHour.standard;
           }
           item.standardPoint = standardPoint;
-          item.point = parseInt((total / (60 * 1.0)) * standardPoint);
+          item.expectPoint = expectPoint;
+        
+          if(itemPointDefault && itemPointDefault.length > 0){ 
+            //Check Neu la point default
+            item.effortHours = itemPointDefault[0].mins; //12min = 5 point
+            item.bpAdddpoint = itemPointDefault[0].point;
+            item.point = itemPointDefault[0].point;
+           
+          } else {
+            item.effortHours = total; 
+            item.point = parseInt((total / (60 * 1.0)) * expectPoint);
+          }
           tmpResult.push(item);
+
         }
+
+        //Update finished pharseeffortHours
+        
       }
       // tmpResult.pntNo = lsReq.pntNo;
       let totalPoint = 0;
       for(let k = 0; k < tmpResult.length; k ++){
         totalPoint += tmpResult[k].point;
+        // if("PIM_PHS_CDFIN" == tmpResult[k].phsCd){
+        //   tmpResult[k].point = 1000;
+        // }
+      }
+      console.log("requirement", requirement);
+
+      //Check total 
+      requirement.lstReq = requirement.lstReq.filter(item => item.reqId == reqId);
+      
+      const gapPoint = requirement.lstReq[0].pntNo - totalPoint; //pntNo
+      console.log("totalPoint", totalPoint);
+      console.log("requirement.lstReq[0]", requirement.lstReq[0].pntNo);
+
+      for(let k = 0; k < tmpResult.length; k ++){
+        if("PIM_PHS_CDFIN" == tmpResult[k].phsCd){
+          tmpResult[k].bpAdddpoint = tmpResult[k].point + gapPoint;
+        }
       }
       requirement.totalPoint = totalPoint;
-
       setTaskInfo(requirement);
       setEffortWithMember(tmpResult);
-      console.log("----------------");
-      console.log(lsReq); 
-      console.log(effortWithMember);
-      console.log(taskInfo);
-      // console.log(uniqueArray);
+      
     })
 
   }
@@ -135,21 +147,21 @@ export default function TaskSearchForm() {
     let sum = 0;
     for (let i = 0; i < lsData.length; i ++) {
       if(userid == lsData[i].usrId && phsCd == lsData[i].phsCd){
-        sum += parseInt(lsData[i].actEfrtMnt)
+        sum += parseInt(lsData[i].actEfrtMnt);
       }
     }
-    if("PIM_PHS_CDREG" == phsCd) {
-      return 10;
-    } else if ("PIM_PHS_CDIMP" == phsCd){
-      return sum - 10;
-    }
+    // if("PIM_PHS_CDREG" == phsCd) {
+    //   return 10;
+    // } else if ("PIM_PHS_CDIMP" == phsCd){
+    //   return sum - 10;
+    // }
     return sum;
   }
 
   function formatTime (time) {
     let hour = parseInt((time > 59 ? time : 0) / 60);
-    let min = time % 60;
-    return `${hour}h ${min}m`
+    let min = time > 0 ? time % 60 : 0;
+    return `${hour}h ${min}m`;
   }
 
   const handleSubmit = (event) => {
@@ -166,33 +178,18 @@ export default function TaskSearchForm() {
         <div className="grid grid-flow-row gap-1">
           <div className="grid grid-cols-3 gap-1">
             <label htmlFor="reqId" className="text-lg font-bold px-4">
-              Task description
+              Req ID
             </label>
             <input
               type="text"
               id="reqId"
               value={reqId}
-              onChange={handleReqIdChange}
-              className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg"
-            />
-          </div>
-          <div className="grid grid-cols-3 gap-1">
-            <label htmlFor="pointOnHour" className="text-lg font-bold px-4">
-              Point In Hour
-            </label>
-            <input
-              type="text"
-              id="pointOnHour"
-              value={pointOnHour}
-              onChange={handlePointOnHourChange}
               className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg"
             />
           </div>
         </div>
-        
-        
         <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg">
-          Search
+          Calc Point
         </button>
       </div>
       <div>
@@ -202,9 +199,9 @@ export default function TaskSearchForm() {
         <table className="w-full border border-gray-500">
           <thead>
             <tr className="bg-gray-200">
-              <th className="px-4 py-2">Added: { (taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0) ? taskInfo.lstReq[0].pntNo : 0}</th>
-              <th className="px-4 py-2 text-blue-600">Total Point: {taskInfo.totalPoint}</th>
-              <th className="px-4 py-2 text-blue-600">Gap: {taskInfo.totalPoint - ((taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0) ? taskInfo.lstReq[0].pntNo : 0)}</th>
+              <th className="px-4 py-2">Effort Point: { (taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0) ? taskInfo.lstReq[0].pntNo : 0}</th>
+              <th className="px-4 py-2 text-blue-600">Actual Point: {taskInfo.totalPoint}</th>
+              <th className="px-4 py-2 c">Gap: {taskInfo.totalPoint - ((taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0) ? taskInfo.lstReq[0].pntNo : 0)}</th>
             </tr>
           </thead>
         </table>
@@ -213,9 +210,10 @@ export default function TaskSearchForm() {
             <tr className="bg-gray-200">
               <th className="px-4 py-2">Member</th>
               <th className="px-4 py-2">Pharse Name</th>
-              <th className="px-4 py-2">Standard Point</th>
-              <th className="px-4 py-2">Hours</th>
+              <th className="px-4 py-2 text-right">Hours</th>
+              <th className="px-4 py-2 text-right">Exp P/H</th>
               <th className="px-4 py-2">Point</th>
+              <th className="px-4 py-2">BP Point</th>
             </tr>
           </thead>
           <tbody>
@@ -223,9 +221,10 @@ export default function TaskSearchForm() {
               <tr key={result.usrId} className="border-t">
                 <td className="px-4 py-2">{result.usrNm}</td>
                 <td className="px-4 py-2">{result.phsNm}</td>
-                <td className="px-4 py-2">{result.standardPoint}</td>
                 <td className="px-4 py-2 text-right">{formatTime(result.effortHours)}</td>
-                <td className="px-4 py-2">{result.point}</td>
+                <td className="px-4 py-2 text-right">{result.expectPoint}</td>
+                <td className="px-4 py-2 text-right">{result.point}</td>
+                <td className="px-4 py-2 text-right text-blue-600">{ "PIM_PHS_CDFIN" === result.phsCd ? result.bpAdddpoint : result.point }</td>
               </tr>
             ))}
           </tbody>
