@@ -21,7 +21,6 @@ export default function PointSuggest(props) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const suggestData = dataSuggetList();
-   
 
   };
 
@@ -156,8 +155,11 @@ export default function PointSuggest(props) {
       subTotal += countList[i].volumeTotal;
     }
     setTotalPoint(subTotal);
+  
     return countList;
   }
+
+
   return (
     <form className="grid grid-flow-row gap-2" 
           onSubmit={handleSubmit}>
