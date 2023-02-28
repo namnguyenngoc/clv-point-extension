@@ -5,7 +5,10 @@
 }
 
 .table-container {
-  height: 40em;
+  height: 20em;
+}
+.table-container-10 {
+  height: 15em;
 }
 table.custom-scroll.custom-scroll {
   display: flex;
@@ -45,4 +48,12 @@ table.custom-scroll {
 
 .w-100 {
   width: 100px;
+}
+
+.pt-16 {
+  padding-top: 16px;
+}
+
+.pt-8 {
+  padding-top: 8px;
 }

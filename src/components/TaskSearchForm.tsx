@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import myData from '../data.json';
+import PointSuggest from './PointSuggest';
 
 export default function TaskSearchForm() {
   let [reqId, setReqId] = useState("");
@@ -9,6 +10,8 @@ export default function TaskSearchForm() {
   let [effortWithMember, setEffortWithMember] = useState([]);
   let [taskInfo, setTaskInfo] = useState({});
   
+  let [suggetList, setSuggetList] = useState([]);
+  const prjId = "PJT20211119000000001";
 
   const url = 'https://blueprint.cyberlogitec.com.vn/api';
   const currentURL = window.location.href // returns the absolute URL of a page
@@ -37,7 +40,7 @@ export default function TaskSearchForm() {
     });
 
     const data = {
-      "pjtId": "PJT20211119000000001",
+      "pjtId": requirementDetail.detailReqVO.pjtId,
         "reqNm": requirementDetail.detailReqVO.reqTitNm,
         "advFlg": "N",
         "reqStsCd": [
@@ -164,72 +167,93 @@ export default function TaskSearchForm() {
     return `${hour}h ${min}m`;
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     //https://blueprint.cyberlogitec.com.vn/api/getUserInfoDetails
     searchRequirement();
- 
+   
+
   };
 
+ 
+
   return (
-    <form className="grid grid-flow-row gap-2" 
-          onSubmit={handleSubmit}>
-      <div className="grid grid-flow-col gap-1">
-        <div className="grid grid-flow-row gap-1">
-          <div className="grid grid-cols-3 gap-1">
-            <label htmlFor="reqId" className="text-lg font-bold px-4">
-              Req ID
-            </label>
-            <input
-              type="text"
-              id="reqId"
-              value={reqId}
-              className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg"
-            />
-          </div>
-        </div>
-        <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg">
-          Calc Point
-        </button>
-      </div>
-      <div>
-        
-      </div>
-      <div>
-        <table className="w-full border border-gray-500">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="px-4 py-2">Effort Point: { (taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0) ? taskInfo.lstReq[0].pntNo : 0}</th>
-              <th className="px-4 py-2 text-blue-600">Actual Point: {taskInfo.totalPoint}</th>
-              <th className="px-4 py-2 c">Gap: {taskInfo.totalPoint - ((taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0) ? taskInfo.lstReq[0].pntNo : 0)}</th>
-            </tr>
-          </thead>
-        </table>
-        <table className="w-full border border-gray-500">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="px-4 py-2">Member</th>
-              <th className="px-4 py-2">Pharse Name</th>
-              <th className="px-4 py-2 text-right">Hours</th>
-              <th className="px-4 py-2 text-right">Exp P/H</th>
-              <th className="px-4 py-2">Point</th>
-              <th className="px-4 py-2">BP Point</th>
-            </tr>
-          </thead>
-          <tbody>
-            {effortWithMember.map((result) => (
-              <tr key={result.usrId} className="border-t">
-                <td className="px-4 py-2">{result.usrNm}</td>
-                <td className="px-4 py-2">{result.phsNm}</td>
-                <td className="px-4 py-2 text-right">{formatTime(result.effortHours)}</td>
-                <td className="px-4 py-2 text-right">{result.expectPoint}</td>
-                <td className="px-4 py-2 text-right">{result.point}</td>
-                <td className="px-4 py-2 text-right text-blue-600">{ "PIM_PHS_CDFIN" === result.phsCd ? result.bpAdddpoint : result.point }</td>
+    <div className="grid grid-flow-row ">
+      <form className="grid grid-flow-row gap-2" 
+            onSubmit={handleSubmit}>
+        <div className="grid grid-flow-col gap-1">
+          <table className="w-full border border-gray-500">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="px-4 py-2 text-right">
+                  Req ID
+                </th>
+                <th className="px-4 py-2 text-right">
+                  <input
+                    type="text"
+                    id="reqId"
+                    value={reqId}
+                    className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg  w-full"
+                  />
+                </th>
+                <th className="px-4 py-2 text-right w-150">
+                  <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg">
+                    Calc Point
+                  </button>
+                </th>
+                
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+          </table>
+        </div>
+        <div>
+          
+        </div>
+        <div>
+          <table className="w-full border border-gray-500">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="px-4 py-2">Effort Point: { (taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0) ? taskInfo.lstReq[0].pntNo : 0}</th>
+                <th className="px-4 py-2 text-blue-600">Actual Point: {taskInfo.totalPoint}</th>
+                <th className="px-4 py-2 c">Gap: {taskInfo.totalPoint - ((taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0) ? taskInfo.lstReq[0].pntNo : 0)}</th>
+              </tr>
+            </thead>
+          </table>
+          <table className="w-full border border-gray-500">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="px-4 py-2">Member</th>
+                <th className="px-4 py-2">Pharse Name</th>
+                <th className="px-4 py-2 text-right">Hours</th>
+                <th className="px-4 py-2 text-right">Exp P/H</th>
+                <th className="px-4 py-2">Point</th>
+                <th className="px-4 py-2">BP Point</th>
+              </tr>
+            </thead>
+            <tbody>
+              {effortWithMember.map((result) => (
+                <tr key={result.usrId} className="border-t">
+                  <td className="px-4 py-2">{result.usrNm}</td>
+                  <td className="px-4 py-2">{result.phsNm}</td>
+                  <td className="px-4 py-2 text-right">{formatTime(result.effortHours)}</td>
+                  <td className="px-4 py-2 text-right">{result.expectPoint}</td>
+                  <td className="px-4 py-2 text-right">{result.point}</td>
+                  <td className="px-4 py-2 text-right text-blue-600">{ "PIM_PHS_CDFIN" === result.phsCd ? result.bpAdddpoint : result.point }</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </form>
+      <div className="pt-8"
+      >
+        <PointSuggest 
+          total = { (taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0) ? taskInfo.lstReq[0].pntNo : 0}
+          actualtotal = {taskInfo.totalPoint}
+          prjId = { prjId }
+          reqId = { reqId }
+        />
       </div>
-    </form>
+    </div>
   );
 }

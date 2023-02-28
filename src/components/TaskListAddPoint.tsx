@@ -4,7 +4,7 @@ import myData from '../data.json';
 import Moment from 'react-moment';
 import 'moment-timezone';
 
-export default function TaskSearchForm() {
+export default function TaskListAddPoint() {
   // Moment.locale('en');
   let [picId, setPicId] = useState("");
   let [pointOnHour, setPointOnHour] = useState(25); //Point senior
@@ -39,12 +39,6 @@ export default function TaskSearchForm() {
     else return 0;
   }
   const searchRequirement = async () => {
-    // https://blueprint.cyberlogitec.com.vn/api/uiPim001/searchRequirement
-    //https://blueprint.cyberlogitec.com.vn/api/task-details/get-actual-effort-point?picId=${lsReq[i].picId}
-    // const requirementDetail = await  axios.get(`${url}/searchRequirementDetails?picId=${picId}`)
-    // .then(res => {
-    //   return res.data;
-    // });
 
     const data = {
         "pjtId": "PJT20211119000000001",
@@ -72,78 +66,6 @@ export default function TaskSearchForm() {
     }
     
     setTaskList(requirement.lstReq);
-  //   axios.get(`${url}/task-details/get-actual-effort-point?picId=${picId}`)
-  //   .then(res => {
-  //     let lsReq = res.data;
-  //     let tmpResult = new Array();
-  //     if(lsReq.lstActEfrtPnt != undefined && lsReq.lstActEfrtPnt != null && lsReq.lstActEfrtPnt.length > 0) {
-  //       console.log("----------------");
-  //       // let addedPoint = taskInfo.lstReq[0].pntNo;
-  //       let currentTotalPoint = 0;
-  //       for(let idx = 0; idx < lsPharseMember.length; idx ++){
-  //         let item = lsPharseMember[idx];
-  //         const userid = lsPharseMember[idx].usrId;
-  //         const phsCd =  lsPharseMember[idx].phsCd;
-  //         const member = lsMember.find(mem => mem.userId == userid);
-  //         const total = sumEffort(lsReq.lstActEfrtPnt, userid, phsCd);
-       
-  //         let totalTask = total;
-
-  //         for(let idx = 0; idx < pointDefaultByPharse.length; idx ++){
-  //           totalTask += pointDefaultByPharse[idx].mins;
-  //         }
-
-
-  //         //Check in default
-  //         let itemPointDefault = pointDefaultByPharse.filter(point => point.code == phsCd);
-  //         let standardPoint = 25;
-  //         let expectPoint = 25;
-  //         if(member){
-  //           expectPoint = member.pointOnHour.expect;
-  //           standardPoint = member.pointOnHour.standard;
-  //         }
-  //         item.standardPoint = standardPoint;
-  //         item.expectPoint = expectPoint;
-        
-  //         if(itemPointDefault && itemPointDefault.length > 0){ 
-  //           //Check Neu la point default
-  //           item.effortHours = itemPointDefault[0].mins; //12min = 5 point
-  //           item.bpAdddpoint = itemPointDefault[0].point;
-  //           item.point = itemPointDefault[0].point;
-           
-  //         } else {
-  //           item.effortHours = total; 
-  //           item.point = parseInt((total / (60 * 1.0)) * expectPoint);
-  //         }
-  //         tmpResult.push(item);
-
-  //       }
-
-  //     }
-  //     // tmpResult.pntNo = lsReq.pntNo;
-  //     let totalPoint = 0;
-  //     for(let k = 0; k < tmpResult.length; k ++){
-  //       totalPoint += tmpResult[k].point;
-  //     }
-  //     console.log("requirement", requirement);
-
-  //     //Check total 
-  //     requirement.lstReq = requirement.lstReq.filter(item => item.picId == picId);
-      
-  //     const gapPoint = requirement.lstReq[0].pntNo - totalPoint; //pntNo
-  //     console.log("totalPoint", totalPoint);
-  //     console.log("requirement.lstReq[0]", requirement.lstReq[0].pntNo);
-
-  //     for(let k = 0; k < tmpResult.length; k ++){
-  //       if("PIM_PHS_CDFIN" == tmpResult[k].phsCd){
-  //         tmpResult[k].bpAdddpoint = tmpResult[k].point + gapPoint;
-  //       }
-  //     }
-  //     requirement.totalPoint = totalPoint;
-  //     setTaskInfo(requirement);
-  //     setEffortWithMember(tmpResult);
-      
-  //   })
 
   }
 
@@ -182,25 +104,30 @@ export default function TaskSearchForm() {
     <form className="grid grid-flow-row gap-2" 
           onSubmit={handleSubmit}>
       <div className="grid grid-flow-col gap-1">
-        <div className="grid grid-flow-row gap-1">
-          <div className="grid grid-cols-3 gap-1">
-            <label htmlFor="picId" className="text-lg font-bold px-4">
-              PIC
-            </label>
-            <input
-              type="text"
-              id="picId"
-              value={picId}
-              onChange={event => setPicId(event.target.value) }
-              className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg"
-            />
-          </div>
-        </div>
-        
-        
-        <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg">
-          Search
-        </button>
+        <table className="w-full border border-gray-500">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="px-4 py-2 text-right w-full">
+                  PIC
+                </th>
+                <th className="px-4 py-2 text-right">
+                  <input
+                    type="text"
+                    id="picId"
+                    value={picId}
+                    onChange={event => setPicId(event.target.value) }
+                    className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg"
+                  />
+                </th>
+                <th className="px-4 py-2 text-right w-100">
+                  <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg w-100">
+                    Search
+                  </button>
+                </th>
+                
+              </tr>
+            </thead>
+          </table>
       </div>
       <div>
         

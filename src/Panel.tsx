@@ -3,6 +3,7 @@ import { APP_COLLAPSE_WIDTH, APP_EXTEND_WIDTH, URLS } from './const';
 import Button from './components/Button';
 import TaskSearchForm from './components/TaskSearchForm';
 import TaskListAddPoint from './components/TaskListAddPoint';
+
 import classNames from 'classnames';
 
 export default function Panel({ onWidthChange, initialEnabled }: { onWidthChange: (value: number) => void, initialEnabled: boolean }): ReactElement {
@@ -47,6 +48,7 @@ export default function Panel({ onWidthChange, initialEnabled }: { onWidthChange
         <TaskSearchForm onSearch={handleSearch} />
         
       </div>
+      
       <div className="p-4">
         <TaskListAddPoint onSearch={handleSearch} />
         
