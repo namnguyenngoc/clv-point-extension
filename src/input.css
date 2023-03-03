@@ -8,7 +8,7 @@
   height: 20em;
 }
 .table-container-10 {
-  height: 15em;
+  height: 31em;
 }
 table.custom-scroll.custom-scroll {
   display: flex;
@@ -56,4 +56,18 @@ table.custom-scroll {
 
 .pt-8 {
   padding-top: 8px;
+}
+
+.ml-4 {
+  margin-left: 4px;
+}
+
+.comment {
+  word-wrap: break-word;
+}
+
+.system-comment {
+  color: #4f9bc5;
+  text-transform: uppercase;
+  font-weight: 500;
 }

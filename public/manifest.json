@@ -1,6 +1,6 @@
 {
   "short_name": "react-chrome-extension-template-side-panel",
-  "name": "React Chrome Extension Template: Side Panel",
+  "name": "Blueprint Point Suggest",
   "version": "0.2.0",
   "manifest_version": 3,
   "background": {

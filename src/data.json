@@ -140,5 +140,5 @@
         }
     
     ],
-    "effortPointCategory": ["Business", "UI Logic", "SQL", "Data model", "UI Layout"]
+    "effortPointCategory": ["Business", "UI Logic", "SQL", "UI Layout"]
 }
