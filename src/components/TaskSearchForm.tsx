@@ -225,32 +225,29 @@ export default function TaskSearchForm() {
       }
     }
     let ro = {
-        reqId: reqDetail.reqId,
+        reqId: reqDetail.detailReqVO.reqId,
         lstPhsPoint: lstPhsPoint,
         cmtCtnt: cmtCtnt,
-        pjtId: reqDetail.pjtId,
-        subPjtId: reqDetail.subPjtId,
-        customFlg: undefined,
-        action: 'REQ_WTC_EFRT'
+        pjtId: reqDetail.detailReqVO.pjtId,
+        subPjtId: reqDetail.detailReqVO.subPjtId,
+        customFlg: true,
+        action: 'REQ_WTC_EFRT',
+        pstTpCd: 'PST_TP_CDACT',
     };
     // ro.pstTpCd = POST_TYPE_CODE_ACTIVITY;
 
     console.log("RO", ro);
 
-    // let response = await axios.put("/api/update-point-process-phase", ro);
-    // const saveFlg = response.data.saveFlg;
-    // if (saveFlg == SAVE_FAIL) {
-    //     //showMessage(WARNING_MESSAGE, getMessageCode("COM0000"))
-    // } else {
-    //   // showMessage(SUCCESS_MESSAGE, getMessageCode("COM0067"))
-    //     // lstPhs.map(function (item) {
-    //     //     item.efrtNo = item.effort;
-    //     //     item.oldEfrtNo = item.effort;
-    //     // });
-    //     // if (customFlg)
-    //     //     addNewElementCommentList(ro);
-    // }
+    let response = axios.put(`${url}/update-point-process-phase`, ro).then(async function (response) {
+      const msg =   response.data.saveFlg;//saveFlg: 'SAVE_SUCCEED', pstId: 'PST20230303000001056'}
 
+        alert(msg);
+        if('SAVE_SUCCEED' == msg) {
+          window.location.reload(false);
+
+        }
+    });
+  
     
     let cmtVo = {
       type: "pntProc",
@@ -285,7 +282,7 @@ export default function TaskSearchForm() {
                     Calc Point
                   </button>
                   <button type="button" className="bg-blue-500 text-white py-2 px-4 rounded-lg ml-4" onClick={cfmEditPoint}>
-                    Save BP
+                    Save Point Phase
                   </button>
                 </th>
                 

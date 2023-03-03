@@ -268,31 +268,6 @@ export default function PointSuggest(props) {
         }
       });
 
-
-      // showProgressBar(curPgmName, async function(){
-      //     $$(curPgmName).disable();
-      //     $$(curPgmName).showProgress();
-      //     let response = await axios.put('/api/save-req-job-detail',ro);
-      //     const saveFlg = response.data.saveFlg;
-      //     if(saveFlg == SAVE_SUCCEED){
-      //         $$("jobDetailGrid").clearAll();
-      //         $$("jobDetailGrid").parse(lstTotalPoint,'json');
-      //         detailReqVO.effortPoint = totalPoint;
-      //         $$("displayEffortPoint").parse(detailReqVO,'json');
-      //         addNewElementCommentList(cmtVO);
-      //         cfmEditPoint(true, false);
-      //         $$(curPgmName).enable();
-      //         $$(curPgmName).hideProgress();
-      //     }else{
-      //         if (response.data.msgId) {
-      //             showMessage(WARNING_MESSAGE, getMessageCode(response.data.msgId), null);
-      //             $$(curPgmName).enable();
-      //             $$(curPgmName).hideProgress();
-      //         } else {
-      //             showMessage(ERROR_MESSAGE, getMessageCode("COM0000"), null);
-      //         }
-      //     }
-      // })
   }
 
   }
@@ -398,10 +373,10 @@ export default function PointSuggest(props) {
                   Suggest
                 </button>
                 <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg ml-4" disabled={totalPoint == 0}  onClick={saveBP}>
-                  Save BP
+                  Save Point Task
                 </button>
               </th>
-              <th className="px-4 py-2 text-right w-100">
+              <th className="px-4 py-2 text-right">
                 <div className="w-100">
                   Total suggest
 
@@ -412,7 +387,7 @@ export default function PointSuggest(props) {
                   type="text"
                   id="totalPointSuggest"
                   value={totalPoint}
-                  className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-100 text-right"
+                  className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-70 text-right"
                 />
               </th>
               <th className="px-4 py-2 text-right">
@@ -420,7 +395,7 @@ export default function PointSuggest(props) {
                   type="text"
                   id="totalListPoint"
                   value={totalListPoint}
-                  className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-100 text-right"
+                  className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-70 text-right"
                 />
               </th>
               
@@ -447,7 +422,7 @@ export default function PointSuggest(props) {
                    {result.prntJbId == "0" ? 
                     (
                       <td className="px-4 py-2 font-bold text-left w-full" colSpan="4">
-                        {result.jbNm} - {result.jbId}
+                        {result.jbNm}
                       </td>
                     ):
                     (
