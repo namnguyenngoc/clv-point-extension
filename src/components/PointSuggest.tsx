@@ -12,6 +12,7 @@ export default function PointSuggest(props) {
   const effortPointCategory = myData.effortPointCategory;
 
   let [totalPoint, setTotalPoint] = useState(0);
+  let [totalListPoint, setTotalListPoint] = useState(0);
   let [suggetPrtList, setSuggetPrtList] = useState([]);
   let [suggestList, setSuggestList] = useState([]);
   let [commentPoint, setCommentPoint] = useState("");
@@ -47,7 +48,6 @@ export default function PointSuggest(props) {
   function buildComment(cmtVO: any, detailReqVO) {
     let comment = "";
     let prntNm = "";
-    console.log("buildComment", cmtVO.lstPoint);
     switch (cmtVO.type) {
       //add point
       case "addPnt":
@@ -121,7 +121,7 @@ export default function PointSuggest(props) {
           });
          
         }
-        console.log("result", result);
+        
 
         pointList = pointList.sort(comparePointFn);
         const suggestListDate = genListPoint(pointList);
@@ -135,13 +135,16 @@ export default function PointSuggest(props) {
     let sortJobDetail = [...listJobDetail?.sort(comparePointFn)];
 
     let lstJbDetails = [...reqDetail.lstJbDetails];
-    
+    lstJbDetails.map(function (item) {
+      item.isNew = false;
+      item.className = "border-t bg-light-green";
+    })
   
     let lstParentDetail = [];
-    console.log("parentList", parentList);
+    
     for(let i = 0; i < sortJobDetail.length; i ++){
       const parent = parentList.filter(item => item.jbId == sortJobDetail[i].prntJbId);
-      console.log("parent", parent);
+      
       if(parent && parent.length > 0 
         && !existParent(lstParentDetail, parent[0]) 
         && !existParent(lstJbDetails, parent[0])
@@ -149,9 +152,7 @@ export default function PointSuggest(props) {
         lstParentDetail.push(parent[0]);
       }
     }
-    console.log("sortJobDetail", sortJobDetail);
-    console.log("lstJbDetails", lstJbDetails);
-    console.log("lstParentDetail", lstParentDetail);
+    
 
     let lsConcat = lstParentDetail.concat(sortJobDetail).concat(lstJbDetails);
     lsConcat.map(function (item) {
@@ -177,20 +178,27 @@ export default function PointSuggest(props) {
     //1. get parent
     let newList = [];
     let newPrt =  [...tmpList.filter(item => item.$parent == "0")];
+    let total = 0;
     if(newPrt && newPrt.length > 0){
       for(let k = 0; k < newPrt.length; k ++){
         newList.push(newPrt[k]);
         const newChild = [...tmpList.filter(item => item.prntJbId == newPrt[k].jbId)];
         if(newChild && newChild.length > 0){
           newList = newList.concat(newChild);
+
+          //total
+          for(let j = 0; j < newChild.length; j ++){
+            total += newChild[j].utPnt * newChild[j].itmAmt;
+
+          }
         }
 
       }
     }
-    //2. input by parrent
-
     // const lsConcatSrt = [...tmpList.sort(compareParentFn)];
-    console.log("newList", newList);
+
+    
+    setTotalListPoint(total);
     setSuggestList(newList);
 
     // let lsNewPoint = [...listJobDetail];
@@ -212,8 +220,7 @@ export default function PointSuggest(props) {
         lstPrt.push(itemPrt[0]);  
       }
     }
-    console.log("lstAdd", lstAdd);
-    console.log("reqDetail", reqDetail);
+    
     // RO
     // {"categoryList":[{"utPnt":0,"jbId":"JOB20211125000000139","jbNm":"Inbound","itmAmt":0,"$parent":0},{"utPnt":50,"jbId":"JOB20211125000000144","jbNm":"COARRI","itmAmt":1,"$parent":"JOB20211125000000139","prntNm":"Inbound"},{"utPnt":0,"jbId":"JOB20211125000000086","jbNm":"UI Layout","itmAmt":0,"$parent":0},{"utPnt":5,"jbId":"JOB20211125000000095","jbNm":"Change Label Charater","itmAmt":1,"$parent":"JOB20211125000000086","prntNm":"UI Layout"},{"utPnt":0,"jbId":"JOB20211125000000033","jbNm":"SQL","itmAmt":0,"$parent":0},{"utPnt":50,"jbId":"JOB20211125000000036","jbNm":"Change delete logic","itmAmt":1,"$parent":"JOB20211125000000033"},{"utPnt":0,"jbId":"JOB20211125000000006","jbNm":"Data Correction","itmAmt":0,"$parent":0},{"utPnt":10,"jbId":"JOB20211125000000008","jbNm":"Updated Column","itmAmt":1,"$parent":1677656482208},{"utPnt":5,"jbId":"JOB20211125000000007","jbNm":"Related table","itmAmt":1,"$parent":1677656482208},{"utPnt":0,"jbId":"JOB20211125000000011","jbNm":"UI Logic","itmAmt":0,"$parent":0},{"utPnt":10,"jbId":"JOB20211125000000013","jbNm":"Data Mapping/Unmapping","itmAmt":1,"$parent":1677656482210},{"utPnt":25,"jbId":"JOB20211125000000015","jbNm":"Change component status","itmAmt":1,"$parent":1677656482210},{"utPnt":50,"jbId":"JOB20211125000000018","jbNm":"Change UI Action","itmAmt":1,"$parent":1677656482210},{"utPnt":15,"jbId":"JOB20211125000000019","jbNm":"Recall function","itmAmt":1,"$parent":1677656482210},{"utPnt":0,"jbId":"JOB20211125000000044","jbNm":"Data model","itmAmt":0,"$parent":0},{"utPnt":30,"jbId":"JOB20211125000000045","jbNm":"Change length","itmAmt":1,"$parent":1677656482215,"prntNm":"Data model"},{"utPnt":5,"jbId":"JOB20211125000000046","jbNm":"Add column","itmAmt":1,"$parent":1677656482215}],"totalPoint":285,"reqId":"PRQ20230301000000085","cmtCtnt":"<div class=\\"system-comment\\"> • Added Point: </div>   <div style=\\"margin-left: 10px\\"> <b>&nbsp;Inbound:</b></div>  <div style=\\"margin-left: 10px\\"><i> &nbsp;&nbsp;COARRI: </i>50 </div>  <div style=\\"margin-left: 10px\\"> <b>&nbsp;UI Layout:</b></div>  <div style=\\"margin-left: 10px\\"><i> &nbsp;&nbsp;Change Label Charater: </i>5 </div>  <div style=\\"margin-left: 10px\\"> <b>&nbsp;Data model:</b></div>  <div style=\\"margin-left: 10px\\"><i> &nbsp;&nbsp;Change length: </i>30 </div> ","pjtId":"PJT20211119000000001","subPjtId":"PJT20211119000000001","action":"REQ_WTC_EFRT"}
 //   //Update category
@@ -237,10 +244,10 @@ export default function PointSuggest(props) {
       // cmtVO.pstTpCd = POST_TYPE_CODE_ACTIVITY;
 
       //Merge
-      let lstJbDetails = [...reqDetail.lstJbDetails];
-      const lstAddAll  = lstAdd.concat(lstJbDetails);
+      // let lstJbDetails = [...reqDetail.lstJbDetails];
+      // const lstAddAll  = lstAdd.concat(lstJbDetails);
       let ro = {
-          categoryList    : lstAddAll,
+          categoryList    : lstAdd,
           totalPoint      : Number(props.total + totalPoint),
           reqId           : reqDetail.detailReqVO.reqId,
           cmtCtnt         : cmtCtnt,
@@ -251,10 +258,15 @@ export default function PointSuggest(props) {
       console.log("RO", ro);
 
       // console.log("reqee", req)
-      // const response = await axios.put(`${url}/save-req-job-detail`, ro).then(async function (response) {
-      //   console.log("response", response.data);
-      //   alert(response.data);
-      // });
+      const response = await axios.put(`${url}/save-req-job-detail`, ro).then(async function (response) {
+        const msg =   response.data.saveFlg;//saveFlg: 'SAVE_SUCCEED', pstId: 'PST20230303000001056'}
+
+        alert(msg);
+        if('SAVE_SUCCEED' == msg) {
+          window.location.reload(false);
+
+        }
+      });
 
 
       // showProgressBar(curPgmName, async function(){
@@ -325,7 +337,6 @@ export default function PointSuggest(props) {
         }
       }
     }
-    console.log("count",count);
     return count;
   }
 
@@ -342,7 +353,6 @@ export default function PointSuggest(props) {
   const genListPoint = (pointList: Array<Object>) => {
     let tmpTotalPoint = props.actualtotal - props.total;
     let lsPoint = [];
-    console.log("tmpTotalPoint", tmpTotalPoint);
     //1. Tim point lon nhat ma total%max = 0;
     // let pointMax = findMaxPoint(pointList, tmpTotalPoint);
     while (tmpTotalPoint > 0) {
@@ -383,22 +393,33 @@ export default function PointSuggest(props) {
         <table className="w-full border border-gray-500">
           <thead>
             <tr className="bg-gray-200">
-              <th className="px-4 py-2 text-left">
+              <th className="px-4 py-2 text-left w-full">
                 <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg" disabled={props.total == 0}>
                   Suggest
                 </button>
-                <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg ml-4" disabled={props.total == 0}  onClick={saveBP}>
+                <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg ml-4" disabled={totalPoint == 0}  onClick={saveBP}>
                   Save BP
                 </button>
               </th>
-              <th className="px-4 py-2 text-right">
-                Total suggest
+              <th className="px-4 py-2 text-right w-100">
+                <div className="w-100">
+                  Total suggest
+
+                </div>
               </th>
               <th className="px-4 py-2 text-right">
                 <input
                   type="text"
                   id="totalPointSuggest"
                   value={totalPoint}
+                  className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-100 text-right"
+                />
+              </th>
+              <th className="px-4 py-2 text-right">
+                <input
+                  type="text"
+                  id="totalListPoint"
+                  value={totalListPoint}
                   className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-100 text-right"
                 />
               </th>
@@ -422,7 +443,7 @@ export default function PointSuggest(props) {
           <tbody className="border-t">
             {
               suggestList.map((result) => (
-                <tr key={result.jbId} className="border-t">
+                <tr key={result.jbId} className={result.className}>
                    {result.prntJbId == "0" ? 
                     (
                       <td className="px-4 py-2 font-bold text-left w-full" colSpan="4">
@@ -431,7 +452,7 @@ export default function PointSuggest(props) {
                     ):
                     (
                       <>
-                        <td className="px-4 py-2 text-right" colSpan={2}>{result.prntJbId != "0" ? "(*)" : ""} {result.jbNm}-{result.prntJbId}</td>
+                        <td className="px-4 px-6 text-left" colSpan={2}>{ result.isNew != false ? "(*)" : ""} {result.jbNm}</td>
                         <td className="px-4 py-2 text-right">{result.prntJbId != "0" ? result.utPnt : ""}</td>
                         <td className="px-4 py-2 text-right">{result.prntJbId != "0" ? result.itmAmt : ""}</td>
                         <td className="px-4 py-2 text-right">{result.prntJbId != "0" ? result.utPnt * result.itmAmt : ""}</td>

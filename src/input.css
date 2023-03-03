@@ -50,6 +50,9 @@ table.custom-scroll {
   width: 100px;
 }
 
+.w-150 {
+  width: 150px;
+}
 .pt-16 {
   padding-top: 16px;
 }
@@ -70,4 +73,8 @@ table.custom-scroll {
   color: #4f9bc5;
   text-transform: uppercase;
   font-weight: 500;
+}
+
+.bg-light-green {
+  background-color: lightgreen;
 }

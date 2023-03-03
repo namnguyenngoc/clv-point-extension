@@ -280,7 +280,7 @@ export default function TaskSearchForm() {
                     className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg  w-full"
                   />
                 </th>
-                <th className="px-4 py-2 text-right w-150">
+                <th className="px-4 py-2 text-right">
                   <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg">
                     Calc Point
                   </button>
