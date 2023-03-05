@@ -7,8 +7,8 @@
   "scripts": {
     "prestart": "yarn style",
     "start": "parce --dist-dir ./public/dist",
-    "prebuild": "yarn style && rm -rf ./public/dist",
-    "build": "parcel build --dist-dir ./public/dist --no-content-hash",
+    "prebuild": "yarn style && rm -rf ./public/dist-mgmt",
+    "build": "parcel build --dist-dir ./public/dist-mgmt --no-content-hash",
     "style": "npx tailwindcss -i ./src/input.css -o ./src/tailwindcss-output.css",
     "style:watch": "yarn style -- --watch"
   },
@@ -28,6 +28,7 @@
   "devDependencies": {
     "@types/react": "^18.0.19",
     "@types/react-dom": "^18.0.6",
+    "buffer": "^5.5.0",
     "parcel": "latest",
     "postcss": "^8.4.16",
     "postcss-nested": "^5.0.6",

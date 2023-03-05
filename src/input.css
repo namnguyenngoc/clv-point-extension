@@ -82,3 +82,14 @@ table.custom-scroll {
 .bg-light-green {
   background-color: lightgreen;
 }
+
+.main-layout {
+  width: 80%;
+    box-shadow: rgb(0 0 0 / 62%) 0px 0px 5px;
+    position: absolute;
+    /* margin: 20px auto; */
+    left: 10%;
+    top: 5%;
+    height: 870px;
+    overflow: auto;
+}

@@ -3,6 +3,7 @@ import { APP_COLLAPSE_WIDTH, APP_EXTEND_WIDTH, URLS } from './const';
 import Button from './components/Button';
 import TaskSearchForm from './components/TaskSearchForm';
 import TaskListAddPoint from './components/TaskListAddPoint';
+import LogWorkListByTeam from './components/LogWorkListByTeam';
 
 import classNames from 'classnames';
 
@@ -10,6 +11,7 @@ export default function Panel({ onWidthChange, initialEnabled }: { onWidthChange
   const [enabled, setEnabled] = useState(initialEnabled);
   const [sidePanelWidth, setSidePanelWidth] = useState(enabled ? APP_EXTEND_WIDTH: APP_COLLAPSE_WIDTH);
   const [tabIndex, setTabIndex] = useState(0);
+  const [showWorkList, setShowWorkList] = useState(false);
 
   function handleOnToggle(enabled: boolean) {
     const value = enabled ? APP_EXTEND_WIDTH : APP_COLLAPSE_WIDTH;
@@ -23,6 +25,7 @@ export default function Panel({ onWidthChange, initialEnabled }: { onWidthChange
     const newValue = force || !enabled;
     setEnabled(newValue);
     handleOnToggle(newValue);
+    setShowWorkList(!newValue);
   }
   const [searchResults, setSearchResults] = useState([]);
 
@@ -35,25 +38,32 @@ export default function Panel({ onWidthChange, initialEnabled }: { onWidthChange
       { id: 3, title: "Task 3", result: "Result 3" },
     ]);
   };
-
+  const openLogWork = (force?: boolean) => {
+    setSidePanelWidth(1000); 
+    const newValue = force || !enabled;
+    setShowWorkList(newValue);
+  }
   return (
     <div
       style={{
         width: sidePanelWidth - 5,
         boxShadow: '0px 0px 5px #0000009e',
       }}
-      className="absolute top-0 right-0 bottom-0 z-max bg-[#F5F8FA] ease-in-out duration-300 overflow-hidden grid grid-flow-row gap-1"
+      className="absolute bottom-0 z-max bg-[#F5F8FA] ease-in-out duration-300 overflow-hidden grid grid-flow-row gap-1 main-layout"
     >
       <div className="p-4">
         <TaskSearchForm onSearch={handleSearch} />
         
       </div>
       
-      <div className="p-4">
+      <div className={showWorkList ? 'hidden' : 'pt-4'}>
         <TaskListAddPoint onSearch={handleSearch} />
         
       </div>
-    
+      <div className={!showWorkList ? 'hidden' : 'pt-4'}>
+        <LogWorkListByTeam />
+        
+      </div>
       <div
         className={classNames('absolute h-full flex border-none flex-col ease-linear w-[50px] space-y-3 p-1', {
           'opacity-0': enabled,
@@ -93,6 +103,11 @@ export default function Panel({ onWidthChange, initialEnabled }: { onWidthChange
                 }
               />
             </svg>
+          </span>
+        </Button>
+        <Button active={enabled} onClick={ openLogWork }>
+          <span>
+            Check Time Work
           </span>
         </Button>
       </div>

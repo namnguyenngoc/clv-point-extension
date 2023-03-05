@@ -4,7 +4,7 @@ import myData from '../data.json';
 import Moment from 'react-moment';
 import 'moment-timezone';
 
-export default function TaskListAddPoint() {
+export default function LogWorkListByTeam() {
   // Moment.locale('en');
   let [picId, setPicId] = useState("");
   let [pointOnHour, setPointOnHour] = useState(25); //Point senior
@@ -69,22 +69,6 @@ export default function TaskListAddPoint() {
 
   }
 
-  function sumEffort (lsData, userid, phsCd) {
-    let sum = 0;
-    for (let i = 0; i < lsData.length; i ++) {
-      if(userid == lsData[i].usrId && phsCd == lsData[i].phsCd){
-        sum += parseInt(lsData[i].actEfrtMnt);
-      }
-    }
-    return sum;
-  }
-
-  function formatTime (time) {
-    let hour = parseInt((time > 59 ? time : 0) / 60);
-    let min = time > 0 ? time % 60 : 0;
-    return `${hour}h ${min}m`;
-  }
-
   const handleSubmit = (event) => {
     event.preventDefault();
     //https://blueprint.cyberlogitec.com.vn/api/getUserInfoDetails
@@ -107,7 +91,7 @@ export default function TaskListAddPoint() {
             <thead>
               <tr className="bg-gray-200">
                 <th className="px-4 py-2 text-right w-full">
-                  PIC
+                  TIME WOKRED
                 </th>
                 <th className="px-4 py-2 text-right">
                   <input
