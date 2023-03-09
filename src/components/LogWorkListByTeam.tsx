@@ -7,10 +7,14 @@ import 'moment-timezone';
 export default function LogWorkListByTeam() {
   // Moment.locale('en');
   let [picId, setPicId] = useState("");
+
   let [pointOnHour, setPointOnHour] = useState(25); //Point senior
 
   let [effortWithMember, setEffortWithMember] = useState([]);
   let [taskList, setTaskList] = useState([]);
+ 
+  let memLs= "";
+ 
   
   const url = 'https://blueprint.cyberlogitec.com.vn/api';
   const currentURL = window.location.href // returns the absolute URL of a page
@@ -38,41 +42,37 @@ export default function LogWorkListByTeam() {
     else if (start < end) return 1;
     else return 0;
   }
-  const searchRequirement = async () => {
-
+  const searchEffortTeam = async () => {
+    if(myData){
+      memLs = myData.memList.map(item => `${item.userId}`).join(',');
+    }
     const data = {
-        "pjtId": "PJT20211119000000001",
-        "advFlg": "N",
-        "reqStsCd": [
-            "REQ_STS_CDPRC",
-            "REQ_STS_CDOPN"
-        ],
-        "picId": picId,
-        "jbTpCd": "_ALL_",
-        "itrtnId": "_ALL_",
-        "beginIdx": 0,
-        "endIdx": 200,
+      "strPjt": "PJT20211119000000001",
+      "strUsr": memLs,
+      "frmDt": "20230201",
+      "toDt": "20230306",
+      "condTxt": ""
     };
     // let lsPharseMember = requirementDetail.lstSkdUsr
-    let requirement = await axios.post(`${url}/uiPim001/searchRequirement`,   data
+    let requirement = await axios.post(`${url}/actual-effort/search-task-with-condition`,   data
     ).then(res => {
       return res.data;
     });
     // console.log("requirementDetail", requirementDetail);
     console.log("requirement", requirement);
     //Sort
-    if(requirement.lstReq){
-      requirement.lstReq = [...requirement.lstReq.sort(compareFn)];
+    if(requirement.lstActEfrt){
+      requirement.lstActEfrt = [...requirement.lstActEfrt];
     }
     
-    setTaskList(requirement.lstReq);
+    setTaskList(requirement.lstActEfrt);
 
   }
 
   const handleSubmit = (event) => {
     event.preventDefault();
     //https://blueprint.cyberlogitec.com.vn/api/getUserInfoDetails
-    searchRequirement();
+    searchEffortTeam();
  
   };
 
@@ -115,25 +115,37 @@ export default function LogWorkListByTeam() {
       <div>
         
       </div>
-      <div className="table-container">
+      <div className="table-container-mgmt">
         <table className="w-full border border-gray-500 custom-scroll">
           <thead>
             <tr className="bg-gray-200">
-              <th className="px-4 py-2">Title</th>
-              <th className="px-4 py-2 w-170">Assignee</th>
-              <th className="px-4 py-2 text-right w-100">Effort Point</th>
+              <th className="px-4 py-2">User</th>
+              <th className="px-4 py-2 w-100">Time</th>
+              <th className="px-4 py-2 text-right w-100">Work Date</th>
+              <th className="px-4 py-2 text-right ">Comment</th>
+              <th className="px-4 py-2 text-right ">Insert Point</th>
             </tr>
           </thead>
           <tbody className="border-t">
             {taskList.map((item) => (
-              <tr key={item.reqId} className="border-t">
+              <tr key={item.reqSeqNo} className="border-t">
                 <td className="px-4 py-2 text-blue">
-                  <a onClick={event => linkToSite(item.reqId)}>
-                    {item.reqTitNm}
+                  <a onClick={event => linkToSite(item.reqSeqNo)}>
+                    {item.usrNm}
                   </a>
                 </td>
-                <td className="px-4 py-2 w-170">{item.assignee}</td>
-                <td className="px-4 py-2 text-right w-100">{item.pntNo}</td>
+                <td className="px-4 py-2 w-100">{item.actEfrtMnt}</td>
+                <td className="px-4 py-2 text-right w-100">{item.wrkDt}</td>
+                <td className="px-4 py-2 text-right">{item.cmt}</td>
+                <td className="px-4 py-2 text-right">
+                  <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg">
+                    Total
+                  </button>
+                  <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg">
+                    Pharse
+                  </button>
+
+                </td>
               </tr>
             ))}
           </tbody>

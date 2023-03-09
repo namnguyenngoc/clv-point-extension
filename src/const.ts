@@ -26,5 +26,7 @@ export const URLS = [
   // },
 ] as const;
 
-export const APP_EXTEND_WIDTH = 600;
-export const APP_COLLAPSE_WIDTH = 55;
+export const APP_EXTEND_MGMT_WIDTH = 1700;
+export const APP_EXTEND_MGMT_HEIGHT = 900;
+export const APP_COLLAPSE_MGMT_WIDTH = 55;
+export const APP_COLLAPSE_MGMT_HEIGHT = 55;

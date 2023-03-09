@@ -403,7 +403,7 @@ export default function PointSuggest(props) {
           </thead>
         </table>
       </div>
-      <div className="table-container-10">
+      <div className="table-container-mgmt-10">
         <table className="w-full border border-gray-500 custom-scroll">
           <thead>
             <tr className="bg-gray-200">
