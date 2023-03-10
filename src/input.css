@@ -92,7 +92,7 @@ table.custom-scroll {
   height: 870px;
   overflow: auto; */
   /* width: 50px; */
-  box-shadow: rgb(0 0 0 / 62%) 0px 0px 5px;
+  box-shadow: rgb(0 0 0 / 70%) 5px 0px 5px;
   /* height: 50px; */
   background: transparent;  
   top: 5px;

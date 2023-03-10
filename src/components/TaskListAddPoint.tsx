@@ -1,17 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import myData from '../data.json';
 import Moment from 'react-moment';
 import 'moment-timezone';
+import TaskDetaillAddPoint from './TaskDetaillAddPoint';
+import TaskSearchForm from './TaskSearchForm';
 
-export default function TaskListAddPoint() {
+
+export default function TaskListAddPoint(props) {
   // Moment.locale('en');
+  const [children, setChildren] = useState([]);
+
   let [picId, setPicId] = React.useState("");
+  let [reqId, setReqId] = React.useState("");
+  let [seqNo, setSeqNo] = React.useState(0);
+  
   let [assignee, setAssignee] = React.useState("");
   let [pointOnHour, setPointOnHour] = useState(25); //Point senior
   let [suggetPrtList, setSuggetPrtList] = useState([]);
-
+  let [taskInfo, setTaskInfo] = useState({});
   let [taskList, setTaskList] = useState([]);
+  let [reqDetail, setReqDetail] = useState({});
+
   
   const url = 'https://blueprint.cyberlogitec.com.vn/api';
  
@@ -30,13 +40,6 @@ export default function TaskListAddPoint() {
 
   picId = 'namnnguyen';
 
-  const handlepicIdChange = (event) => {
-    setPicId(event.target.value);
-  };
-
-  const handlePointOnHourChange = (event) => {
-    setPointOnHour(event.target.value);
-  };
   const compareFn = (a: string, b: string) => {
     // const startDate = a.createDate;
     // const endDate = b.createDate;
@@ -292,6 +295,8 @@ export default function TaskListAddPoint() {
     //https://blueprint.cyberlogitec.com.vn/api/task-details/get-actual-effort-point?reqId=${lsReq[i].reqId}
     const requirementDetail = await  axios.get(`${url}/searchRequirementDetails?reqId=${reqId}`)
     .then(res => {
+      console.log("requirementDetail", res.data);
+      setReqDetail(res.data);
       return res.data;
     });
 
@@ -392,7 +397,12 @@ export default function TaskListAddPoint() {
         }
       }
       requirement.totalPoint = totalPoint;
-      // setTaskInfo(requirement);
+        if(requirementDetail.detailReqVO) {
+          const seqNo = requirementDetail.detailReqVO.seqNo;
+          setSeqNo(seqNo);
+
+        }
+      setTaskInfo(requirement);
       // setEffortWithMember(tmpResult);
       return requirement;
     });
@@ -403,9 +413,11 @@ export default function TaskListAddPoint() {
   async function onClickCheckPoint(prjId, reqId, total: any, item: any) {
    
     // await datasuggestList(prjId, reqId, actualTotal, total);
+    setReqId(reqId);
     const pointTask = await searchRequirementDetais(reqId); 
     console.log("pointTask", pointTask );
     console.log("totalPoint", pointTask.totalPoint );
+   
 
 
     updateStateList(reqId, pointTask.totalPoint);
@@ -649,154 +661,192 @@ export default function TaskListAddPoint() {
     setSelectAssingee(event.target.value);
  
   };
-  
+
+
+  /**
+   * Communication parent to child
+   */
+  function communicateWithMe(val) {
+    console.log("I am called", val);
+  }
+  // useEffect(() => {
+  //   let _children = React.Children.map(props.children, (child) => {
+  //     console.log("Parent child", child);
+  //     return {
+  //       ...child,
+  //       props: {
+  //         ...child.props,
+  //         callBack: communicateWithMe
+  //       }
+  //     };
+  //   });
+
+  //   console.log("_children", _children);
+  //   setChildren(_children);
+  // }, []);
+  const parentToChild = () => {
+    console.log("This is data from Parent Component to the Child Component.");
+  }
   return (
-    <form className="grid grid-flow-row gap-2" 
-          onSubmit={handleSubmit}>
-      <div className="grid grid-flow-col gap-1">
-        <table className="w-full border border-gray-500">
+    <div className="grid grid-flow-col gap-2 px-4">
+      <form className="grid grid-flow-row gap-2 col-span-2" 
+            onSubmit={handleSubmit}>
+        <div className="grid grid-flow-col gap-1">
+          <table className="w-full border border-gray-500">
+              <thead>
+                <tr className="bg-gray-200">
+                  <th className="px-4 py-2 text-right w-200">
+                    <div className="grid grid-flow-col gap-1 text-left">
+                      <label>
+                        <input type="checkbox"
+                          defaultChecked={stsChecked}
+                          onChange={() => setStsChecked(!stsChecked)}
+                        />
+                        All
+                      </label>
+                      
+                      <label>
+                        <input type="checkbox"
+                          defaultChecked={focalChecked}
+                          onChange={() => setFocalChecked(!focalChecked)}
+                        />
+                          Focal Receiving
+                      </label>
+                      <label>
+                        <input type="checkbox"
+                          defaultChecked={approvalChecked}
+                          onChange={() => setApprovalChecked(!approvalChecked)}
+                        />
+                          Approval
+                      </label>
+                      <label>
+                        <input type="checkbox"
+                          defaultChecked={finishChecked}
+                          onChange={() => setFinishChecked(!finishChecked)}
+                        />
+                          Finish
+                      </label>
+                      <div>
+                        {/* <input
+                          type="text"
+                          id="picId"
+                          value={picId}
+                          onChange={ () => setPicId(picId) }
+                          className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg"
+                        /> */}
+                      </div>
+                    </div>
+                    
+                  </th>
+                
+                  <th className="px-4 py-2 text-right">
+                    <input
+                      type="text"
+                      defaultValue={picId}
+                      onChange={ () => setPicId(picId) }
+                      className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-full"
+                    />
+                  </th>
+                  <th className="px-4 py-2 text-right w-100">
+                    <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg w-100">
+                      Search
+                    </button>
+                  </th>
+                  
+                </tr>
+                <tr className="bg-gray-200">
+                  <th className="px-4 py-2 text-left w-200">
+                    Assignee
+                  </th>
+                
+                  <th className="px-4 py-2 text-right">
+                    <select value={selectAssingee} onChange={assigneeChange}>
+                    {
+                      lsAssingee.map((item) => (
+                        <option value={item.assignee}>
+                          {item.assignee}
+                        </option>
+                      ))
+                    }            
+
+                      </select>
+                  </th>
+                  
+                </tr>
+              </thead>
+            </table>
+        </div>
+        <div>
+          
+        </div>
+        <div className="table-container-mgmt">
+          <table className="w-full border border-gray-500 custom-scroll">
             <thead>
               <tr className="bg-gray-200">
-                <th className="px-4 py-2 text-right w-200">
-                  <div className="grid grid-flow-col gap-1 text-left">
-                    <label>
-                      <input type="checkbox"
-                        defaultChecked={stsChecked}
-                        onChange={() => setStsChecked(!stsChecked)}
-                      />
-                      All
-                    </label>
-                    
-                    <label>
-                      <input type="checkbox"
-                        defaultChecked={focalChecked}
-                        onChange={() => setFocalChecked(!focalChecked)}
-                      />
-                        Focal Receiving
-                    </label>
-                    <label>
-                      <input type="checkbox"
-                        defaultChecked={approvalChecked}
-                        onChange={() => setApprovalChecked(!approvalChecked)}
-                      />
-                        Approval
-                    </label>
-                    <label>
-                      <input type="checkbox"
-                        defaultChecked={finishChecked}
-                        onChange={() => setFinishChecked(!finishChecked)}
-                      />
-                        Finish
-                    </label>
-                    <div>
-                      {/* <input
-                        type="text"
-                        id="picId"
-                        value={picId}
-                        onChange={ () => setPicId(picId) }
-                        className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg"
-                      /> */}
-                    </div>
-                  </div>
-                  
+                <th className="px-4 py-2 w-30 text-center">#</th>
+                <th className="px-4 py-2 w-40 text-center">B.ID</th>
+                <th className="px-4 py-2">Title</th>
+                <th className="px-4 py-2 w-150">Assignee</th>
+                <th className="px-4 py-2 w-w-120">Phase</th>
+                <th className="px-4 py-2 text-right w-150">Eff. Task/T.Worked</th>
+                <th className="px-4 py-2 text-right w-220">
+                  Effort Point
                 </th>
-               
-                <th className="px-4 py-2 text-right">
-                  <input
-                    type="text"
-                    defaultValue={picId}
-                    onChange={ () => setPicId(picId) }
-                    className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-full"
-                  />
-                </th>
-                <th className="px-4 py-2 text-right w-100">
-                  <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg w-100">
-                    Search
-                  </button>
-                </th>
-                
-              </tr>
-              <tr className="bg-gray-200">
-                <th className="px-4 py-2 text-left w-200">
-                  Assignee
-                </th>
-               
-                <th className="px-4 py-2 text-right">
-                  <select value={selectAssingee} onChange={assigneeChange}>
-                  {
-                    lsAssingee.map((item) => (
-                      <option value={item.assignee}>
-                        {item.assignee}
-                      </option>
-                    ))
-                  }            
-
-                    </select>
-                </th>
-                
               </tr>
             </thead>
-          </table>
-      </div>
-      <div>
-        
-      </div>
-      <div className="table-container-mgmt">
-        <table className="w-full border border-gray-500 custom-scroll">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="px-4 py-2 w-30 text-center">#</th>
-              <th className="px-4 py-2 w-40 text-center">B.ID</th>
-              <th className="px-4 py-2">Title</th>
-              <th className="px-4 py-2 w-150">Assignee</th>
-              <th className="px-4 py-2 w-w-120">Phase</th>
-              <th className="px-4 py-2 text-right w-150">Eff. Task/T.Worked</th>
-              <th className="px-4 py-2 text-right w-220">
-                Effort Point
-              </th>
-            </tr>
-          </thead>
-          <tbody className="border-t">
-            {taskList.map((item, idx) => (
-              <tr key={item.reqId} className={(item.pntNo == 30 || (item.actEffort && item.pntNo < item.actEffort)) ? "border-t bg-green-200" : "border-t"}>
-                <td className="px-4 py-2 w-30 text-center">{idx + 1}</td>
-                <td className="px-4 py-2 w-40 text-center">{item.seqNo}</td>
-                
-                <td className="px-4 py-2 text-blue">
-                  <a onClick={event => linkToSite(item.reqId)}>
-                    {item.reqTitNm}
-                  </a>
-                </td>
-                <td className="px-4 py-2 w-150">{item.assignee}</td>
-                <td className="px-4 py-2 w-120">{item.reqPhsNm}</td>
-                <td className="px-4 py-2 text-right w-150">{item.pntNo}/{item.actEffort}</td>
-                <td className="px-4 py-2 text-right w-220">
-                  <div className="grid grid-flow-col gap-1">
-                    <button type="button" 
-                      className="bg-blue-500 text-white py-2 px-4 rounded-lg"
-                      disabled={!item.actEffort || item.actEffort > item.pntNo}
-                      onClick={ event => onClickTotal("PJT20211119000000001", item.reqId,item.pntNo, item) }
+            <tbody className="border-t">
+              {taskList.map((item, idx) => (
+                <tr key={item.reqId} className={(item.pntNo == 30 || (item.actEffort && item.pntNo < item.actEffort)) ? "border-t bg-green-200" : "border-t"}>
+                  <td className="px-4 py-2 w-30 text-center">{idx + 1}</td>
+                  <td className="px-4 py-2 w-40 text-center">{item.seqNo}</td>
+                  
+                  <td className="px-4 py-2 text-blue">
+                    <a onClick={event => linkToSite(item.reqId)}>
+                      {item.reqTitNm}
+                    </a>
+                  </td>
+                  <td className="px-4 py-2 w-150">{item.assignee}</td>
+                  <td className="px-4 py-2 w-120">{item.reqPhsNm}</td>
+                  <td className="px-4 py-2 text-right w-150">{item.pntNo}/{item.actEffort}</td>
+                  <td className="px-4 py-2 text-right w-220">
+                    <div className="grid grid-flow-col gap-1">
+                      <button type="button" 
+                        className="bg-blue-500 text-white py-2 px-4 rounded-lg"
+                        disabled={!item.actEffort || item.actEffort > item.pntNo}
+                        onClick={ event => onClickTotal("PJT20211119000000001", item.reqId,item.pntNo, item) }
+                        >
+                        Task
+                      </button>
+                      <button type="button" className="bg-blue-500 text-white py-2 px-4 rounded-lg"
+                        disabled={!item.actEffort || item.actEffort > item.pntNo}
                       >
-                      Task
-                    </button>
-                    <button type="button" className="bg-blue-500 text-white py-2 px-4 rounded-lg"
-                      disabled={!item.actEffort || item.actEffort > item.pntNo}
-                    >
-                      Pharse
-                    </button>
-                    <button 
-                      type="button" 
-                      className="bg-blue-500 text-white py-2 px-4 rounded-lg"
-                      onClick={ event => onClickCheckPoint("PJT20211119000000001", item.reqId,item.pntNo, item) }>
-                      Check
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </form>
+                        Pharse
+                      </button>
+                      <button 
+                        type="button" 
+                        className="bg-blue-500 text-white py-2 px-4 rounded-lg"
+                        onClick={ event => onClickCheckPoint("PJT20211119000000001", item.reqId,item.pntNo, item) }>
+                        Check
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        
+      </form>
+    <div>
+      <TaskSearchForm 
+        reqId = { reqId }
+        taskInfo = { taskInfo }
+        reqDetail = {reqDetail}
+        seqNo = { seqNo }
+      />
+    </div>
+  </div>
+
   );
 }

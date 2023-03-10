@@ -263,7 +263,8 @@ export default function PointSuggest(props) {
 
         alert(msg);
         if('SAVE_SUCCEED' == msg) {
-          window.location.reload(false);
+          
+          // window.location.reload(false);
 
         }
       });
@@ -354,6 +355,7 @@ export default function PointSuggest(props) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    // props.callBack("child : ");
     datasuggestList();
 
     // cfmEditPoint(true, true);
@@ -369,11 +371,16 @@ export default function PointSuggest(props) {
           <thead>
             <tr className="bg-gray-200">
               <th className="px-4 py-2 text-left w-full">
-                <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg" disabled={props.total == 0}>
+                <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg" 
+                  disabled={props.total == 0}>
                   Suggest
                 </button>
                 <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg ml-4" disabled={totalPoint == 0}  onClick={saveBP}>
                   Save Point Task
+                </button>
+                <button type="button" className="bg-blue-500 text-white py-2 px-4 rounded-lg ml-4"
+                 >
+                  Call Back
                 </button>
               </th>
               <th className="px-4 py-2 text-right">
@@ -403,7 +410,7 @@ export default function PointSuggest(props) {
           </thead>
         </table>
       </div>
-      <div className="table-container-mgmt-10">
+      <div className="table-container-10">
         <table className="w-full border border-gray-500 custom-scroll">
           <thead>
             <tr className="bg-gray-200">

@@ -1,18 +1,22 @@
-import React, { useState } from "react";
+import React, {useCallback, useState } from "react";
 import axios from "axios";
 import myData from '../data.json';
 import PointSuggest from './PointSuggest';
 
-export default function TaskSearchForm() {
+export default function TaskSearchForm(props, { term }) {
+  const [children, setChildren] = useState([]);
   let [reqId, setReqId] = useState("");
+  
   let [pointOnHour, setPointOnHour] = useState(25); //Point senior
 
   let [effortWithMember, setEffortWithMember] = useState([]);
   let [taskInfo, setTaskInfo] = useState({});
-  let [reqDetail, setReqDetail] = useState({});
+  // let [reqDetail, setReqDetail] = useState({});
+  const reqDetail  = props.reqDetail;
   
   let [suggetList, setSuggetList] = useState([]);
   let [comment, setComment] = useState("");
+  // let [seqNo, setSeqNo] = useState("");
 
   const prjId = "PJT20211119000000001";
 
@@ -20,12 +24,22 @@ export default function TaskSearchForm() {
   const currentURL = window.location.href // returns the absolute URL of a page
   const pointDefaultByPharse = myData.pointDefaultByPharse;
   const lsMember = myData.memList;
+  reqId = props.reqId;
+  // let seqNo = 0;
+  // console.log("props", props);
+  // if(props.reqDetail){
+  //   if(props.reqDetail.detailReqVO) {
+  //     const seqNo = props.reqDetail.detailReqVO.seqNo;
+  //     setSeqNo(seqNo);
 
-  const arr = currentURL.split("/");
-  if(arr && arr.length > 0){
-    // const reqId = arr[arr.length-1];
-    reqId = arr[arr.length-1];
-  }
+  //   }
+  // }
+  // const arr = currentURL.split("/");
+  // if(arr && arr.length > 0){
+  //   // const reqId = arr[arr.length-1];
+  //   reqId = arr[arr.length-1];
+  // }
+ 
   const handleReqIdChange = (event) => {
     setReqId(event.target.value);
   };
@@ -37,9 +51,10 @@ export default function TaskSearchForm() {
   const searchRequirement = async () => {
     // https://blueprint.cyberlogitec.com.vn/api/uiPim001/searchRequirement
     //https://blueprint.cyberlogitec.com.vn/api/task-details/get-actual-effort-point?reqId=${lsReq[i].reqId}
+    setEffortWithMember([]);
     const requirementDetail = await  axios.get(`${url}/searchRequirementDetails?reqId=${reqId}`)
     .then(res => {
-      setReqDetail(res.data);
+      // setReqDetail(res.data);
       return res.data;
     });
 
@@ -57,7 +72,7 @@ export default function TaskSearchForm() {
         "endIdx": 200,
         "picId": "_ALL_"
     };
-    let lsPharseMember = requirementDetail.lstSkdUsr
+    let lsPharseMember = requirementDetail.lstSkdUsr;
     let requirement = await axios.post(`${url}/uiPim001/searchRequirement`,   data
     ).then(res => {
       return res.data;
@@ -178,6 +193,8 @@ export default function TaskSearchForm() {
 
   };
 
+
+
   const buildComment = (cmtVO: any, detailReqVO) => {
     let comment = "";
     let prntNm = "";
@@ -212,11 +229,11 @@ export default function TaskSearchForm() {
       } else {
         item.newPoint = item.point;
       }
+      lstPhsPoint.push({
+        skdId: item.skdId,
+        efrtNo: (item.newPoint) ? item.newPoint : "0"
+      });
       if (parseFloat(item.newPoint) != parseFloat(item.oldPoint)) {
-        lstPhsPoint.push({
-            skdId: item.skdId,
-            efrtNo: (item.newPoint) ? item.newPoint : "0"
-        });
         const cmtVO = {
             ...item,
             type: 'pntProc'
@@ -242,10 +259,10 @@ export default function TaskSearchForm() {
       const msg =   response.data.saveFlg;//saveFlg: 'SAVE_SUCCEED', pstId: 'PST20230303000001056'}
 
         alert(msg);
-        if('SAVE_SUCCEED' == msg) {
-          window.location.reload(false);
+        // if('SAVE_SUCCEED' == msg) {
+        //   window.location.reload(false);
 
-        }
+        // }
     });
   
     
@@ -257,19 +274,54 @@ export default function TaskSearchForm() {
     console.log("comment", cmtCtnt);
     setComment(cmtCtnt);
   }
-  
+  // useEffect(() => {
+  //   let _children = React.Children.map(props.children, (child) => {
+  //     console.log("Parent child", child);
+  //     return {
+  //       ...child,
+  //       props: {
+  //         ...child.props,
+  //         callBack: handleSubmit
+  //       }
+  //     };
+  //   });
+
+  //   console.log("_children", _children);
+  //   setChildren(_children);
+  // }, []);
+  const handleClick = () => {
+    console.log('You clicked ',"AAAAAÂ");
+  };
+
+
   return (
     <div className="grid grid-flow-row ">
+      <div>
+        <PointSuggest 
+          total = { (props.taskInfo && props.taskInfo.lstReq && props.taskInfo.lstReq.length > 0) ? props.taskInfo.lstReq[0].pntNo : 0}
+          actualtotal = {props.taskInfo.totalPoint}
+          prjId = { prjId }
+          reqId = { props.reqId }
+          reqDetail = { reqDetail }
+          detailReqVO = { props.taskInfo }
+        />
+       
+      </div>
       <form className="grid grid-flow-row gap-2" 
             onSubmit={handleSubmit}>
         <div className="grid grid-flow-col gap-1">
           <table className="w-full border border-gray-500">
             <thead>
               <tr className="bg-gray-200">
-                <th className="px-4 py-2 text-right">
-                  Req ID
+                <th className="px-4 py-2 text-right w-100">
+                  <input
+                    type="text"
+                    id="seqNo"
+                    value={props.seqNo}
+                    className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg  w-full"
+                  />
                 </th>
-                <th className="px-4 py-2 text-right">
+                <th className="px-4 py-2 text-right ">
                   <input
                     type="text"
                     id="reqId"
@@ -331,16 +383,7 @@ export default function TaskSearchForm() {
         </div>
       </form>
       <div className="comment" dangerouslySetInnerHTML={{__html: comment}}></div>
-      <div className="pt-8">
-        <PointSuggest 
-          total = { (taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0) ? taskInfo.lstReq[0].pntNo : 0}
-          actualtotal = {taskInfo.totalPoint}
-          prjId = { prjId }
-          reqId = { reqId }
-          reqDetail = { reqDetail }
-          detailReqVO = { taskInfo }
-        />
-      </div>
+      
     </div>
   );
 }
