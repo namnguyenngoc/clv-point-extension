@@ -193,8 +193,6 @@ export default function TaskSearchForm(props, { term }) {
 
   };
 
-
-
   const buildComment = (cmtVO: any, detailReqVO) => {
     let comment = "";
     let prntNm = "";
@@ -304,6 +302,8 @@ export default function TaskSearchForm(props, { term }) {
           reqId = { props.reqId }
           reqDetail = { reqDetail }
           detailReqVO = { props.taskInfo }
+          seqNo =  { props.seqNo }
+          suggestList = { props.suggestList }
         />
        
       </div>
@@ -318,7 +318,7 @@ export default function TaskSearchForm(props, { term }) {
                     type="text"
                     id="seqNo"
                     value={props.seqNo}
-                    className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg  w-full"
+                    className="px-4 py-2 col-span-2 border border-gray-500 px-4 py-2 rounded-lg  w-full"
                   />
                 </th>
                 <th className="px-4 py-2 text-right ">
@@ -330,10 +330,10 @@ export default function TaskSearchForm(props, { term }) {
                   />
                 </th>
                 <th className="px-4 py-2 text-right">
-                  <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg">
+                  <button type="submit" className="px-4 py-2 bg-blue-500 text-white py-2 px-4 rounded-lg">
                     Calc Point
                   </button>
-                  <button type="button" className="bg-blue-500 text-white py-2 px-4 rounded-lg ml-4" onClick={cfmEditPoint}>
+                  <button type="button" className="px-4 py-2 bg-blue-500 text-white py-2 px-4 rounded-lg ml-4" onClick={cfmEditPoint}>
                     Save Point Phase
                   </button>
                 </th>

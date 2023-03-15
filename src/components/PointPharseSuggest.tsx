@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import myData from '../data.json';
 
-export default function PointSuggest(props) {
+export default function PointPharseSuggest(props) {
   const url = 'https://blueprint.cyberlogitec.com.vn/api';
   const currentURL = window.location.href // returns the absolute URL of a page
   const prjId = props.prjId;
@@ -11,16 +11,12 @@ export default function PointSuggest(props) {
   const detailReqVO = props.detailReqVO;
   const effortPointCategory = myData.effortPointCategory;
 
-  let [actPoint, setActPoint] = useState(0);
+  let [totalPoint, setTotalPoint] = useState(0);
   let [totalListPoint, setTotalListPoint] = useState(0);
   let [suggetPrtList, setSuggetPrtList] = useState([]);
   let [suggestList, setSuggestList] = useState([]);
   let [commentPoint, setCommentPoint] = useState("");
 
-  // if(props.suggestList){
-  //   setSuggestList(props.suggestList);
-
-  // }
   const comparePointFn  = (a: any, b: any) => {
     if(a.utPnt > b.utPnt) return -1;
     else if(a.utPnt < b.utPnt) return 1;
@@ -226,7 +222,7 @@ export default function PointSuggest(props) {
     }
     
     // RO
-    // {"categoryList":[{"utPnt":0,"jbId":"JOB20211125000000139","jbNm":"Inbound","itmAmt":0,"$parent":0},{"utPnt":50,"jbId":"JOB20211125000000144","jbNm":"COARRI","itmAmt":1,"$parent":"JOB20211125000000139","prntNm":"Inbound"},{"utPnt":0,"jbId":"JOB20211125000000086","jbNm":"UI Layout","itmAmt":0,"$parent":0},{"utPnt":5,"jbId":"JOB20211125000000095","jbNm":"Change Label Charater","itmAmt":1,"$parent":"JOB20211125000000086","prntNm":"UI Layout"},{"utPnt":0,"jbId":"JOB20211125000000033","jbNm":"SQL","itmAmt":0,"$parent":0},{"utPnt":50,"jbId":"JOB20211125000000036","jbNm":"Change delete logic","itmAmt":1,"$parent":"JOB20211125000000033"},{"utPnt":0,"jbId":"JOB20211125000000006","jbNm":"Data Correction","itmAmt":0,"$parent":0},{"utPnt":10,"jbId":"JOB20211125000000008","jbNm":"Updated Column","itmAmt":1,"$parent":1677656482208},{"utPnt":5,"jbId":"JOB20211125000000007","jbNm":"Related table","itmAmt":1,"$parent":1677656482208},{"utPnt":0,"jbId":"JOB20211125000000011","jbNm":"UI Logic","itmAmt":0,"$parent":0},{"utPnt":10,"jbId":"JOB20211125000000013","jbNm":"Data Mapping/Unmapping","itmAmt":1,"$parent":1677656482210},{"utPnt":25,"jbId":"JOB20211125000000015","jbNm":"Change component status","itmAmt":1,"$parent":1677656482210},{"utPnt":50,"jbId":"JOB20211125000000018","jbNm":"Change UI Action","itmAmt":1,"$parent":1677656482210},{"utPnt":15,"jbId":"JOB20211125000000019","jbNm":"Recall function","itmAmt":1,"$parent":1677656482210},{"utPnt":0,"jbId":"JOB20211125000000044","jbNm":"Data model","itmAmt":0,"$parent":0},{"utPnt":30,"jbId":"JOB20211125000000045","jbNm":"Change length","itmAmt":1,"$parent":1677656482215,"prntNm":"Data model"},{"utPnt":5,"jbId":"JOB20211125000000046","jbNm":"Add column","itmAmt":1,"$parent":1677656482215}],"actPoint":285,"reqId":"PRQ20230301000000085","cmtCtnt":"<div class=\\"system-comment\\"> • Added Point: </div>   <div style=\\"margin-left: 10px\\"> <b>&nbsp;Inbound:</b></div>  <div style=\\"margin-left: 10px\\"><i> &nbsp;&nbsp;COARRI: </i>50 </div>  <div style=\\"margin-left: 10px\\"> <b>&nbsp;UI Layout:</b></div>  <div style=\\"margin-left: 10px\\"><i> &nbsp;&nbsp;Change Label Charater: </i>5 </div>  <div style=\\"margin-left: 10px\\"> <b>&nbsp;Data model:</b></div>  <div style=\\"margin-left: 10px\\"><i> &nbsp;&nbsp;Change length: </i>30 </div> ","pjtId":"PJT20211119000000001","subPjtId":"PJT20211119000000001","action":"REQ_WTC_EFRT"}
+    // {"categoryList":[{"utPnt":0,"jbId":"JOB20211125000000139","jbNm":"Inbound","itmAmt":0,"$parent":0},{"utPnt":50,"jbId":"JOB20211125000000144","jbNm":"COARRI","itmAmt":1,"$parent":"JOB20211125000000139","prntNm":"Inbound"},{"utPnt":0,"jbId":"JOB20211125000000086","jbNm":"UI Layout","itmAmt":0,"$parent":0},{"utPnt":5,"jbId":"JOB20211125000000095","jbNm":"Change Label Charater","itmAmt":1,"$parent":"JOB20211125000000086","prntNm":"UI Layout"},{"utPnt":0,"jbId":"JOB20211125000000033","jbNm":"SQL","itmAmt":0,"$parent":0},{"utPnt":50,"jbId":"JOB20211125000000036","jbNm":"Change delete logic","itmAmt":1,"$parent":"JOB20211125000000033"},{"utPnt":0,"jbId":"JOB20211125000000006","jbNm":"Data Correction","itmAmt":0,"$parent":0},{"utPnt":10,"jbId":"JOB20211125000000008","jbNm":"Updated Column","itmAmt":1,"$parent":1677656482208},{"utPnt":5,"jbId":"JOB20211125000000007","jbNm":"Related table","itmAmt":1,"$parent":1677656482208},{"utPnt":0,"jbId":"JOB20211125000000011","jbNm":"UI Logic","itmAmt":0,"$parent":0},{"utPnt":10,"jbId":"JOB20211125000000013","jbNm":"Data Mapping/Unmapping","itmAmt":1,"$parent":1677656482210},{"utPnt":25,"jbId":"JOB20211125000000015","jbNm":"Change component status","itmAmt":1,"$parent":1677656482210},{"utPnt":50,"jbId":"JOB20211125000000018","jbNm":"Change UI Action","itmAmt":1,"$parent":1677656482210},{"utPnt":15,"jbId":"JOB20211125000000019","jbNm":"Recall function","itmAmt":1,"$parent":1677656482210},{"utPnt":0,"jbId":"JOB20211125000000044","jbNm":"Data model","itmAmt":0,"$parent":0},{"utPnt":30,"jbId":"JOB20211125000000045","jbNm":"Change length","itmAmt":1,"$parent":1677656482215,"prntNm":"Data model"},{"utPnt":5,"jbId":"JOB20211125000000046","jbNm":"Add column","itmAmt":1,"$parent":1677656482215}],"totalPoint":285,"reqId":"PRQ20230301000000085","cmtCtnt":"<div class=\\"system-comment\\"> • Added Point: </div>   <div style=\\"margin-left: 10px\\"> <b>&nbsp;Inbound:</b></div>  <div style=\\"margin-left: 10px\\"><i> &nbsp;&nbsp;COARRI: </i>50 </div>  <div style=\\"margin-left: 10px\\"> <b>&nbsp;UI Layout:</b></div>  <div style=\\"margin-left: 10px\\"><i> &nbsp;&nbsp;Change Label Charater: </i>5 </div>  <div style=\\"margin-left: 10px\\"> <b>&nbsp;Data model:</b></div>  <div style=\\"margin-left: 10px\\"><i> &nbsp;&nbsp;Change length: </i>30 </div> ","pjtId":"PJT20211119000000001","subPjtId":"PJT20211119000000001","action":"REQ_WTC_EFRT"}
 //   //Update category
     let parentDetail = [...suggestList.filter(item => item.$parent == "0")];
     if(lstAdd.length > 0){
@@ -252,7 +248,7 @@ export default function PointSuggest(props) {
       // const lstAddAll  = lstAdd.concat(lstJbDetails);
       let ro = {
           categoryList    : lstAdd,
-          actPoint      : Number(props.total + actPoint),
+          totalPoint      : Number(props.total + totalPoint),
           reqId           : reqDetail.detailReqVO.reqId,
           cmtCtnt         : cmtCtnt,
           pjtId           : reqDetail.detailReqVO.pjtId,
@@ -352,7 +348,7 @@ export default function PointSuggest(props) {
       }
       subTotal += countList[i].volumeTotal;
     }
-    setActPoint(subTotal);
+    setTotalPoint(subTotal);
   
     return countList;
   }
@@ -373,15 +369,15 @@ export default function PointSuggest(props) {
       <div>
         <table className="w-full border border-gray-500">
           <thead>
-            <tr className="bg-gray-200 ">
+            <tr className="bg-gray-200">
               <th className="px-4 py-2 text-left">
                 Seq#Id
               </th>
               <th className="px-4 py-2 text-right">
-                Act. Point
+                Total Point
               </th>
               <th className="px-4 py-2 text-right">
-                Est. Point
+                Total List Point
               </th>
               <th className="px-4 py-2 text-right">
                
@@ -390,42 +386,40 @@ export default function PointSuggest(props) {
             </tr>
 
             <tr className="bg-gray-200">
-              <th className="text-right x-4 py-2 w-120">
-                  <input
-                    type="text"
-                    id="seqNo"
-                    defaultValue={props.reqId}
-                    onChange={handleSubmit}
-                    className="px-4 py-2 col-span-2 border border-gray-500 rounded-lg text-right  w-full"
-                  />
-                
-              </th>
-              <th className="text-right w-100 px-4 py-2">
-                <input
-                    type="text"
-                    id="actPointSuggest"
-                    defaultValue={actPoint}
-                    onChange={handleSubmit}
-                    className="px-4 py-2 col-span-2 border border-gray-500 rounded-lg w-100 text-right  w-full"
-                  />
              
+              <th className="px-4 py-2 text-right">
+                <div className="w-100">
+                  Total suggest
+
+                </div>
               </th>
-              <th className="text-left w-100 px-4 py-2">
+              <th className="px-4 py-2 text-right">
                 <input
-                    type="text"
-                    id="totalListPoint"
-                    value={totalListPoint}
-                    className="px-4 py-2 col-span-2 border border-gray-500 rounded-lg w-100 text-right  w-full"
-                  />
-               
+                  type="text"
+                  id="totalPointSuggest"
+                  value={totalPoint}
+                  className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-70 text-right"
+                />
               </th>
-              <th className="px-4 py-2 text-right w-250">
-                <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-lg w-100" 
-                    disabled={props.total == 0}>
-                    Suggest
+              <th className="px-4 py-2 text-right">
+                <input
+                  type="text"
+                  id="totalListPoint"
+                  value={totalListPoint}
+                  className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-70 text-right"
+                />
+              </th>
+              <th className="px-4 py-2 text-left w-full">
+                <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg" 
+                  disabled={props.total == 0}>
+                  Suggest
                 </button>
-                <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-lg ml-4 w-130" disabled={actPoint == 0}  onClick={saveBP}>
+                <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg ml-4" disabled={totalPoint == 0}  onClick={saveBP}>
                   Save Point Task
+                </button>
+                <button type="button" className="bg-blue-500 text-white py-2 px-4 rounded-lg ml-4"
+                 >
+                  Call Back
                 </button>
               </th>
             </tr>

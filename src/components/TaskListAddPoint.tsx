@@ -17,6 +17,9 @@ export default function TaskListAddPoint(props) {
   
   let [assignee, setAssignee] = React.useState("");
   let [pointOnHour, setPointOnHour] = useState(25); //Point senior
+  let [totalListPoint, setTotalListPoint] = useState(0);
+  let [suggestList, setSuggestList] = useState([]);
+
   let [suggetPrtList, setSuggetPrtList] = useState([]);
   let [taskInfo, setTaskInfo] = useState({});
   let [taskList, setTaskList] = useState([]);
@@ -25,13 +28,13 @@ export default function TaskListAddPoint(props) {
   
   const url = 'https://blueprint.cyberlogitec.com.vn/api';
  
-  const [stsChecked, setStsChecked] = React.useState(false);
+  const [stsChecked, setStsChecked] = React.useState(true);
   const [approvalChecked, setApprovalChecked] = React.useState(false);
   const [focalChecked, setFocalChecked] = React.useState(false);
 
-  const [finishChecked, setFinishChecked] = React.useState(true);
+  const [finishChecked, setFinishChecked] = React.useState(false);
   
-  const [selectAssingee, setSelectAssingee] = React.useState('ALL');
+  const [selectAssingee, setSelectAssingee] = React.useState('Nam Ngoc Nguyen');
   const [lsAssingee, setLsAssingee] = React.useState([]);
 
   const effortPointCategory = myData.effortPointCategory;
@@ -404,6 +407,7 @@ export default function TaskListAddPoint(props) {
         }
       setTaskInfo(requirement);
       // setEffortWithMember(tmpResult);
+      datasuggestList(requirementDetail.detailReqVO.pjtId,reqId, totalPoint, totalPoint)
       return requirement;
     });
 
@@ -415,6 +419,7 @@ export default function TaskListAddPoint(props) {
     // await datasuggestList(prjId, reqId, actualTotal, total);
     setReqId(reqId);
     const pointTask = await searchRequirementDetais(reqId); 
+  
     console.log("pointTask", pointTask );
     console.log("totalPoint", pointTask.totalPoint );
    
@@ -461,7 +466,7 @@ export default function TaskListAddPoint(props) {
             lsFilter = [...res.data];
             
           }
-          setSuggetPrtList(lsFilter); -- Note -1
+          setSuggetPrtList(lsFilter); 
           
           for(let i = 0; i < lsFilter.length; i ++){
             
@@ -565,11 +570,13 @@ export default function TaskListAddPoint(props) {
       }
       
       console.log("newList", newList);
-      // setTotalListPoint(total);
-      // setSuggestList(newList);
+      setTotalListPoint(total);
+      setSuggestList(newList);
     } //End request detail
 
   }
+
+  
   //Insert Point for member 
   function buildComment(cmtVO: any, detailReqVO) {
     let comment = "";
@@ -747,7 +754,7 @@ export default function TaskListAddPoint(props) {
                       className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-full"
                     />
                   </th>
-                  <th className="px-4 py-2 text-right w-100">
+                  <th className="px-4 py-2 text-right w-100" rowSpan={2}>
                     <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg w-100">
                       Search
                     </button>
@@ -760,10 +767,13 @@ export default function TaskListAddPoint(props) {
                   </th>
                 
                   <th className="px-4 py-2 text-right">
-                    <select value={selectAssingee} onChange={assigneeChange}>
+                    <select 
+                      className="px-4 py-2 border border-gray-500 rounded-lg"
+                      value={selectAssingee} 
+                      onChange={assigneeChange}>
                     {
                       lsAssingee.map((item) => (
-                        <option value={item.assignee}>
+                        <option className="px-4 py-2" value={item.assignee}>
                           {item.assignee}
                         </option>
                       ))
@@ -796,7 +806,8 @@ export default function TaskListAddPoint(props) {
             </thead>
             <tbody className="border-t">
               {taskList.map((item, idx) => (
-                <tr key={item.reqId} className={(item.pntNo == 30 || (item.actEffort && item.pntNo < item.actEffort)) ? "border-t bg-green-200" : "border-t"}>
+                <tr key={item.reqId} 
+                    className={item.seqNo == seqNo ? "border-t bg-green-200" : "border-t"}>
                   <td className="px-4 py-2 w-30 text-center">{idx + 1}</td>
                   <td className="px-4 py-2 w-40 text-center">{item.seqNo}</td>
                   
@@ -844,6 +855,7 @@ export default function TaskListAddPoint(props) {
         taskInfo = { taskInfo }
         reqDetail = {reqDetail}
         seqNo = { seqNo }
+        suggestList = { suggestList }
       />
     </div>
   </div>
