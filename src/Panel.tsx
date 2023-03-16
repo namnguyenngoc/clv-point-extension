@@ -3,11 +3,16 @@ import { APP_COLLAPSE_MGMT_WIDTH, APP_EXTEND_MGMT_WIDTH, APP_EXTEND_MGMT_HEIGHT,
 import Button from './components/Button';
 import TaskSearchForm from './components/TaskSearchForm';
 import TaskListAddPoint from './components/TaskListAddPoint';
+import ClickupMgmt from './components/ClickupMgmt';
+
 
 import classNames from 'classnames';
 
 export default function Panel({ onWidthChange, initialEnabled }: { onWidthChange: (value: number) => void, initialEnabled: boolean }): ReactElement {
   const [enabledMgmt, setEnabledMgmt] = useState(initialEnabled);
+  const [enabledClickup, setEnabledClickup] = useState(false);
+
+  
   const [sidePanelWidthMgmt, setSidePanelWidthMgmt] = useState(enabledMgmt ? APP_EXTEND_MGMT_WIDTH: APP_COLLAPSE_MGMT_WIDTH);
   const [sidePanelHeightMgmt, setSidePanelHeightMgmt] = useState(enabledMgmt ? APP_EXTEND_MGMT_HEIGHT: APP_COLLAPSE_MGMT_HEIGHT);
  
@@ -26,6 +31,17 @@ export default function Panel({ onWidthChange, initialEnabled }: { onWidthChange
     setEnabledMgmt(newValue);
     handleOnToggle(newValue);
   }
+  
+  function openClickUp(force?: boolean) {
+    setEnabledMgmt(false);
+   
+    const newValue = force || !enabledClickup;
+    console.log("openClickUp");
+    handleOnToggle(newValue);
+    setEnabledClickup(newValue); 
+  }
+
+  
   const [searchResults, setSearchResults] = useState([]);
 
   const handleSearch = (condition) => {
@@ -43,7 +59,7 @@ export default function Panel({ onWidthChange, initialEnabled }: { onWidthChange
         width: sidePanelWidthMgmt - 5,
         height: sidePanelHeightMgmt,
       }}
-      className={!enabledMgmt ? "absolute bottom-0 z-max bg-[#F5F8FA] ease-in-out duration-300 overflow-hidden grid grid-flow-row gap-1 main-body-mgmt border-hidden" 
+      className={(!enabledMgmt || !enabledClickup) ? "absolute bottom-0 z-max bg-[#F5F8FA] ease-in-out duration-300 overflow-hidden grid grid-flow-row gap-1 main-body-mgmt border-hidden" 
         : "absolute bottom-0 z-max bg-[#F5F8FA] ease-in-out duration-300 overflow-hidden grid grid-flow-row gap-1 main-body-mgmt"}
     >
       <div className='main-layout-mgmt'>
@@ -54,13 +70,23 @@ export default function Panel({ onWidthChange, initialEnabled }: { onWidthChange
           </TaskListAddPoint>
           
         </div>
+        <div className={!enabledClickup ? 'hidden' : 'pt-4'}>
+          <ClickupMgmt>
+            {/* <TaskDetaillAddPoint text="Hello1333"/> */}
+          </ClickupMgmt>
+          
+        </div>
         {/* <div className={!enabledMgmt ? 'hidden' : 'pt-4'}>
           <TaskDetaillAddPoint />
           
         </div> */}
       </div>
       
-      <div className="absolute bottom-0 left-0 w-[50px] z-10 flex justify-center items-center p-1 custom-button-expand">
+      <div className="absolute bottom-0 left-0 w-[50px] z-10 flex justify-center items-center custom-button-expand grid grid-flow-row gap-3">
+        <Button active={enabledClickup} onClick={() => openClickUp()}>
+          ClickUp
+        </Button>
+
         <Button active={enabledMgmt} onClick={() => openPanel()}>
           <span>
             <svg

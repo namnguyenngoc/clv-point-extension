@@ -30,3 +30,10 @@ export const APP_EXTEND_MGMT_WIDTH = 1700;
 export const APP_EXTEND_MGMT_HEIGHT = 900;
 export const APP_COLLAPSE_MGMT_WIDTH = 55;
 export const APP_COLLAPSE_MGMT_HEIGHT = 55;
+
+export const REQ_HEADER = {
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'pk_32193054_YQNFO05VHHM9ABEJUTOE8YUPS7RII2JN'
+  }
+}

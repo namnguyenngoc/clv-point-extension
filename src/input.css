@@ -100,6 +100,7 @@ table.custom-scroll {
   width: 99%;
   margin: 0 auto;
   /* box-shadow: 0px 0px 5px #0000009e; */
+  color: rgb(42,46,52);
 }
 .main-body-mgmt {
   bottom: 15px;
@@ -114,7 +115,7 @@ table.custom-scroll {
 }
 
 .border-hidden {
-  border-radius: 50%;
+  /* border-radius: 50%; */
 }
 
 
@@ -141,4 +142,24 @@ tr.bg-green-200 td {
 }
 .w-40 {
   width: 40px;
+}
+
+/* clickup */
+
+/* .main-layout-mgmt {
+  background-color:  #2a2e34;;
+} */
+
+.main-layout-mgmt table.table-format-dark-clickup,
+.main-layout-mgmt table.table-format-dark-clickup th,
+.main-layout-mgmt table.table-format-dark-clickup tr,
+.main-layout-mgmt table.table-format-dark-clickup td {
+  background-color:  #2a2e34 !important;
+  color: #2a2e34 !important;
+}
+
+.main-layout-mgmt th, 
+.main-layout-mgmt td,
+.main-layout-mgmt td a{
+  color: #2a2e34;
 }
