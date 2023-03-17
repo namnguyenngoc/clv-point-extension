@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import myData from '../data.json';
 import 'moment-timezone';
+import moment from 'moment'
+
 import { REQ_HEADER } from '../const';
 import Select, { components } from "react-select";
 
@@ -1799,7 +1800,17 @@ export default function ClickupMgmt(props) {
   // const [allOptions, setAllOptions] = useState([]);
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState([]);
-
+  function openTask(url) {
+   
+    window.open(url, "_blank"); //to open new page
+  }
+  const compareFn = (a: string, b: string) => {
+    const start = a.parent;
+    const end = b.parent;
+    if(start > end) return -1;
+    else if (start < end) return 1;
+    else return 0;
+  }
   // setAllOptions(allOptions);
   /**
    * https://clickup.com/api/clickupreference/operation/GetTasks/
@@ -1807,11 +1818,17 @@ export default function ClickupMgmt(props) {
    */
   const getTasks = async (listId) => {
     console.log("selectedOptions", selectedOptions);
+    if(selectedOptions || selectedOptions.length == 0) {
+        setSelectedOptions(defaultMem);
+    }
     let assignees = selectedOptions.map(item => `assignees=${item.value}`).join('&');
+    if(selectedStatus || selectedStatus.length == 0) {
+        setSelectedStatus(defaultStatus);
+    }
     let status = selectedStatus.map(item => `statuses=${item.label}`).join('&');
     var config = {
       method: 'get',
-      url: `${API_CLICKUP}/list/${listId}/task?subtasks=true&${assignees}&` + status,
+      url: `${API_CLICKUP}/list/${listId}/task?subtasks=true&order_by=due_date&${assignees}&` + status,
       headers:  REQ_HEADER.headers
     };
     axios(config)
@@ -1826,10 +1843,16 @@ export default function ClickupMgmt(props) {
           item.status_tp = item.status.type;
           item.status_color = item.status.color;
           item.module = item.tags.length > 0 ? item.tags[0].name : "";
-          item.due_date_str = new Date(item.due_date);
+          if(item.due_date && item.due_date != null) {
+            item.due_date_str = moment(Number(item.due_date)).format("ddd, MMM DD");
+          } else {
+            item.due_date_str = "";
+          }
+          
           return item;
         })
-        setTaskList(newList);
+        const newListSrt = [...newList.sort(compareFn)];
+        setTaskList(newListSrt);
         // const memList = await getListMembers(listId);
         // setAllOptions(memList);
       }
@@ -1946,6 +1969,7 @@ export default function ClickupMgmt(props) {
                 <th className="px-4 py-2 w-30 text-center">#</th>
                 <th className="px-4 py-2 w-40 text-center">ID</th>
                 <th className="px-4 py-2">Module</th>
+                <th className="px-4 py-2">Parent</th>
                 <th className="px-4 py-2">Name</th>
                 <th className="px-4 py-2">Assignee</th>
                 <th className="px-4 py-2">Status</th>
@@ -1962,6 +1986,7 @@ export default function ClickupMgmt(props) {
                   <td className="px-4 py-2 w-30 text-center">{idx + 1}</td>
                   <td className="px-4 py-2 w-40 text-center">{item.id}</td>
                   <td className="px-4 py-2 w-40 text-center">{item.module}</td>
+                  <td className="px-4 py-2 w-40 text-center">{item.parent}</td>
                   <td className="px-4 py-2 text-blue">
                     {item.name}
                   </td>
@@ -1973,7 +1998,11 @@ export default function ClickupMgmt(props) {
                   }}>{item.status_nm}</td>
                   <td className="px-4 py-2 text-center">{item.due_date_str}</td>
                   <td className="px-4 py-2 text-center">{item.creator_nm}</td>
-                  <td className="px-4 py-2 text-center">{item.url}</td>
+                  <td className="px-4 py-2 text-center">
+                    <a onClick={event => openTask(item.url)}>
+                        {item.url}
+                    </a>
+                    </td>
                 </tr>
               ))}
             </tbody>
