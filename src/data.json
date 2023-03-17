@@ -13,38 +13,11 @@
     ],
     "memList": [
         {
-            "userId": "hiennguyen",
-            "fullName": "Hien Nguyen",
-            "pointOnHour": {
-                "standard": 25,
-                "expect": 25,
-                "description": ""
-            }
-        },
-        {
-            "userId": "duytrn",
-            "fullName": "Duy Tran Nhut",
-            "pointOnHour": {
-                "standard": 25,
-                "expect": 17,
-                "description": ""
-            }
-        },
-        {
-            "userId": "huynhnh",
-            "fullName": "Huynh Nguyen",
-            "pointOnHour": {
-                "standard": 25,
-                "expect": 17,
-                "description": ""
-            }
-        },
-        {
             "userId": "vivo",
-            "fullName": "Vi Vo",
+            "fullName": "Vo Thi Thuy Vy",
             "pointOnHour": {
                 "standard": 25,
-                "expect": 25,
+                "expect": 17, //Junior
                 "description": ""
             }
         },
@@ -62,7 +35,7 @@
             "fullName": "Trinh Le",
             "pointOnHour": {
                 "standard": 25,
-                "expect": 28,
+                "expect": 29,
                 "description": ""
             }
         },
@@ -71,7 +44,7 @@
             "fullName": "Thai To",
             "pointOnHour": {
                 "standard": 25,
-                "expect": 23,
+                "expect": 19,
                 "description": ""
             }
         },
@@ -80,7 +53,7 @@
             "fullName": "Hao Nguyen Nhat",
             "pointOnHour": {
                 "standard": 25,
-                "expect": 23,
+                "expect": 19,
                 "description": ""
             }
         },
@@ -89,7 +62,7 @@
             "fullName": "Ao Pham",
             "pointOnHour": {
                 "standard": 25,
-                "expect": 23,
+                "expect": 19,
                 "description": ""
             }
         },
@@ -98,7 +71,7 @@
             "fullName": "Phuc Hoang Nguyen",
             "pointOnHour": {
                 "standard": 25,
-                "expect": 23,
+                "expect": 19,
                 "description": ""
             }
         },
@@ -107,7 +80,7 @@
             "fullName": "Pham Vo",
             "pointOnHour": {
                 "standard": 25,
-                "expect": 25,
+                "expect": 17,
                 "description": ""
             }
         },
@@ -135,6 +108,42 @@
             "pointOnHour": {
                 "standard": 13,
                 "expect": 17, //Junior 1
+                "description": ""
+            }
+        },
+        {
+            "userId": "namnph",
+            "fullName": "Nam Nguyen Phan Hoai",
+            "pointOnHour": {
+                "standard": 17,
+                "expect": 19, //Junior 1
+                "description": ""
+            }
+        },
+        {
+            "userId": "hiennguyen",
+            "fullName": "Hien Nguyen",
+            "pointOnHour": {
+                "standard": 25,
+                "expect": 25,
+                "description": ""
+            }
+        },
+        {
+            "userId": "duytrn",
+            "fullName": "Duy Tran Nhut",
+            "pointOnHour": {
+                "standard": 25,
+                "expect": 17,
+                "description": ""
+            }
+        },
+        {
+            "userId": "huynhnh",
+            "fullName": "Huynh Nguyen",
+            "pointOnHour": {
+                "standard": 25,
+                "expect": 17,
                 "description": ""
             }
         }

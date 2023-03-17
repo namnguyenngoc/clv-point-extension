@@ -212,11 +212,11 @@ export default function TaskSearchForm() {
       } else {
         item.newPoint = item.point;
       }
+      lstPhsPoint.push({
+        skdId: item.skdId,
+        efrtNo: (item.newPoint) ? item.newPoint : "0"
+      });
       if (parseFloat(item.newPoint) != parseFloat(item.oldPoint)) {
-        lstPhsPoint.push({
-            skdId: item.skdId,
-            efrtNo: (item.newPoint) ? item.newPoint : "0"
-        });
         const cmtVO = {
             ...item,
             type: 'pntProc'
@@ -267,7 +267,7 @@ export default function TaskSearchForm() {
             <thead>
               <tr className="bg-gray-200">
                 <th className="px-4 py-2 text-right">
-                  Req ID
+                  [Req ID]
                 </th>
                 <th className="px-4 py-2 text-right">
                   <input
