@@ -2,7 +2,7 @@ import React, { ReactElement, useEffect, useState } from 'react';
 import { APP_COLLAPSE_WIDTH, APP_EXTEND_WIDTH, APP_EXTEND_HEIGHT, APP_COLLAPSE_HEIGHT} from './const';
 import Button from './components/Button';
 import TaskSearchForm from './components/TaskSearchForm';
-import TaskListAddPoint from './components/TaskListAddPoint';
+import TaskEffortByUser from './components/TaskEffortByUser';
 
 import classNames from 'classnames';
 
@@ -61,7 +61,7 @@ export default function Panel({ onWidthChange, initialEnabled }: { onWidthChange
         </div>
         
         <div className={!enabled ? 'hidden' : 'pt-4'}>
-          <TaskListAddPoint onSearch={handleSearch} />
+          <TaskEffortByUser />
           
         </div>
       </div>

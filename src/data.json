@@ -11,19 +11,22 @@
             "mins": 12
         }
     ],
+   
     "memList": [
         {
             "userId": "vivo",
             "fullName": "Vo Thi Thuy Vy",
+            "currentLevel": "Fsh",
             "pointOnHour": {
                 "standard": 25,
-                "expect": 17, //Junior
+                "expect": 17, //Jnr
                 "description": ""
             }
         },
         {
             "userId": "anhtd",
             "fullName": "Anh Truong Dinh",
+            "currentLevel": "Fsh",
             "pointOnHour": {
                 "standard": 25,
                 "expect": 17,
@@ -33,6 +36,7 @@
         {
             "userId": "trinhle",
             "fullName": "Trinh Le",
+            "currentLevel": "Snr 2",
             "pointOnHour": {
                 "standard": 25,
                 "expect": 29,
@@ -42,6 +46,7 @@
         {
             "userId": "thaito",
             "fullName": "Thai To",
+            "currentLevel": "Fsh",
             "pointOnHour": {
                 "standard": 25,
                 "expect": 19,
@@ -51,6 +56,7 @@
         {
             "userId": "haonn",
             "fullName": "Hao Nguyen Nhat",
+            "currentLevel": "Jnr 1",
             "pointOnHour": {
                 "standard": 25,
                 "expect": 19,
@@ -60,6 +66,7 @@
         {
             "userId": "aopham",
             "fullName": "Ao Pham",
+            "currentLevel": "Jnr 1",
             "pointOnHour": {
                 "standard": 25,
                 "expect": 19,
@@ -69,6 +76,7 @@
         {
             "userId": "phucnguyenhoang",
             "fullName": "Phuc Hoang Nguyen",
+            "currentLevel": "Jnr 1",
             "pointOnHour": {
                 "standard": 25,
                 "expect": 19,
@@ -78,6 +86,7 @@
         {
             "userId": "phamvo",
             "fullName": "Pham Vo",
+            "currentLevel": "Fsh",
             "pointOnHour": {
                 "standard": 25,
                 "expect": 17,
@@ -96,27 +105,30 @@
         {
             "userId": "sangng",
             "fullName": "Nguyen Van Sang",
+            "currentLevel": "Jnr 1",
             "pointOnHour": {
                 "standard": 17,
-                "expect": 19, //~ junior 2
+                "expect": 19, //~ Jnr 2
                 "description": ""
             }
         },
         {
             "userId": "thuanlai",
             "fullName": "Thuan Lai",
+            "currentLevel": "Fsh(+)",
             "pointOnHour": {
                 "standard": 13,
-                "expect": 17, //Junior 1
+                "expect": 17, //Jnr 1
                 "description": ""
             }
         },
         {
             "userId": "namnph",
             "fullName": "Nam Nguyen Phan Hoai",
+            "currentLevel": "Jnr 1",
             "pointOnHour": {
                 "standard": 17,
-                "expect": 19, //Junior 1
+                "expect": 19, //Jnr 1
                 "description": ""
             }
         },
@@ -149,5 +161,159 @@
         }
     
     ],
-    "effortPointCategory": ["Business", "UI Logic", "SQL", "UI Layout"]
+    "effortPointCategory": ["Business", "UI Logic", "SQL", "UI Layout"],
+    "workingDay": {
+        "holidays": [
+          { "holidayDate": "20210902", "description": "Quoc Khanh" },
+          { "holidayDate": "20210903", "description": "Quoc Khanh" },
+          { "holidayDate": "20220103", "description": "Tet Duong Lich" }
+        ]
+    },
+    "levelList": [
+        {
+            "no": 1,
+            "code": "FSH",
+            "name": "Fresher",
+            "point": {
+                "min": 2000,
+                "max": 2800,
+                "gap": 800,
+                "taskLevelMax": 4,
+                "agvDay": 100,
+                "agvMonth": 2200
+            },
+            "description": "2000 ~ 2800"
+        },
+        {
+            "no": 2,
+            "code": "JUN1",
+            "name": "Junior 1",
+            "point": {
+                "min": 2700,
+                "max": 3600,
+                "gap": 900,
+                "taskLevelMax": 5,
+                "agvDay": 135,
+                "agvMonth": 2970
+            },
+            "description": "2700 ~ 3600"
+        },
+        {
+            "no": 3,
+            "code": "JUN2",
+            "name": "Junior 2",
+            "point": {
+                "min": 3500,
+                "max": 4300,
+                "gap": 800,
+                "taskLevelMax": 4,
+                "agvDay": 170,
+                "agvMonth": 3740
+            },
+            "description": "3500 ~ 4300"
+        },
+        {
+            "no": 4,
+            "code": "SEN1",
+            "name": "Senior 1",
+            "point": {
+                "min": 4200,
+                "max": 4900,
+                "gap": 700,
+                "taskLevelMax": 4,
+                "agvDay": 200,
+                "agvMonth": 4400
+            },
+            "description": "4200 ~ 4900"
+        },
+        {
+            "no": 5,
+            "code": "SEN2",
+            "name": "Senior 2",
+            "point": {
+                "min": 4700,
+                "max": 5400,
+                "gap": 700,
+                "taskLevelMax": 3,
+                "agvDay": 225,
+                "agvMonth": 4950
+            },
+            "description": "4700 ~ 5400"
+        },
+        {
+            "no": 6,
+            "code": "PRP",
+            "name": "Principal",
+            "point": {
+                "min": 5300,
+                "max": 5900,
+                "gap": 600,
+                "taskLevelMax": 3,
+                "agvDay": 250,
+                "agvMonth": 5500
+            },
+            "description": "5300 ~ 5900"
+        },
+        {
+            "no": 7,
+            "code": "TECH",
+            "name": "Technical Architect",
+            "point": {
+                "min": 5800,
+                "max": 6300,
+                "gap": 500,
+                "taskLevelMax": 3,
+                "agvDay": 275,
+                "agvMonth": 6050
+            },
+            "description": "5800 ~ 6300"
+        },
+        {
+            "no": 8,
+            "code": "SENMGMT",
+            "name": "Senior Manager",
+            "point": {
+                "min": 6000,
+                "max": 6800,
+                "gap": 800,
+                "taskLevelMax": 4,
+                "agvDay": 300,
+                "agvMonth": 6600
+            },
+            "description": "6000 ~ 7000"
+        }
+    ],
+    "taskLevel": [
+        {
+            "label": "Standard",
+            "id": "lvl0",
+            "value": 0
+        },
+        {
+            "label": "Level 1",
+            "id": "lvl1",
+            "value": 1
+
+        },
+        {
+            "label": "Level 2",
+            "id": "lvl2",
+            "value": 2
+        },
+        {
+            "label": "Level 3",
+            "id": "lvl3",
+            "value": 3
+        },
+        {
+            "label": "Level 4",
+            "id": "lvl4",
+            "value": 4
+        },
+        {
+            "label": "Level 5",
+            "id": "lvl5",
+            "value": 5
+        }
+    ]
 }

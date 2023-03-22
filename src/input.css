@@ -8,7 +8,7 @@
   height: 20em;
 }
 .table-container-10 {
-  height: 31em;
+  height: 20em;
 }
 table.custom-scroll.custom-scroll {
   display: flex;
@@ -122,3 +122,18 @@ table.custom-scroll {
 .border-hidden:hover {
   opacity: 1;
 }
+
+.react-datepicker-wrapper .react-datepicker__input-container input {
+  padding: 4px 8px;
+  border: 1px solid #dcdcdc;
+  border-radius: 4px;
+  text-align: center;
+ 
+ }
+ tr.bg-misty {
+  background-color: #FFE4E1;
+ }
+
+ .mr-4 {
+  margin-right: 4px;
+ }

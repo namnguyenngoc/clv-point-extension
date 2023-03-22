@@ -2,6 +2,58 @@ import React, { useState } from "react";
 import axios from "axios";
 import myData from '../data.json';
 import PointSuggest from './PointSuggest';
+import Select, { components } from "react-select";
+
+const InputTrongSoOption = ({
+  getStyles,
+  Icon,
+  isDisabled,
+  isFocused,
+  isSelected,
+  children,
+  innerProps,
+  ...rest
+}) => {
+  const [isActive, setIsActive] = useState(false);
+  const onMouseDown = () => setIsActive(true);
+  const onMouseUp = () => setIsActive(false);
+  const onMouseLeave = () => setIsActive(false);
+
+  // styles
+  let bg = "transparent";
+  if (isFocused) bg = "#eee";
+  if (isActive) bg = "#B2D4FF";
+
+  const style = {
+    alignItems: "center",
+    backgroundColor: bg,
+    color: "inherit",
+    display: "flex "
+  };
+
+  // prop assignment
+  const props = {
+    ...innerProps,
+    onMouseDown,
+    onMouseUp,
+    onMouseLeave,
+    style
+  };
+
+  return (
+    <components.Option
+      {...rest}
+      isDisabled={isDisabled}
+      isFocused={isFocused}
+      isSelected={isSelected}
+      getStyles={getStyles}
+      innerProps={props}
+    >
+      <input type="checkbox" checked={isSelected} className="mr-4" />
+      {children}
+    </components.Option>
+  );
+};
 
 export default function TaskSearchForm() {
   let [reqId, setReqId] = useState("");
@@ -20,6 +72,14 @@ export default function TaskSearchForm() {
   const currentURL = window.location.href // returns the absolute URL of a page
   const pointDefaultByPharse = myData.pointDefaultByPharse;
   const lsMember = myData.memList;
+
+  const taskLevelList = myData.taskLevel;
+  const defaultTrongSo = taskLevelList[0];
+  const [taskLevel, setTaskLevel] = useState(taskLevelList[0]);
+
+  const onChangeLevel = (option: any) => {
+    setTaskLevel(option);
+  }
 
   const arr = currentURL.split("/");
   if(arr && arr.length > 0){
@@ -111,6 +171,23 @@ export default function TaskSearchForm() {
             item.effortHours = total; 
             item.point = parseInt((total / (60 * 1.0)) * expectPoint);
           }
+
+
+          //Tinh theo level task
+          console.log("taskLevel", taskLevel);
+          console.log("taskLevelList", taskLevelList);
+
+          // if(taskLevel.value == undefined) {
+          //   setTaskLevel(taskLevelList[0]);
+          // }
+          if(item.bpAdddpoint > 0 && "PIM_PHS_CDFIN" != item.phsCd){
+            item.bpAdddpoint = item.bpAdddpoint + (expectPoint * taskLevel.value);
+
+          }
+          if(item.point > 0 && "PIM_PHS_CDFIN" != item.phsCd){
+            item.point = (item.point == undefined ? 0: item.point) + (expectPoint * taskLevel.value);
+
+          }
           tmpResult.push(item);
 
         }
@@ -126,7 +203,7 @@ export default function TaskSearchForm() {
         //   tmpResult[k].point = 1000;
         // }
       }
-      console.log("requirement", requirement);
+     
 
       //Check total 
       requirement.lstReq = requirement.lstReq.filter(item => item.reqId == reqId);
@@ -267,14 +344,27 @@ export default function TaskSearchForm() {
             <thead>
               <tr className="bg-gray-200">
                 <th className="px-4 py-2 text-right">
-                  [Req ID]
-                </th>
-                <th className="px-4 py-2 text-right">
                   <input
                     type="text"
                     id="reqId"
                     value={reqId}
                     className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg  w-full"
+                  />
+                </th>
+                <th className="px-4 py-2 text-right">
+                  <Select
+                    defaultValue={defaultTrongSo}
+                    closeMenuOnSelect={false}
+                    hideSelectedOptions={false}
+                    onChange={(options) => {
+                      console.log("options", options);
+                      setTaskLevel(options)
+                    }
+                    } 
+                    options={taskLevelList}
+                    components={{
+                      Option: InputTrongSoOption
+                    }}
                   />
                 </th>
                 <th className="px-4 py-2 text-right">
