@@ -3,8 +3,8 @@ import { APP_COLLAPSE_WIDTH, APP_EXTEND_WIDTH, APP_EXTEND_HEIGHT, APP_COLLAPSE_H
 import Button from './components/Button';
 import TaskSearchForm from './components/TaskSearchForm';
 import TaskEffortByUser from './components/TaskEffortByUser';
+import SearchTask from './components/SearchTask';
 
-import classNames from 'classnames';
 
 export default function Panel({ onWidthChange, initialEnabled }: { onWidthChange: (value: number) => void, initialEnabled: boolean }): ReactElement {
   const [enabled, setEnabled] = useState(initialEnabled);
@@ -52,9 +52,13 @@ export default function Panel({ onWidthChange, initialEnabled }: { onWidthChange
         height: sidePanelHeight,
       }}
       className={!enabled ? "absolute bottom-0 z-max bg-[#F5F8FA] ease-in-out duration-300 overflow-hidden grid grid-flow-row gap-1 main-body border-hidden" 
-        : "absolute bottom-0 z-max bg-[#F5F8FA] ease-in-out duration-300 overflow-hidden grid grid-flow-row gap-1 main-body"}
+        : "absolute bottom-0 z-max bg-[#F5F8FA] ease-in-out duration-300 overflow-hidden gap-1 main-body"}
     >
+      <div className={!enabled ? 'hidden' : 'pt-4 ml-4 pb-4 h-150'}>
+        <SearchTask />
+      </div>
       <div className='main-layout grid grid-flow-row gap-1'>
+        
         <div className={!enabled ? 'hidden' : 'pt-4'}>
           <TaskSearchForm onSearch={handleSearch} />
           

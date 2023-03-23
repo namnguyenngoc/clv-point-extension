@@ -358,7 +358,8 @@ export default function TaskSearchForm() {
                     hideSelectedOptions={false}
                     onChange={(options) => {
                       console.log("options", options);
-                      setTaskLevel(options)
+                      setTaskLevel(options);
+                      searchRequirement();
                     }
                     } 
                     options={taskLevelList}

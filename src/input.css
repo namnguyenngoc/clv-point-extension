@@ -8,7 +8,7 @@
   height: 20em;
 }
 .table-container-10 {
-  height: 20em;
+  height: calc(20em-50px);
 }
 table.custom-scroll.custom-scroll {
   display: flex;
@@ -137,3 +137,11 @@ table.custom-scroll {
  .mr-4 {
   margin-right: 4px;
  }
+
+ .table-container-search {
+  height: 100px;
+}
+
+a.link {
+  color: blue;
+}
