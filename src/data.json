@@ -133,6 +133,16 @@
             }
         },
         {
+            "userId": "hieunt",
+            "fullName": "Hieu Nguyen",
+            "currentLevel": "Jnr 1",
+            "pointOnHour": {
+                "standard": 17,
+                "expect": 19, //Jnr 1
+                "description": ""
+            }
+        },
+        {
             "userId": "hiennguyen",
             "fullName": "Hien Nguyen",
             "pointOnHour": {

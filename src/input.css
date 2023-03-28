@@ -106,7 +106,7 @@ table.custom-scroll {
   width: 600px;
   height: 830px;
   box-shadow: 0px 0px 5px #0000009e;
-  top: 50px;
+  top: 120px;
   right: 0;
 }
 .custom-button-expand {
@@ -125,9 +125,10 @@ table.custom-scroll {
 
 .react-datepicker-wrapper .react-datepicker__input-container input {
   padding: 4px 8px;
-  border: 1px solid #dcdcdc;
   border-radius: 4px;
   text-align: center;
+  height: 36px;
+  border: 1px solid #dcdcdc;
  
  }
  tr.bg-misty {

@@ -6,7 +6,7 @@ import Select, { components } from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-const InputOption = ({
+const InputMemberOption = ({
   getStyles,
   Icon,
   isDisabled,
@@ -51,7 +51,6 @@ const InputOption = ({
       getStyles={getStyles}
       innerProps={props}
     >
-      <input type="checkbox" checked={isSelected} />
       {children}
     </components.Option>
   );
@@ -60,7 +59,7 @@ const InputOption = ({
 export default function TaskEffortByUser(props) {
   const url = 'https://blueprint.cyberlogitec.com.vn/api';
   const DT_FM = 'YYYYMMDD';
-  const defaultMem = [];
+  const defaultMem = null;
   const allMember = [...myData.memList.map(
     function (item) {
       item.label =   item.userId, //`${item.fullName}-${item.pointOnHour.expect}(${item.currentLevel})`;
@@ -69,7 +68,7 @@ export default function TaskEffortByUser(props) {
     })
   ];
 
-  const [memberSelect, setMemberSelect] = useState([]);
+  const [memberSelect, setMemberSelect] = useState(null);
   const today = moment(new Date());
   console.log("today", today);
   const firstDayOfMonth = today.clone().startOf("month");
@@ -135,7 +134,7 @@ export default function TaskEffortByUser(props) {
     return count;
   };
 
-  const selectTaskByUser = async () => {
+  const selectTaskByUser = async (memSelect: any) => {
     const strFrm = moment(startDate);
     const endFrm = moment(endDate);
     const workday = workday_count(strFrm, endFrm);
@@ -159,7 +158,11 @@ export default function TaskEffortByUser(props) {
         }
         return item;
       })
-      const newListSrt = await Promise.all(newList);
+      console.log("memberSelect", memSelect);
+      let newListSrt = await Promise.all(newList);
+      if(memSelect != null) {
+        newListSrt = newListSrt.filter(mem => mem.userId == memSelect.userId);
+      }
       setEffortList(newListSrt);
     }
   }
@@ -174,7 +177,7 @@ export default function TaskEffortByUser(props) {
     }
    
 
-    await selectTaskByUser();
+    await selectTaskByUser(memberSelect);
   }
   const formatPrice = (value, tofix) => {
     if (!value) {
@@ -197,46 +200,51 @@ export default function TaskEffortByUser(props) {
  
   return (
     <div className="grid grid-flow-row gap-2">
-      <div className="grid grid-flow-col gap-5 px-2">
+      <div className="grid grid-flow-col gap-1 px-2">
+        <div className="w-150">
+          <Select
+            defaultValue={defaultMem}
+            closeMenuOnSelect={true}
+            hideSelectedOptions={false}
+            isClearable={true}
+            onChange={(mem) => {
+              setMemberSelect(mem);
+              selectTaskByUser(mem);
+            }
+            } 
+            options={allMember}
+            components={{
+              Option: InputMemberOption
+            }}
+          />
+        </div>
         <div>
-          <DatePicker selected={startDate} onChange={(date) => onChangeDate(date, "START")} />
+          <DatePicker selected={startDate} onChange={(date) => onChangeDate(date, "START")} className="w-150"/>
 
         </div>
         <div>
-          <DatePicker selected={endDate} onChange={(date) => onChangeDate(date, "END")} />
+          <DatePicker selected={endDate} onChange={(date) => onChangeDate(date, "END")} className="w-150"/>
 
         </div>
         <div>
-          <h5> { workday } days ({formatPrice(monthDay,0)} months)</h5>
+          <div> { workday } days </div>
+          <div>
+            {formatPrice(monthDay,0)} months
+          </div>
         </div>
-        <div>
-          <button type="button" className="bg-blue-500 text-white py-2 px-4 rounded-lg ml-4" onClick={selectTaskByUser}>
+        <div className="w-70">
+          <button 
+            type="button" 
+            className="bg-blue-500 text-white py-2 px-4 rounded-lg ml-4" 
+            onClick={event => selectTaskByUser(memberSelect)}>
             Search
           </button>
         </div>
         
       </div>
-      {/* <div className="px-2">
-        <Select
-          defaultValue={defaultMem}
-          isMulti
-          closeMenuOnSelect={false}
-          hideSelectedOptions={false}
-          onChange={(options) => {
-            if (Array.isArray(options)) {
-              onChangeMember(options);
-
-            }
-          }
-          } 
-          options={allMember}
-          components={{
-            Option: InputOption
-          }}
-        />
-      </div> */}
-      
-      <div className="table-container-10">
+      <div className="table-container-10" style={{
+        height: "170px",
+      }}>
         <table className="w-full border border-gray-500 custom-scroll">
           <thead>
             <tr className="bg-gray-200">
