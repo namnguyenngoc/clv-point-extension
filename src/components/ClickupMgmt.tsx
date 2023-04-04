@@ -1811,6 +1811,26 @@ export default function ClickupMgmt(props) {
     else if (start < end) return 1;
     else return 0;
   }
+
+  async function getTask(item:any) {
+    let itemTask = {};
+    const config2 = {
+        method: 'get',
+        url: `${API_CLICKUP}/task/${item.parent}`,
+        headers:  REQ_HEADER.headers
+    };
+    const response = axios(config2).then((res2) => {
+        const data2 = res2.data;
+        if(data2){
+            itemTask = data2;
+        }
+        return itemTask;
+    });
+    console.log("response", response);
+    return new Promise((resolve, reject) => {
+        resolve(response);
+    });
+  }
   // setAllOptions(allOptions);
   /**
    * https://clickup.com/api/clickupreference/operation/GetTasks/
@@ -1826,7 +1846,7 @@ export default function ClickupMgmt(props) {
         setSelectedStatus(defaultStatus);
     }
     let status = selectedStatus.map(item => `statuses=${item.label}`).join('&');
-    var config = {
+    const config = {
       method: 'get',
       url: `${API_CLICKUP}/list/${listId}/task?subtasks=true&order_by=due_date&${assignees}&` + status,
       headers:  REQ_HEADER.headers
@@ -1835,23 +1855,34 @@ export default function ClickupMgmt(props) {
     .then(async (res) => {
       const data = res.data;
       if(data && data.tasks){
-        const newList = data.tasks.map(function (item) {
-          let assignees = item.assignees.map(item => item.username).join(',');
-          item.assignees_ls = assignees;
-          item.creator_nm = item.creator.username;
-          item.status_nm = item.status.status;
-          item.status_tp = item.status.type;
-          item.status_color = item.status.color;
-          item.module = item.tags.length > 0 ? item.tags[0].name : "";
-          if(item.due_date && item.due_date != null) {
-            item.due_date_str = moment(Number(item.due_date)).format("ddd, MMM DD");
-          } else {
-            item.due_date_str = "";
-          }
-          
-          return item;
+        const newList = data.tasks.map(async function (item) {
+            //Get task
+
+            let parent_nm = "";
+            if(item.parent){
+                const task = await getTask(item);  
+                if(task) {
+                    parent_nm = task.name;
+                }
+            }
+            let assignees = item.assignees.map(item => item.username).join(',');
+            item.assignees_ls = assignees;
+            item.creator_nm = item.creator.username;
+            item.status_nm = item.status.status;
+            item.status_tp = item.status.type;
+            item.status_color = item.status.color;
+            item.module = item.tags.length > 0 ? item.tags[0].name : "";
+            if(item.due_date && item.due_date != null) {
+                item.due_date_str = moment(Number(item.due_date)).format("ddd, MMM DD");
+            } else {
+                item.due_date_str = "";
+            }
+            item.parent_nm = parent_nm;
+            
+            return item;
         })
-        const newListSrt = [...newList.sort(compareFn)];
+        console.log("newList", newList);
+        const newListSrt = await Promise.all([...newList.sort(compareFn)]);
         setTaskList(newListSrt);
         // const memList = await getListMembers(listId);
         // setAllOptions(memList);
@@ -1966,16 +1997,16 @@ export default function ClickupMgmt(props) {
           <table className="w-full border border-gray-500 custom-scroll">
             <thead>
               <tr className="bg-gray-200">
-                <th className="px-4 py-2 w-30 text-center">#</th>
-                <th className="px-4 py-2 w-40 text-center">ID</th>
-                <th className="px-4 py-2">Module</th>
-                <th className="px-4 py-2">Parent</th>
-                <th className="px-4 py-2">Name</th>
-                <th className="px-4 py-2">Assignee</th>
-                <th className="px-4 py-2">Status</th>
-                <th className="px-4 py-2 text-right">Due Date</th>
-                <th className="px-4 py-2 text-right">Created By</th>
-                <th className="px-4 py-2 text-right">
+                <th className="px-2 py-2 w-30 text-center">#</th>
+                <th className="px-2 py-2 w-100 text-center">ID</th>
+                <th className="px-2 py-2 w-100 text-center">Module</th>
+                <th className="px-2 py-2">Parent</th>
+                <th className="px-2 py-2">Name</th>
+                <th className="px-2 py-2">Assignee</th>
+                <th className="px-2 py-2 w-100 text-center">Status</th>
+                <th className="px-2 py-2 text-center">Due Date</th>
+                <th className="px-2 py-2 text-center w-100">Created By</th>
+                <th className="px-2 py-2 text-left">
                   URL
                 </th>
               </tr>
@@ -1983,22 +2014,22 @@ export default function ClickupMgmt(props) {
             <tbody className="border-t">
               {taskList.map((item, idx) => (
                 <tr key={item.id} className="border-t">
-                  <td className="px-4 py-2 w-30 text-center">{idx + 1}</td>
-                  <td className="px-4 py-2 w-40 text-center">{item.id}</td>
-                  <td className="px-4 py-2 w-40 text-center">{item.module}</td>
-                  <td className="px-4 py-2 w-40 text-center">{item.parent}</td>
-                  <td className="px-4 py-2 text-blue">
+                  <td className="px-2 py-2 w-30 text-center">{idx + 1}</td>
+                  <td className="px-2 py-2 w-100 text-center">{item.id}</td>
+                  <td className="px-2 py-2 w-100 text-center">{item.module}</td>
+                  <td className="px-2 py-2">{item.parent_nm}</td>
+                  <td className="px-2 py-2 text-blue">
                     {item.name}
                   </td>
-                  <td className="px-4 py-2 text-center">{item.assignees_ls}</td>
-                  <td className="px-4 py-2 text-center" style={{
+                  <td className="px-2 py-2">{item.assignees_ls}</td>
+                  <td className="px-2 py-2 w-100 text-center" style={{
                     color: item.status_color,
                     fontWeight: "bold",
 
                   }}>{item.status_nm}</td>
-                  <td className="px-4 py-2 text-center">{item.due_date_str}</td>
-                  <td className="px-4 py-2 text-center">{item.creator_nm}</td>
-                  <td className="px-4 py-2 text-center">
+                  <td className="px-2 py-2 text-center">{item.due_date_str}</td>
+                  <td className="px-2 py-2 text-center w-100">{item.creator_nm}</td>
+                  <td className="px-2 py-2 text-left">
                     <a onClick={event => openTask(item.url)}>
                         {item.url}
                     </a>

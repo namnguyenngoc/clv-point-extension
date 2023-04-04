@@ -24,8 +24,9 @@ export default function TaskListAddPoint(props) {
   let [taskInfo, setTaskInfo] = useState({});
   let [taskList, setTaskList] = useState([]);
   let [reqDetail, setReqDetail] = useState({});
+  let [commentProp, setCommentProp] = useState([]);
+  let [countFB, setCountFB] = useState(0);
 
-  
   const url = 'https://blueprint.cyberlogitec.com.vn/api';
  
   const [stsChecked, setStsChecked] = React.useState(true);
@@ -33,6 +34,8 @@ export default function TaskListAddPoint(props) {
   const [focalChecked, setFocalChecked] = React.useState(false);
 
   const [finishChecked, setFinishChecked] = React.useState(false);
+  const [lsFb, setLsFb] = React.useState(false);
+
   
   const [selectAssingee, setSelectAssingee] = React.useState('Nam Ngoc Nguyen');
   const [lsAssingee, setLsAssingee] = React.useState([]);
@@ -89,6 +92,8 @@ export default function TaskListAddPoint(props) {
     ).then(res => {
       return res.data;
     });
+
+    // let countFB = comments(reqId);
     // console.log("requirementDetail", requirementDetail);
     // console.log("requirement", requirement);
     //Sort
@@ -104,13 +109,11 @@ export default function TaskListAddPoint(props) {
     let arrApp = [...originalArr.filter(item => item.reqPhsNm == "Approval")];
     let arrFn = [...originalArr.filter(item => item.reqPhsNm == "Finish")];
     let arrFocal = [...originalArr.filter(item => item.reqPhsNm == "Focal Receiving")];
-    
+  
     // requirement.lstReq = originalArr;
     console.log("originalArr", originalArr);
     if(originalArr){
       let lsData = [];
-    
-      
       if(stsChecked) {
         lsData = [...originalArr];
         
@@ -127,14 +130,31 @@ export default function TaskListAddPoint(props) {
         }
       
       }
+    
       if(selectAssingee && selectAssingee != "ALL") {
         lsData = [...lsData.filter(item => item.assignee == selectAssingee)];
       }
       // requirement.lstReq = [...lsData];
-      requirement.lstReq = [...lsData.sort(compareFn)];
+      requirement.lstReq = [...lsData.sort(compareFBFn)];
     }
     
-    setTaskList(requirement.lstReq);
+    //Update point and fb
+    // onClickCheckPoint
+    await Promise.all(requirement.lstReq.map(async function(item){
+      const pointTask = await searchRequirementDetais(item.reqId); 
+      let fb = await comments(item.reqId);
+      item.countFb = fb.count;
+      item.comments = fb.comments;
+      //
+      item.actEffort = pointTask.totalPoint;
+      //
+    })
+    );
+    let taskList = [...requirement.lstReq];
+    if(lsFb){
+      taskList = [...requirement.lstReq.filter(item => item.countFb > 0)];
+    } 
+    setTaskList(taskList);
 
   }
 
@@ -184,7 +204,11 @@ export default function TaskListAddPoint(props) {
     else if(a.utPnt < b.utPnt) return 1;
     else return 0;
   }
-
+  const compareFBFn  = (a: any, b: any) => {
+    if(a.counFb > b.counFb) return -1;
+    else if(a.counFb < b.counFb) return 1;
+    else return 0;
+  }
   const existParent = (dataLs: Array<Object>, item: any) => {
     let flag = false;
     for(let i = 0; i < dataLs.length; i ++) {
@@ -418,14 +442,17 @@ export default function TaskListAddPoint(props) {
    
     // await datasuggestList(prjId, reqId, actualTotal, total);
     setReqId(reqId);
-    const pointTask = await searchRequirementDetais(reqId); 
-  
-    console.log("pointTask", pointTask );
-    console.log("totalPoint", pointTask.totalPoint );
+    setCommentProp(item.comments.lstUsrCmt);
+    setCountFB(item.countFb);
+    // const pointTask = await searchRequirementDetais(reqId); 
+    // let fb = await comments(reqId);
+    // alert("FB:" + fb);
+    // console.log("pointTask", pointTask );
+    // console.log("totalPoint", pointTask.totalPoint );
    
 
 
-    updateStateList(reqId, pointTask.totalPoint);
+    // updateStateList(reqId, pointTask.totalPoint);
     // item.actEffort = 999;
   }
 
@@ -438,6 +465,33 @@ export default function TaskListAddPoint(props) {
     updateStateList(reqId);
     // item.actEffort = 999;
   }
+  const comments = async (detailReqId) => {
+    let result = {
+      count: 0,
+      comments: {},
+    }
+    let count = 0;
+    await axios.post(`${url}/searchCommentTask`, {
+      "reqId":detailReqId
+    }).then(res => {
+      let commentList = res.data.lstUsrCmt;
+      if(commentList) {
+       
+        for(let i = 0; i < commentList.length; i ++ ){
+          if(commentList[i].cmtCtnt && commentList[i].cmtCtnt.toUpperCase().indexOf('FEEDBACK:') > 0) {
+            count ++;
+          }
+        }
+        
+      }
+      result.count = count;
+      result.comments = res.data;
+      return result;
+      
+    });
+    return result;
+  }
+
   const datasuggestList = async (prjId, reqId, actualTotal: any, total: any) => {
     console.log("datasuggestList", reqId);
     if(!reqId || !reqId) {
@@ -733,6 +787,13 @@ export default function TaskListAddPoint(props) {
                         />
                           Finish
                       </label>
+                      <label>
+                        <input type="checkbox"
+                          defaultChecked={lsFb}
+                          onChange={() => setLsFb(!lsFb)}
+                        />
+                          Feedback
+                      </label>
                       <div>
                         {/* <input
                           type="text"
@@ -799,6 +860,9 @@ export default function TaskListAddPoint(props) {
                 <th className="px-4 py-2 w-150">Assignee</th>
                 <th className="px-4 py-2 w-w-120">Phase</th>
                 <th className="px-4 py-2 text-right w-150">Eff. Task/T.Worked</th>
+                <th className="px-4 py-2 text-right w-70">
+                  FB
+                </th>
                 <th className="px-4 py-2 text-right w-220">
                   Effort Point
                 </th>
@@ -807,7 +871,7 @@ export default function TaskListAddPoint(props) {
             <tbody className="border-t">
               {taskList.map((item, idx) => (
                 <tr key={item.reqId} 
-                    className={item.seqNo == seqNo ? "border-t bg-green-200" : "border-t"}>
+                    className={item.seqNo == seqNo ? "border-t bg-green-200" : (item.countFb > 0 ? "bg-fb" : "border-t")}>
                   <td className="px-4 py-2 w-30 text-center">{idx + 1}</td>
                   <td className="px-4 py-2 w-40 text-center">{item.seqNo}</td>
                   
@@ -819,9 +883,10 @@ export default function TaskListAddPoint(props) {
                   <td className="px-4 py-2 w-150">{item.assignee}</td>
                   <td className="px-4 py-2 w-120">{item.reqPhsNm}</td>
                   <td className="px-4 py-2 text-right w-150">{item.pntNo}/{item.actEffort}</td>
-                  <td className="px-4 py-2 text-right w-220">
+                  <td className="px-4 py-2 text-right w-70">{item.countFb}</td>
+                  <td className="px-4 py-2 text-right w-150">
                     <div className="grid grid-flow-col gap-1">
-                      <button type="button" 
+                      {/* <button type="button" 
                         className="bg-blue-500 text-white py-2 px-4 rounded-lg"
                         disabled={!item.actEffort || item.actEffort > item.pntNo}
                         onClick={ event => onClickTotal("PJT20211119000000001", item.reqId,item.pntNo, item) }
@@ -832,12 +897,12 @@ export default function TaskListAddPoint(props) {
                         disabled={!item.actEffort || item.actEffort > item.pntNo}
                       >
                         Pharse
-                      </button>
+                      </button> */}
                       <button 
                         type="button" 
                         className="bg-blue-500 text-white py-2 px-4 rounded-lg"
                         onClick={ event => onClickCheckPoint("PJT20211119000000001", item.reqId,item.pntNo, item) }>
-                        Check
+                        Check CMT
                       </button>
                     </div>
                   </td>
@@ -856,6 +921,8 @@ export default function TaskListAddPoint(props) {
         reqDetail = {reqDetail}
         seqNo = { seqNo }
         suggestList = { suggestList }
+        comment = { commentProp }
+        countFB = { countFB }
       />
     </div>
   </div>

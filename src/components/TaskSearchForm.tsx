@@ -2,6 +2,7 @@ import React, {useCallback, useState } from "react";
 import axios from "axios";
 import myData from '../data.json';
 import PointSuggest from './PointSuggest';
+import TaskComment from './TaskComment';
 
 export default function TaskSearchForm(props, { term }) {
   const [children, setChildren] = useState([]);
@@ -294,6 +295,14 @@ export default function TaskSearchForm(props, { term }) {
 
   return (
     <div className="grid grid-flow-row ">
+      <div>
+        <TaskComment
+          seqNo = { props.seqNo }
+          reqId = { props.reqId }
+          comment = { props.comment }
+          countFB = { props.countFB }
+        />
+      </div>
       <div>
         <PointSuggest 
           total = { (props.taskInfo && props.taskInfo.lstReq && props.taskInfo.lstReq.length > 0) ? props.taskInfo.lstReq[0].pntNo : 0}

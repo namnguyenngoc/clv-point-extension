@@ -137,11 +137,17 @@ tr.bg-green-200 td {
   background: #FAF0E6;
 }
 
-.w-30 {
+.w-30,
+th.w-30 {
   width: 30px;
 }
-.w-40 {
+.w-40,
+th.w-40 {
   width: 40px;
+}
+
+th.w-100 {
+  width: 100px;
 }
 
 /* clickup */
@@ -162,4 +168,25 @@ tr.bg-green-200 td {
 .main-layout-mgmt td,
 .main-layout-mgmt td a{
   color: #2a2e34;
+}
+
+.comment-full {
+  max-height: 600px;
+  overflow: auto;
+}
+
+.comment-full ul {
+  border-bottom: 1px solid #ccc;
+  margin-top: 5px;
+  margin-bottom: 8px;
+}
+
+.comment-full ul li {
+  font-size: 16px;
+  font-weight: 600;
+  text-align: right;
+}
+
+.bg-fb td {
+  background-color: #FFB6C1;
 }
