@@ -21,7 +21,13 @@
                 "standard": 25,
                 "expect": 17, //Jnr
                 "description": ""
-            }
+            },
+            "role": ["test"],
+            "pointStandard": 13,
+            "workload": 1,
+            "teamLocal": [
+                "NEWFWD"
+            ]
         },
         {
             "userId": "anhtd",
@@ -31,7 +37,13 @@
                 "standard": 25,
                 "expect": 17,
                 "description": ""
-            }
+            },
+            "role": ["develop"],
+            "workload": 0.2, 
+            "pointStandard": 3,
+            "teamLocal": [
+                "NEWFWD"
+            ]
         },
         {
             "userId": "trinhle",
@@ -41,7 +53,13 @@
                 "standard": 25,
                 "expect": 29,
                 "description": ""
-            }
+            },
+            "role": ["develop"],
+            "workload": 0.3, 
+            "pointStandard": 6,
+            "teamLocal": [
+                "NEWFWD"
+            ]
         },
         {
             "userId": "thaito",
@@ -51,7 +69,13 @@
                 "standard": 25,
                 "expect": 19,
                 "description": ""
-            }
+            },
+            "role": ["develop"],
+            "workload": 0.9, 
+            "pointStandard": 11,
+            "teamLocal": [
+                "NEWFWD"
+            ]
         },
         {
             "userId": "haonn",
@@ -61,7 +85,13 @@
                 "standard": 25,
                 "expect": 19,
                 "description": ""
-            }
+            },
+            "role": ["develop"],
+            "workload": 1, 
+            "pointStandard": 13,
+            "teamLocal": [
+                "NEWFWD"
+            ]
         },
         {
             "userId": "aopham",
@@ -71,7 +101,13 @@
                 "standard": 25,
                 "expect": 19,
                 "description": ""
-            }
+            },
+            "role": ["develop"],
+            "workload": 1, 
+            "pointStandard": 13,
+            "teamLocal": [
+                "NEWFWD"
+            ]
         },
         {
             "userId": "phucnguyenhoang",
@@ -81,7 +117,13 @@
                 "standard": 25,
                 "expect": 19,
                 "description": ""
-            }
+            },
+            "role": ["develop"],
+            "workload": 1, 
+            "pointStandard": 13,
+            "teamLocal": [
+                "NEWFWD"
+            ]
         },
         {
             "userId": "phamvo",
@@ -91,7 +133,13 @@
                 "standard": 25,
                 "expect": 17,
                 "description": ""
-            }
+            },
+            "role": ["tester"],
+            "workload": 1, 
+            "pointStandard": 13,
+            "teamLocal": [
+                "NEWFWD"
+            ]
         },
         {
             "userId": "namnnguyen",
@@ -100,7 +148,13 @@
                 "standard": 25,
                 "expect": 29,
                 "description": ""
-            }
+            },
+            "role": ["lead"],
+            "workload": 1, 
+            "pointStandard": 13,
+            "teamLocal": [
+                "NEWFWD"
+            ]
         },
         {
             "userId": "sangng",
@@ -110,7 +164,13 @@
                 "standard": 17,
                 "expect": 19, //~ Jnr 2
                 "description": ""
-            }
+            },
+            "role": ["develop"],
+            "workload": 1, 
+            "pointStandard": 13,
+            "teamLocal": [
+                "NEWFWD"
+            ]
         },
         {
             "userId": "thuanlai",
@@ -120,7 +180,13 @@
                 "standard": 13,
                 "expect": 17, //Jnr 1
                 "description": ""
-            }
+            },
+            "role": ["develop"],
+            "workload": 1, 
+            "pointStandard": 13,
+            "teamLocal": [
+                "NEWFWD"
+            ]
         },
         {
             "userId": "namnph",
@@ -130,7 +196,13 @@
                 "standard": 17,
                 "expect": 19, //Jnr 1
                 "description": ""
-            }
+            },
+            "role": ["develop"],
+            "workload": 1, 
+            "pointStandard": 13,
+            "teamLocal": [
+                "NEWFWD"
+            ]
         },
         {
             "userId": "hieunt",
@@ -140,7 +212,13 @@
                 "standard": 17,
                 "expect": 19, //Jnr 1
                 "description": ""
-            }
+            },
+            "role": ["develop"],
+            "workload": 0.85, 
+            "pointStandard": 13,
+            "teamLocal": [
+                "NEWFWD"
+            ]
         },
         {
             "userId": "hiennguyen",
@@ -149,7 +227,12 @@
                 "standard": 25,
                 "expect": 25,
                 "description": ""
-            }
+            },
+            "role": ["develop"],
+            "workload": 1, 
+            "pointStandard": 13,
+            "teamLocal": [
+            ]
         },
         {
             "userId": "duytrn",
@@ -158,7 +241,12 @@
                 "standard": 25,
                 "expect": 17,
                 "description": ""
-            }
+            },
+            "role": ["develop"],
+            "workload": 1, 
+            "pointStandard": 13,
+            "teamLocal": [
+            ]
         },
         {
             "userId": "huynhnh",
@@ -167,7 +255,12 @@
                 "standard": 25,
                 "expect": 17,
                 "description": ""
-            }
+            },
+            "role": ["develop"],
+            "workload": 1, 
+            "pointStandard": 13,
+            "teamLocal": [
+            ]
         }
     
     ],

@@ -60,13 +60,17 @@ export default function TaskEffortByUser(props) {
   const url = 'https://blueprint.cyberlogitec.com.vn/api';
   const DT_FM = 'YYYYMMDD';
   const defaultMem = null;
-  const allMember = [...myData.memList.map(
+  let allMember = [];
+  myData.memList.map(
     function (item) {
-      item.label =   item.userId, //`${item.fullName}-${item.pointOnHour.expect}(${item.currentLevel})`;
-      item.value = item.userId
-      return item;
-    })
-  ];
+      // console.log("item", item);
+      if(item.teamLocal.includes("NEWFWD")) {
+        item.label = item.userId, //`${item.fullName}-${item.pointOnHour.expect}(${item.currentLevel})`;
+        item.value = item.userId
+        allMember.push(item);
+        // return item;
+      }
+    });
 
   const [memberSelect, setMemberSelect] = useState(null);
   const today = moment(new Date());

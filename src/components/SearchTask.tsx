@@ -148,10 +148,7 @@ export default function SearchTask() {
     let data = {
       "pjtId": pjtId,
       "advFlg": "N",
-      "reqStsCd": [
-          "REQ_STS_CDPRC",
-          "REQ_STS_CDOPN"
-      ],
+      "reqStsCd": ["REQ_STS_CDPRC", "REQ_STS_CDOPN", "REQ_STS_CDFIN", "REQ_STS_CDCC", "REQ_STS_CDPD"],
       "jbTpCd": "_ALL_",
       "itrtnId": "_ALL_",
       "beginIdx": 0,
@@ -211,17 +208,22 @@ export default function SearchTask() {
           <thead>
             <tr className="bg-gray-200">
               <th className="px-4 py-2 w-50">ID</th>
-              <th className="px-4 py-2 text-center w-150">Reg. PIC</th>
-              <th className="px-4 py-2 w-150 text-center">PIC</th>
               <th className="px-4 py-2 w-250 text-right">Title</th>
-              <th className="px-4 py-2 text-right w-100">Link</th>
+              <th className="px-4 py-2 text-center w-100">Reg. PIC</th>
+              <th className="px-4 py-2 w-150 text-center w-100">PIC</th>
+              <th className="px-4 py-2 w-150 text-center w-100">Phase</th>
             </tr>
           </thead>
           <tbody className="border-t">
             {lstReq.map((item) => (
               <tr key={item.seqNo} className={"border-t"}>
-                <td className="px-2 py-2 w-70 text-center">
-                  {item.seqNo}
+                <td className="px-2 py-2 w-70 text-center text-blue">
+                  <a onClick={event => openTask(item.reqId)} className="link">
+                    {item.seqNo}
+                  </a>
+                </td>
+                <td className="px-2 py-2">
+                  {item.reqTitNm}
                 </td>
                 <td className="px-2 py-2 text-center w-100">
                   {item.createUser}
@@ -229,14 +231,10 @@ export default function SearchTask() {
                 <td className="px-2 py-2 w-100 text-center">
                   {item.PIC}
                 </td>
-                <td className="px-2 py-2">
-                  {item.reqTitNm}
+                <td className="px-2 py-2 w-100 text-center">
+                  {item.reqPhsNm}
                 </td>
-                <td className="px-2 py-2 text-center w-70">
-                  <a onClick={event => openTask(item.reqId)} className="link">
-                    {item.link}
-                  </a>
-                </td>
+                
               </tr>
             ))}
           </tbody>
