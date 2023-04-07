@@ -175,10 +175,10 @@
         {
             "userId": "thuanlai",
             "fullName": "Thuan Lai",
-            "currentLevel": "Fsh(+)",
+            "currentLevel": "Jnr 1", //2023-06-04: Up from Fsh -> Jun1
             "pointOnHour": {
-                "standard": 13,
-                "expect": 17, //Jnr 1
+                "standard": 17,
+                "expect": 19, //Jnr 1
                 "description": ""
             },
             "role": ["develop"],
