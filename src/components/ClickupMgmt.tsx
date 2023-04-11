@@ -2284,10 +2284,10 @@ let defaultEpic =
     let originList = [...originTaskList];
     let filterList = [];
     console.log("filterTaskLContent");
-    if(name && name.length > 0){
+    if(name && name.target && name.target.value && name.target.value.length > 0){
         console.log("filterTaskLContent", 1);
         filterList = originList.filter(item => 
-            item.name.includes(name)
+            item.name.includes(name.target.value)
         );
         setTaskList(filterList);
 
