@@ -52,7 +52,7 @@ const InputOption = ({
       innerProps={props}
     >
       <input type="checkbox" checked={isSelected} />
-      {children}
+       {children}
     </components.Option>
   );
 };
@@ -72,6 +72,231 @@ const InputOption = ({
 // https://api.clickup.com/api/v2/space/26265831/folder
 
 const allOptions = [
+    
+    {
+        "value": 32270675,
+        "label": "Ao Pham",
+        "email": "ao.pham@cyberlogitec.com",
+        "color": "#04a9f4",
+        "initials": "AP",
+        "profilePicture": null,
+        "profileInfo": {
+            "display_profile": false,
+            "verified_ambassador": null,
+            "verified_consultant": null,
+            "top_tier_user": null,
+            "viewed_verified_ambassador": null,
+            "viewed_verified_consultant": null,
+            "viewed_top_tier_user": null
+        }
+    },
+
+    {
+        "value": 49507726,
+        "label": "Phuc Nguyen",
+        "email": "phuc.nguyenhoang@cyberlogitec.com",
+        "color": "#f57c01",
+        "initials": "PN",
+        "profilePicture": null,
+        "profileInfo": {
+            "display_profile": null,
+            "verified_ambassador": null,
+            "verified_consultant": null,
+            "top_tier_user": null,
+            "viewed_verified_ambassador": null,
+            "viewed_verified_consultant": null,
+            "viewed_top_tier_user": null
+        }
+    },
+
+    {
+        "value": 49593104,
+        "label": "Nguyễn Nhật Hào",
+        "email": "hao.nn@cyberlogitec.com",
+        "color": "#5d4037",
+        "initials": "NH",
+        "profilePicture": null,
+        "profileInfo": {
+            "display_profile": null,
+            "verified_ambassador": null,
+            "verified_consultant": null,
+            "top_tier_user": null,
+            "viewed_verified_ambassador": null,
+            "viewed_verified_consultant": null,
+            "viewed_top_tier_user": null
+        }
+    },
+    {
+        "value": 49593105,
+        "label": "Nguyen Trung Hieu",
+        "email": "hieu.nt@cyberlogitec.com",
+        "color": "#ff7fab",
+        "initials": "NH",
+        "profilePicture": "https://attachments.clickup.com/profilePictures/49593105_Eai.jpg",
+        "profileInfo": {
+            "display_profile": true,
+            "verified_ambassador": null,
+            "verified_consultant": null,
+            "top_tier_user": null,
+            "viewed_verified_ambassador": null,
+            "viewed_verified_consultant": null,
+            "viewed_top_tier_user": null
+        }
+    },
+    {
+        "value": 49640752,
+        "label": "Trương Đình Ánh",
+        "email": "anh.td@cyberlogitec.com",
+        "color": "#f57c01",
+        "initials": "TÁ",
+        "profilePicture": null,
+        "profileInfo": {
+            "display_profile": null,
+            "verified_ambassador": null,
+            "verified_consultant": null,
+            "top_tier_user": null,
+            "viewed_verified_ambassador": null,
+            "viewed_verified_consultant": null,
+            "viewed_top_tier_user": null
+        }
+    },
+    {
+        "value": 49742722,
+        "label": "ThaiTo",
+        "email": "thai.to@cyberlogitec.com",
+        "color": "#ff7fab",
+        "initials": "T",
+        "profilePicture": null,
+        "profileInfo": {
+            "display_profile": null,
+            "verified_ambassador": null,
+            "verified_consultant": null,
+            "top_tier_user": null,
+            "viewed_verified_ambassador": null,
+            "viewed_verified_consultant": null,
+            "viewed_top_tier_user": null
+        }
+    },
+    {
+        "value": 55625216,
+        "label": "Dinh Thuan",
+        "email": "thuan.lai@cyberlogitec.com",
+        "color": "#f57c01",
+        "initials": "DT",
+        "profilePicture": null,
+        "profileInfo": {
+            "display_profile": true,
+            "verified_ambassador": null,
+            "verified_consultant": null,
+            "top_tier_user": null,
+            "viewed_verified_ambassador": null,
+            "viewed_verified_consultant": null,
+            "viewed_top_tier_user": null
+        }
+    },
+    {
+        "value": 55639242,
+        "label": "Nguyen Van Sang",
+        "email": "sang.ng@cyberlogitec.com",
+        "color": "#ff7fab",
+        "initials": "NS",
+        "profilePicture": null,
+        "profileInfo": {
+            "display_profile": null,
+            "verified_ambassador": null,
+            "verified_consultant": null,
+            "top_tier_user": null,
+            "viewed_verified_ambassador": null,
+            "viewed_verified_consultant": null,
+            "viewed_top_tier_user": null
+        }
+    },
+    {
+        "value": 55673790,
+        "label": "Nguyen Phan Hoai Nam",
+        "email": "nam.nph@cyberlogitec.com",
+        "color": "#536cfe",
+        "initials": "NN",
+        "profilePicture": null,
+        "profileInfo": {
+            "display_profile": null,
+            "verified_ambassador": null,
+            "verified_consultant": null,
+            "top_tier_user": null,
+            "viewed_verified_ambassador": null,
+            "viewed_verified_consultant": null,
+            "viewed_top_tier_user": null
+        }
+    },
+    {
+        "value": 32193054,
+        "label": "Nguyen Ngoc Nam",
+        "email": "nam.nguyenngoc@cyberlogitec.com",
+        "color": "#0197a7",
+        "initials": "NN",
+        "profilePicture": null,
+        "profileInfo": {
+            "display_profile": null,
+            "verified_ambassador": null,
+            "verified_consultant": null,
+            "top_tier_user": null,
+            "viewed_verified_ambassador": null,
+            "viewed_verified_consultant": null,
+            "viewed_top_tier_user": null
+        }
+    },
+    {
+        "value": 49534669,
+        "label": "Vi Vo",
+        "email": "vi.vo@cyberlogitec.com",
+        "color": "#827718",
+        "initials": "VV",
+        "profilePicture": null,
+        "profileInfo": {
+            "display_profile": null,
+            "verified_ambassador": null,
+            "verified_consultant": null,
+            "top_tier_user": null,
+            "viewed_verified_ambassador": null,
+            "viewed_verified_consultant": null,
+            "viewed_top_tier_user": null
+        }
+    },
+
+    {
+        "value": 49534719,
+        "label": "Pham Vo",
+        "email": "pham.vo@cyberlogitec.com",
+        "color": "#b388ff",
+        "initials": "PV",
+        "profilePicture": "https://attachments.clickup.com/profilePictures/49534719_dvx.jpg",
+        "profileInfo": {
+            "display_profile": true,
+            "verified_ambassador": null,
+            "verified_consultant": null,
+            "top_tier_user": null,
+            "viewed_verified_ambassador": null,
+            "viewed_verified_consultant": null,
+            "viewed_top_tier_user": null
+        }
+    },
+    {
+        "value": 32193101,
+        "label": "Trinh Le",
+        "email": "trinh.le@cyberlogitec.com",
+        "color": "#ffa727",
+        "initials": "TL",
+        "profilePicture": null,
+        "profileInfo": {
+            "display_profile": null,
+            "verified_ambassador": null,
+            "verified_consultant": null,
+            "top_tier_user": null,
+            "viewed_verified_ambassador": null,
+            "viewed_verified_consultant": null,
+            "viewed_top_tier_user": null
+        }
+    },
   {
     "value": 32151963,
     "label": "Nam Nguyen-Thai",
@@ -214,23 +439,6 @@ const allOptions = [
     "email": "binh.pham@cyberlogitec.com",
     "color": "#5f7c8a",
     "initials": "BP",
-    "profilePicture": null,
-    "profileInfo": {
-        "display_profile": null,
-        "verified_ambassador": null,
-        "verified_consultant": null,
-        "top_tier_user": null,
-        "viewed_verified_ambassador": null,
-        "viewed_verified_consultant": null,
-        "viewed_top_tier_user": null
-    }
-},
-{
-    "value": 32193054,
-    "label": "Nguyen Ngoc Nam",
-    "email": "nam.nguyenngoc@cyberlogitec.com",
-    "color": "#0197a7",
-    "initials": "NN",
     "profilePicture": null,
     "profileInfo": {
         "display_profile": null,
@@ -515,23 +723,6 @@ const allOptions = [
     }
 },
 {
-    "value": 32193101,
-    "label": "Trinh Le",
-    "email": "trinh.le@cyberlogitec.com",
-    "color": "#ffa727",
-    "initials": "TL",
-    "profilePicture": null,
-    "profileInfo": {
-        "display_profile": null,
-        "verified_ambassador": null,
-        "verified_consultant": null,
-        "top_tier_user": null,
-        "viewed_verified_ambassador": null,
-        "viewed_verified_consultant": null,
-        "viewed_top_tier_user": null
-    }
-},
-{
     "value": 32193102,
     "label": "Nguyen Quang Trung",
     "email": "trung.nguyenquang@cyberlogitec.com",
@@ -642,23 +833,6 @@ const allOptions = [
     "profilePicture": null,
     "profileInfo": {
         "display_profile": null,
-        "verified_ambassador": null,
-        "verified_consultant": null,
-        "top_tier_user": null,
-        "viewed_verified_ambassador": null,
-        "viewed_verified_consultant": null,
-        "viewed_top_tier_user": null
-    }
-},
-{
-    "value": 32270675,
-    "label": "Ao Pham",
-    "email": "ao.pham@cyberlogitec.com",
-    "color": "#04a9f4",
-    "initials": "AP",
-    "profilePicture": null,
-    "profileInfo": {
-        "display_profile": false,
         "verified_ambassador": null,
         "verified_consultant": null,
         "top_tier_user": null,
@@ -923,23 +1097,6 @@ const allOptions = [
     }
 },
 {
-    "value": 49507726,
-    "label": "Phuc Nguyen",
-    "email": "phuc.nguyenhoang@cyberlogitec.com",
-    "color": "#f57c01",
-    "initials": "PN",
-    "profilePicture": null,
-    "profileInfo": {
-        "display_profile": null,
-        "verified_ambassador": null,
-        "verified_consultant": null,
-        "top_tier_user": null,
-        "viewed_verified_ambassador": null,
-        "viewed_verified_consultant": null,
-        "viewed_top_tier_user": null
-    }
-},
-{
     "value": 49527890,
     "label": "Uy Nguyen",
     "email": "uy.nguyen@cyberlogitec.com",
@@ -991,23 +1148,6 @@ const allOptions = [
     }
 },
 {
-    "value": 49534669,
-    "label": "Vi Vo",
-    "email": "vi.vo@cyberlogitec.com",
-    "color": "#827718",
-    "initials": "VV",
-    "profilePicture": null,
-    "profileInfo": {
-        "display_profile": null,
-        "verified_ambassador": null,
-        "verified_consultant": null,
-        "top_tier_user": null,
-        "viewed_verified_ambassador": null,
-        "viewed_verified_consultant": null,
-        "viewed_top_tier_user": null
-    }
-},
-{
     "value": 49534706,
     "label": "Van Huynh",
     "email": "van.huynh@cyberlogitec.com",
@@ -1025,79 +1165,11 @@ const allOptions = [
     }
 },
 {
-    "value": 49534719,
-    "label": "Pham Vo",
-    "email": "pham.vo@cyberlogitec.com",
-    "color": "#b388ff",
-    "initials": "PV",
-    "profilePicture": "https://attachments.clickup.com/profilePictures/49534719_dvx.jpg",
-    "profileInfo": {
-        "display_profile": true,
-        "verified_ambassador": null,
-        "verified_consultant": null,
-        "top_tier_user": null,
-        "viewed_verified_ambassador": null,
-        "viewed_verified_consultant": null,
-        "viewed_top_tier_user": null
-    }
-},
-{
-    "value": 49593104,
-    "label": "Nguyễn Nhật Hào",
-    "email": "hao.nn@cyberlogitec.com",
-    "color": "#5d4037",
-    "initials": "NH",
-    "profilePicture": null,
-    "profileInfo": {
-        "display_profile": null,
-        "verified_ambassador": null,
-        "verified_consultant": null,
-        "top_tier_user": null,
-        "viewed_verified_ambassador": null,
-        "viewed_verified_consultant": null,
-        "viewed_top_tier_user": null
-    }
-},
-{
-    "value": 49593105,
-    "label": "Nguyen Trung Hieu",
-    "email": "hieu.nt@cyberlogitec.com",
-    "color": "#ff7fab",
-    "initials": "NH",
-    "profilePicture": "https://attachments.clickup.com/profilePictures/49593105_Eai.jpg",
-    "profileInfo": {
-        "display_profile": true,
-        "verified_ambassador": null,
-        "verified_consultant": null,
-        "top_tier_user": null,
-        "viewed_verified_ambassador": null,
-        "viewed_verified_consultant": null,
-        "viewed_top_tier_user": null
-    }
-},
-{
     "value": 49593778,
     "label": "Bảo Dư",
     "email": "bao.du@cyberlogitec.com",
     "color": "#0ab4ff",
     "initials": "BD",
-    "profilePicture": null,
-    "profileInfo": {
-        "display_profile": null,
-        "verified_ambassador": null,
-        "verified_consultant": null,
-        "top_tier_user": null,
-        "viewed_verified_ambassador": null,
-        "viewed_verified_consultant": null,
-        "viewed_top_tier_user": null
-    }
-},
-{
-    "value": 49640752,
-    "label": "Trương Đình Ánh",
-    "email": "anh.td@cyberlogitec.com",
-    "color": "#f57c01",
-    "initials": "TÁ",
     "profilePicture": null,
     "profileInfo": {
         "display_profile": null,
@@ -1263,23 +1335,6 @@ const allOptions = [
     }
 },
 {
-    "value": 49742722,
-    "label": "ThaiTo",
-    "email": "thai.to@cyberlogitec.com",
-    "color": "#ff7fab",
-    "initials": "T",
-    "profilePicture": null,
-    "profileInfo": {
-        "display_profile": null,
-        "verified_ambassador": null,
-        "verified_consultant": null,
-        "top_tier_user": null,
-        "viewed_verified_ambassador": null,
-        "viewed_verified_consultant": null,
-        "viewed_top_tier_user": null
-    }
-},
-{
     "value": 55108569,
     "label": "Tran Minh Triet",
     "email": "triet.tran@cyberlogitec.com",
@@ -1416,57 +1471,6 @@ const allOptions = [
     }
 },
 {
-    "value": 55625216,
-    "label": "Dinh Thuan",
-    "email": "thuan.lai@cyberlogitec.com",
-    "color": "#f57c01",
-    "initials": "DT",
-    "profilePicture": null,
-    "profileInfo": {
-        "display_profile": true,
-        "verified_ambassador": null,
-        "verified_consultant": null,
-        "top_tier_user": null,
-        "viewed_verified_ambassador": null,
-        "viewed_verified_consultant": null,
-        "viewed_top_tier_user": null
-    }
-},
-{
-    "value": 55639242,
-    "label": "Nguyen Van Sang",
-    "email": "sang.ng@cyberlogitec.com",
-    "color": "#ff7fab",
-    "initials": "NS",
-    "profilePicture": null,
-    "profileInfo": {
-        "display_profile": null,
-        "verified_ambassador": null,
-        "verified_consultant": null,
-        "top_tier_user": null,
-        "viewed_verified_ambassador": null,
-        "viewed_verified_consultant": null,
-        "viewed_top_tier_user": null
-    }
-},
-{
-    "value": 55673790,
-    "label": "Nguyen Phan Hoai Nam",
-    "email": "nam.nph@cyberlogitec.com",
-    "color": "#536cfe",
-    "initials": "NN",
-    "profilePicture": null,
-    "profileInfo": {
-        "display_profile": null,
-        "verified_ambassador": null,
-        "verified_consultant": null,
-        "top_tier_user": null,
-        "viewed_verified_ambassador": null,
-        "viewed_verified_consultant": null,
-        "viewed_top_tier_user": null
-    }
-},
-{
     "value": 55693610,
     "label": "Nguyen Huu Hoang",
     "email": "hoang.nguyenhuu@cyberlogitec.com",
@@ -1527,15 +1531,195 @@ const allStatus = [
       "orderindex": 5,
       "color": "#6bc950",
       "type": "closed"
-  }
+  },
+  {
+    "value": "2",
+    "label": "code review",
+    "orderindex": 4,
+    "color": "#25CB89",
+    "type": "custom"
+},
+{
+    "value": "3",
+    "label": "design approval",
+    "orderindex": 4,
+    "color": "#25CB89",
+    "type": "custom"
+},
+{
+    "value": "4",
+    "label": "po review",
+    "orderindex": 4,
+    "color": "#25CB89",
+    "type": "custom"
+},
 ];
 
 const allTags = [
+    {
+        "value": "accounting",
+        "label": "accounting",
+        "tag_fg": "#FF7FAB",
+        "tag_bg": "#FF7FAB",
+        "creator": 32188582
+    },
+    {
+        "value": "dashboard",
+        "label": "dashboard",
+        "tag_fg": "#7C4DFF",
+        "tag_bg": "#7C4DFF",
+        "creator": 32188582
+    },
+    {
+        "value": "system",
+        "label": "system",
+        "tag_fg": "#BF55EC",
+        "tag_bg": "#BF55EC",
+        "creator": 32188582
+    },
+    {
+        "value": "shipment",
+        "label": "shipment",
+        "tag_fg": "#E50000",
+        "tag_bg": "#E50000",
+        "creator": 32188582
+    },
+    {
+        "value": "mobile",
+        "label": "mobile",
+        "tag_fg": "#0231E8",
+        "tag_bg": "#0231E8",
+        "creator": 32188582
+    },
+    {
+        "value": "masterdata",
+        "label": "master data",
+        "tag_fg": "#800000",
+        "tag_bg": "#800000",
+        "creator": 32193035
+    },
+    {
+        "value": "visibility",
+        "label": "visibility",
+        "tag_fg": "#F900EA",
+        "tag_bg": "#F900EA",
+        "creator": 32188582
+    },
+    {
+        "value": "tradepartnermgmt",
+        "label": "trade partner mgmt",
+        "tag_fg": "#81B1FF",
+        "tag_bg": "#81B1FF",
+        "creator": 32193035
+    },
+    {
+        "value": "reporting",
+        "label": "reporting",
+        "tag_fg": "#EA80FC",
+        "tag_bg": "#EA80FC",
+        "creator": 32188582
+    },
+    {
+        "value": "admin",
+        "label": "admin",
+        "tag_fg": "#9B59B6",
+        "tag_bg": "#9B59B6",
+        "creator": 32188582
+    },
+    {
+        "value": "sales",
+        "label": "sales",
+        "tag_fg": "#FF4081",
+        "tag_bg": "#FF4081",
+        "creator": 32188582
+    }
+        
 ]
+
+const allEpic = [
+        {
+            "value": "152185323",
+            "label": "🏆 Epics",
+            "orderindex": 6,
+            "status": null,
+            "priority": null,
+            "assignee": null,
+            "task_count": 111,
+            "due_date": null,
+            "start_date": null,
+            "folder": {
+                "id": "104188201",
+                "name": "Product Backlogs",
+                "hidden": false,
+                "access": true
+            },
+            "space": {
+                "id": "26265831",
+                "name": "New FWD",
+                "access": true
+            },
+            "archived": false,
+            "override_statuses": true,
+            "permission_level": "create"
+        },
+        {
+            "value": "900800090277",
+            "label": "🏆 Epics - Target 1",
+            "orderindex": 8,
+            "status": null,
+            "priority": null,
+            "assignee": null,
+            "task_count": 63,
+            "due_date": null,
+            "start_date": null,
+            "folder": {
+                "id": "104188201",
+                "name": "Product Backlogs",
+                "hidden": false,
+                "access": true
+            },
+            "space": {
+                "id": "26265831",
+                "name": "New FWD",
+                "access": true
+            },
+            "archived": false,
+            "override_statuses": true,
+            "permission_level": "create"
+        },
+        {
+            "value": "900800996894",
+            "label": "🏆 Epics - Target 2",
+            "orderindex": 9,
+            "content": "",
+            "status": null,
+            "priority": null,
+            "assignee": null,
+            "task_count": 10,
+            "due_date": null,
+            "start_date": null,
+            "folder": {
+                "id": "104188201",
+                "name": "Product Backlogs",
+                "hidden": false,
+                "access": true
+            },
+            "space": {
+                "id": "26265831",
+                "name": "New FWD",
+                "access": true
+            },
+            "archived": false,
+            "override_statuses": false,
+            "permission_level": "create"
+        }
+    ]
 export default function ClickupMgmt(props) {
   const API_CLICKUP = 'https://api.clickup.com/api/v2';
 
-  let [taskList, setTaskList] = useState([]);
+  let [taskList, setTaskList] = React.useState([]);
+  let [originTaskList, setOriginTaskList] = useState([]);
+
   let defaultMem = [
     {
       "value": 49593104,
@@ -1796,27 +1980,120 @@ export default function ClickupMgmt(props) {
         "color": "#25CB89",
         "type": "custom"
     },
+    {
+        "value": "2",
+        "label": "code review",
+        "orderindex": 4,
+        "color": "#25CB89",
+        "type": "custom"
+    },
+    {
+        "value": "3",
+        "label": "design approval",
+        "orderindex": 4,
+        "color": "#25CB89",
+        "type": "custom"
+    },
+    {
+        "value": "4",
+        "label": "po review",
+        "orderindex": 4,
+        "color": "#25CB89",
+        "type": "custom"
+    },
   ]
+
+  let defaultTags = [
+    {
+        "value": "accounting",
+        "label": "accounting",
+        "tag_fg": "#FF7FAB",
+        "tag_bg": "#FF7FAB",
+        "creator": 32188582
+    },
+    {
+        "value": "sales",
+        "label": "sales",
+        "tag_fg": "#FF4081",
+        "tag_bg": "#FF4081",
+        "creator": 32188582
+    }
+        
+]
+
+let defaultEpic = 
+    {
+        "value": "900800090277",
+        "label": "🏆 Epics - Target 1",
+        "orderindex": 8,
+        "status": null,
+        "priority": null,
+        "assignee": null,
+        "task_count": 63,
+        "due_date": null,
+        "start_date": null,
+        "folder": {
+            "id": "104188201",
+            "name": "Product Backlogs",
+            "hidden": false,
+            "access": true
+        },
+        "space": {
+            "id": "26265831",
+            "name": "New FWD",
+            "access": true
+        },
+        "archived": false,
+        "override_statuses": true,
+        "permission_level": "create"
+    }
+;
   // const [allOptions, setAllOptions] = useState([]);
-  const [selectedOptions, setSelectedOptions] = useState([]);
-  const [selectedStatus, setSelectedStatus] = useState([]);
+  const [selectedOptions, setSelectedOptions] = useState(defaultMem);
+  const [selectedStatus, setSelectedStatus] = useState(defaultStatus);
+  const [selectedTags, setSelectedTags] = useState(defaultTags);
+  const [selectEpic, setSelectEpic] = useState(defaultEpic);
+  const [oneSelectMember, setOneSelectMember] = useState({});
+  const [taskName, setTaskName] = useState("");
+  
+  let isEnableSearch = false;
+  
+//   setSelectedOptions(defaultMem);
+//   setSelectedStatus(defaultStatus);
+//   setSelectedTags(defaultTags);
+//   window['chrome'].storage?.local.set({defaultMem});
+//   window['chrome'].storage?.local.set({defaultStatus});
+//   window['chrome'].storage?.local.set({defaultTags});
+
   function openTask(url) {
    
     window.open(url, "_blank"); //to open new page
   }
-  const compareFn = (a: string, b: string) => {
-    const start = a.parent;
-    const end = b.parent;
-    if(start > end) return -1;
-    else if (start < end) return 1;
+  const compareFn = (a: any, b: any) => {
+    const start = a.parent == null ? a.id : a.parent;
+    const end = b.parent == null ? b.id : b.parent;
+    if(start < end) return 1;
+    else if (start > end) return -1;
     else return 0;
   }
 
+  const compareFn2 = (a: any, b: any) => {
+    const start = a.orderindex;
+    const end = b.orderindex;
+    if(a.parent_nm == b.parent_nm) {
+        if(start < end) return -1;
+        else if (start > end) return 1;
+        else return 0;
+    } else {
+        return 0;
+    }
+    
+  }
   async function getTask(item:any) {
     let itemTask = {};
     const config2 = {
         method: 'get',
-        url: `${API_CLICKUP}/task/${item.parent}`,
+        url: `${API_CLICKUP}/task/${item.parent}?subtasks=true`,
         headers:  REQ_HEADER.headers
     };
     const response = axios(config2).then((res2) => {
@@ -1826,7 +2103,6 @@ export default function ClickupMgmt(props) {
         }
         return itemTask;
     });
-    console.log("response", response);
     return new Promise((resolve, reject) => {
         resolve(response);
     });
@@ -1837,36 +2113,108 @@ export default function ClickupMgmt(props) {
    * https://api.clickup.com/api/v2/list/{list_id}/task
    */
   const getTasks = async (listId) => {
-    console.log("selectedOptions", selectedOptions);
-    if(selectedOptions || selectedOptions.length == 0) {
-        setSelectedOptions(defaultMem);
-    }
+    isEnableSearch = true;
+    setTaskList([]);
+    setOriginTaskList([]);
+    // if(selectedOptions || selectedOptions.length == 0) {
+    //     setSelectedOptions(defaultMem);
+    //     // _url = `${API_CLICKUP}/list/${listId}/task?subtasks=true&` + status;
+    // }
+
+    
+    // if(selectedStatus || selectedStatus.length == 0) {
+    //     setSelectedStatus(defaultStatus);
+    //     // _url = `${API_CLICKUP}/list/${listId}/task?subtasks=true`;
+    // }
+   
     let assignees = selectedOptions.map(item => `assignees=${item.value}`).join('&');
-    if(selectedStatus || selectedStatus.length == 0) {
-        setSelectedStatus(defaultStatus);
-    }
     let status = selectedStatus.map(item => `statuses=${item.label}`).join('&');
+    let tags = selectedTags.map(item => `tags=${item.label}`).join('&');
+
+    let  _url = `${API_CLICKUP}/list/${listId}/task?subtasks=true`;
+    // let _url = `${API_CLICKUP}/list/${listId}/task?subtasks=true&${assignees}&` + status;
+    if(selectedOptions && selectedOptions.length > 0) {
+        _url += `&` + assignees;
+    }
+
+    if(selectedStatus && selectedStatus.length > 0) {
+        _url += `&` + status;
+    }
+
+    if(selectedTags && selectedTags.length > 0) {
+        _url += `&` + tags;
+    }
+   
     const config = {
       method: 'get',
-      url: `${API_CLICKUP}/list/${listId}/task?subtasks=true&order_by=due_date&${assignees}&` + status,
+      url: _url,
       headers:  REQ_HEADER.headers
     };
     axios(config)
     .then(async (res) => {
       const data = res.data;
       if(data && data.tasks){
-        const newList = data.tasks.map(async function (item) {
-            //Get task
-
-            let parent_nm = "";
-            if(item.parent){
-                const task = await getTask(item);  
-                if(task) {
-                    parent_nm = task.name;
+        const uniqueIds = [];
+        const lsMainParent = [...data.tasks.filter(item => item.parent == null)];
+        const parentNotExitsTmp = [...data.tasks.filter(item => item.parent != null && lsMainParent.find(item2 => item2.id == item.parent) == undefined)];
+        if(parentNotExitsTmp){
+            const parentNotExits = [...parentNotExitsTmp.filter(element => {
+                const isDuplicate = uniqueIds.includes(element.parent);
+            
+                if (!isDuplicate) {
+                    uniqueIds.push(element.parent);
+                    return true;
                 }
+            
+                return false;
+            })];
+        }
+
+        //get parent infor
+        let parentMissingArr = [];
+        if(uniqueIds && uniqueIds.length > 0){
+            for(let i = 0; i < uniqueIds.length; i ++) {
+                
+                let task = await getTask({
+                    parent: uniqueIds[i]
+                });  
+
+                if(task.parent) {
+                    task = await getTask({
+                        parent: task.parent
+                    });  
+                }
+
+                let assignees = task.assignees.map(item => item.username).join(',');
+                task.assignees_ls = assignees;
+                task.creator_nm = task.creator.username;
+                task.status_nm = task.status.status;
+                task.status_tp = task.status.type;
+                task.status_color = task.status.color;
+                task.module = task.tags.length > 0 ? task.tags[0].name : "";
+                if(task.due_date && task.due_date != null) {
+                    task.due_date_str = moment(Number(task.due_date)).format("ddd, MMM DD");
+                } else {
+                    task.due_date_str = "";
+                }
+                task.parent_nm = task.name;
+                // taskListByParent.push(item); // push parent;
+                const isExit = parentMissingArr.find(item => item.id == task.id);
+                if(task && isExit == undefined) {
+                    parentMissingArr.push(task);
+                }
+                
+            
             }
-            let assignees = item.assignees.map(item => item.username).join(',');
-            item.assignees_ls = assignees;
+        }
+
+        let lsFinalParent = lsMainParent.concat(await Promise.all([...parentMissingArr]));
+        // let lsFinalParent = lsMainParent.concat([...parentMissingArr]);
+        console.log("lsFinalParent", lsFinalParent);
+        let finalListTask = [];
+        lsFinalParent.map(function(item) {
+            let _assignees = item.assignees.map(item4 => item4.username).join(',');
+            item.assignees_ls = _assignees;
             item.creator_nm = item.creator.username;
             item.status_nm = item.status.status;
             item.status_tp = item.status.type;
@@ -1877,18 +2225,76 @@ export default function ClickupMgmt(props) {
             } else {
                 item.due_date_str = "";
             }
-            item.parent_nm = parent_nm;
-            
-            return item;
-        })
-        console.log("newList", newList);
-        const newListSrt = await Promise.all([...newList.sort(compareFn)]);
-        setTaskList(newListSrt);
+            finalListTask.push(item);
+
+            let lsTaskByParent = [...data.tasks.filter(item2 => item2.parent == item.id)];
+            if(lsTaskByParent){
+                // console.log("lsTaskByParent", lsTaskByParent);
+                lsTaskByParent.map(function(item3) {
+                    let assignees = item3.assignees.map(item => item.username).join(',');
+                    item3.assignees_ls = assignees;
+                    // item3.username = assignees;
+                    item3.creator_nm = item3.creator.username;
+                    item3.status_nm = item3.status.status;
+                    item3.status_tp = item3.status.type;
+                    item3.status_color = item3.status.color;
+                    item3.module = item3.tags.length > 0 ? item3.tags[0].name : "";
+                    if(item3.due_date && item3.due_date != null) {
+                        item3.due_date_str = moment(Number(item3.due_date)).format("ddd, MMM DD");
+                    } else {
+                        item3.due_date_str = "";
+                    }
+                })
+                finalListTask = [...finalListTask, ...lsTaskByParent];
+            }
+        });
+       
+        setTaskList(finalListTask);
+        setOriginTaskList(finalListTask);
+        isEnableSearch = false;
         // const memList = await getListMembers(listId);
         // setAllOptions(memList);
       }
       // return res.data;
     });
+  }
+
+  const filterTaskList = async (member: any) => {
+    setTaskList([]);
+    let originList = [...originTaskList];
+    let filterList = [];
+    if(member && member.value){
+        filterList = originList.filter(item => 
+            item.assignees.filter(item3=>item3.username === member.label).length > 0
+            
+
+        );
+        console.log("filterList", filterList);
+        setTaskList(filterList);
+
+    } else {
+        console.log("filterList2", filterList);
+        setTaskList(originList);
+    }
+    
+  }
+
+  const filterTaskLContent = async (name: any) => {
+    setTaskList([]);
+    let originList = [...originTaskList];
+    let filterList = [];
+    console.log("filterTaskLContent");
+    if(name && name.length > 0){
+        console.log("filterTaskLContent", 1);
+        filterList = originList.filter(item => 
+            item.name.includes(name)
+        );
+        setTaskList(filterList);
+
+    } else {
+        setTaskList(originList);
+    }
+    
   }
 
   /**
@@ -1907,7 +2313,6 @@ export default function ClickupMgmt(props) {
     return axios(config)
     .then(res => {
       const data = res.data;
-      console.log("allOptions");
       if(data && data.members){
         const newList = data.members.map(function (item) {
         
@@ -1947,10 +2352,23 @@ export default function ClickupMgmt(props) {
                 Option: InputOption
               }}
             />
+            <Select
+              defaultValue={defaultEpic}
+              closeMenuOnSelect={false}
+              hideSelectedOptions={false}
+              onChange={(options) => {
+                setSelectEpic(options);
+              }
+              } 
+              options={allEpic}
+              components={{
+                Option: InputOption
+              }}
+            />
            <button 
               type="button" 
               className="bg-blue-500 text-white py-2 px-4 rounded-lg w-100"
-              onClick={ event => getTasks(900800090277)}>
+              onClick={ event => getTasks(selectEpic.value)}>
               Search
             </button>
           </div>
@@ -1961,10 +2379,10 @@ export default function ClickupMgmt(props) {
               closeMenuOnSelect={false}
               hideSelectedOptions={false}
               onChange={(options) => {
-                if (Array.isArray(options)) {
-                  setSelectedStatus(options);
+                    if (Array.isArray(options)) {
+                        setSelectedStatus(options);
+                    }
                 }
-              }
               } 
               options={allStatus}
               components={{
@@ -1972,28 +2390,49 @@ export default function ClickupMgmt(props) {
               }}
             />
             <Select
+              defaultValue={defaultTags}
+              isMulti
+              closeMenuOnSelect={false}
+              hideSelectedOptions={false}
+              onChange={(options) => {
+                    if (Array.isArray(options)) {
+                        setSelectedTags(options);
+                    }
+                }
+              } 
+              options={allTags}
               components={{
                 Option: InputOption
               }}
             />
-            <Select
-              components={{
-                Option: InputOption
-              }}
-            />
-            <Select
-              components={{
-                Option: InputOption
-              }}
-            />
-            <Select
-              components={{
-                Option: InputOption
-              }}
-            />
+            
           </div>
+          <div className="grid grid-flow-col gap-1">
+            <div>
+                <input
+                    type="text"
+                    className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-full"
+                    onChange={(value) => {filterTaskLContent(value)}}
+                />
+            </div>
+            <div className="w-170">
+                <Select
+                    closeMenuOnSelect={false}
+                    hideSelectedOptions={false}
+                    options={defaultMem}
+                    onChange={async (mem) => {
+                        await filterTaskList(mem);
+                    }} 
+                    components={{
+                    Option: InputOption
+                }}
+                />
+            </div>
+            
+            </div>
         </div>
         <div className="table-container-mgmt">
+            {taskList.length}
           <table className="w-full border border-gray-500 custom-scroll">
             <thead>
               <tr className="bg-gray-200">
@@ -2006,20 +2445,28 @@ export default function ClickupMgmt(props) {
                 <th className="px-2 py-2 w-100 text-center">Status</th>
                 <th className="px-2 py-2 text-center">Due Date</th>
                 <th className="px-2 py-2 text-center w-100">Created By</th>
-                <th className="px-2 py-2 text-left">
-                  URL
-                </th>
+              
+                
               </tr>
             </thead>
             <tbody className="border-t">
               {taskList.map((item, idx) => (
                 <tr key={item.id} className="border-t">
                   <td className="px-2 py-2 w-30 text-center">{idx + 1}</td>
-                  <td className="px-2 py-2 w-100 text-center">{item.id}</td>
-                  <td className="px-2 py-2 w-100 text-center">{item.module}</td>
-                  <td className="px-2 py-2">{item.parent_nm}</td>
+                  <td className="px-2 py-2 w-100 text-center">
+                    <a onClick={event => openTask(item.url)}>
+                        {item.id}
+                    </a>
+                    </td>
+                 <td className="px-2 py-2 w-100 text-center">{item.module}</td>
+                  <td className="px-2 py-2" style={{
+                    color: item.status_color,
+                    fontWeight: "bold",
+                  }}>
+                    {item.parent == null ? item.name : item.parent_nm}
+                  </td>
                   <td className="px-2 py-2 text-blue">
-                    {item.name}
+                    {item.parent ? item.name : ""}
                   </td>
                   <td className="px-2 py-2">{item.assignees_ls}</td>
                   <td className="px-2 py-2 w-100 text-center" style={{
@@ -2028,12 +2475,9 @@ export default function ClickupMgmt(props) {
 
                   }}>{item.status_nm}</td>
                   <td className="px-2 py-2 text-center">{item.due_date_str}</td>
-                  <td className="px-2 py-2 text-center w-100">{item.creator_nm}</td>
-                  <td className="px-2 py-2 text-left">
-                    <a onClick={event => openTask(item.url)}>
-                        {item.url}
-                    </a>
-                    </td>
+                  <td className="px-2 py-2 text-center w-100">{item.creator_nm}</td> 
+                 
+                  
                 </tr>
               ))}
             </tbody>

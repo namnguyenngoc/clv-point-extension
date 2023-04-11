@@ -44,7 +44,7 @@ export default function TaskComment(props) {
     <div className="grid grid-flow-row gap-2">
       <div className="grid grid-flow-col gap-2">
         <h4>
-          #{seqNo} Comment List 
+          #{props.seqNo} Comment List 
         </h4>
         <div>
           {props.countFB} feedbacks.

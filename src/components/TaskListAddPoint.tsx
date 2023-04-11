@@ -442,6 +442,7 @@ export default function TaskListAddPoint(props) {
    
     // await datasuggestList(prjId, reqId, actualTotal, total);
     setReqId(reqId);
+    setSeqNo(item.seqNo);
     setCommentProp(item.comments.lstUsrCmt);
     setCountFB(item.countFb);
     // const pointTask = await searchRequirementDetais(reqId); 
@@ -871,7 +872,7 @@ export default function TaskListAddPoint(props) {
             <tbody className="border-t">
               {taskList.map((item, idx) => (
                 <tr key={item.reqId} 
-                    className={item.seqNo == seqNo ? "border-t bg-green-200" : (item.countFb > 0 ? "bg-fb" : "border-t")}>
+                    className={item.countFb > 0 ? "border-t bg-fb" : "border-t"}>
                   <td className="px-4 py-2 w-30 text-center">{idx + 1}</td>
                   <td className="px-4 py-2 w-40 text-center">{item.seqNo}</td>
                   

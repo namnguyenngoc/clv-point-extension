@@ -1,12 +1,9 @@
 import React, { ReactElement, useEffect, useState } from 'react';
 import { APP_COLLAPSE_MGMT_WIDTH, APP_EXTEND_MGMT_WIDTH, APP_EXTEND_MGMT_HEIGHT, APP_COLLAPSE_MGMT_HEIGHT} from './const';
 import Button from './components/Button';
-import TaskSearchForm from './components/TaskSearchForm';
 import TaskListAddPoint from './components/TaskListAddPoint';
 import ClickupMgmt from './components/ClickupMgmt';
 
-
-import classNames from 'classnames';
 
 export default function Panel({ onWidthChange, initialEnabled }: { onWidthChange: (value: number) => void, initialEnabled: boolean }): ReactElement {
   const [enabledMgmt, setEnabledMgmt] = useState(initialEnabled);
