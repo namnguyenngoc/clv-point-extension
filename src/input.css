@@ -41,7 +41,14 @@ table.custom-scroll tbody tr {
 table.custom-scroll {
   border: 1px solid lightgrey;
 }
-
+table.custom-scroll thead th {
+  border-right: 1px solid !important;
+  border-color: whitesmoke !important;
+}
+table.custom-scroll tbody tr td {
+  border-right: 1px solid !important;
+  border-color: rgb(229, 231, 235) !important;
+}
 .w-170 {
   width: 170px;
 }
@@ -107,11 +114,27 @@ table.custom-scroll {
   width: 1700px;
   height: 900px;
   box-shadow: 0px 0px 5px #0000009e;
+  /* background: #2a2e34;
+  color: #FFFFFF; */
 }
+.main-body-mgmt input {
+  color: #2a2e34 !important;
+}
+
+.main-body-mgmt .grid {
+  /* background: #2a2e34;
+  color: #FFFFFF; */
+
+}
+
 .custom-button-expand {
-  height: 50px;
   background: white;
   border-radius: 50%;
+  bottom: 60px;
+  left: 20px;
+  height: 90px;
+  width: 90px;
+  border-radius: 4px;
 }
 
 .border-hidden {
@@ -170,6 +193,7 @@ th.w-100 {
   color: #2a2e34;
 }
 
+
 .comment-full {
   max-height: 600px;
   overflow: auto;
@@ -223,3 +247,39 @@ tfoot {
 tfoot th {
   font-weight: normal;
 } */
+
+
+
+.css-1nmdiq5-menu {
+  color: #000;
+}
+
+.css-1nmdiq5-menu span{
+  color: #000;
+}
+.css-1nmdiq5-menu label {
+  color: #000;
+}
+
+tr.dev-test {
+  background-color: beige;
+}
+
+div[id="react-select*"],
+div[id="react-select*"] div,
+div[id="react-select*"] span,
+div[id="react-select*"] label {
+  color: #000;
+}
+
+.over-due-date {
+  background-color: #FFE4E1;
+}
+
+.over-due-date {
+  background-color: #FFE4E1;
+}
+
+.due-date {
+  background-color: #F0FFF0;
+}

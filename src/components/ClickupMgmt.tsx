@@ -252,6 +252,7 @@ const allOptions = [
         "color": "#827718",
         "initials": "VV",
         "profilePicture": null,
+        "scope": "TEST",
         "profileInfo": {
             "display_profile": null,
             "verified_ambassador": null,
@@ -269,6 +270,7 @@ const allOptions = [
         "email": "pham.vo@cyberlogitec.com",
         "color": "#b388ff",
         "initials": "PV",
+        "scope": "TEST",
         "profilePicture": "https://attachments.clickup.com/profilePictures/49534719_dvx.jpg",
         "profileInfo": {
             "display_profile": true,
@@ -1779,6 +1781,7 @@ export default function ClickupMgmt(props) {
       "color": "#b388ff",
       "initials": "PV",
       "profilePicture": "https://attachments.clickup.com/profilePictures/49534719_dvx.jpg",
+      "scope": "TEST",
       "profileInfo": {
           "display_profile": true,
           "verified_ambassador": null,
@@ -1880,6 +1883,7 @@ export default function ClickupMgmt(props) {
       "email": "vi.vo@cyberlogitec.com",
       "color": "#827718",
       "initials": "VV",
+      "scope": "TEST",
       "profilePicture": null,
       "profileInfo": {
           "display_profile": null,
@@ -2107,6 +2111,17 @@ let defaultEpic =
         resolve(response);
     });
   }
+
+  const checkStatus = (statusNm: any, listStatusValid: any) => {
+    if (!statusNm && !listStatusValid) return true;
+
+    let result = listStatusValid.find(item => item.label == statusNm);
+    if (result > 0) {
+        return true;
+    }
+    return false
+
+  }
   // setAllOptions(allOptions);
   /**
    * https://clickup.com/api/clickupreference/operation/GetTasks/
@@ -2154,7 +2169,8 @@ let defaultEpic =
     .then(async (res) => {
       const data = res.data;
       if(data && data.tasks){
-        const uniqueIds = [];
+        let uniqueIds = [];
+
         const lsMainParent = [...data.tasks.filter(item => item.parent == null)];
         const parentNotExitsTmp = [...data.tasks.filter(item => item.parent != null && lsMainParent.find(item2 => item2.id == item.parent) == undefined)];
         if(parentNotExitsTmp){
@@ -2162,7 +2178,17 @@ let defaultEpic =
                 const isDuplicate = uniqueIds.includes(element.parent);
             
                 if (!isDuplicate) {
-                    uniqueIds.push(element.parent);
+                    //check status
+                    let isAdd = true;
+                    if(status && status.length > 0){
+                        isAdd = checkStatus(element.status.status, selectedStatus);
+
+                    }
+
+                    if(isAdd){
+                        uniqueIds.push(element.parent);
+
+                    }
                     return true;
                 }
             
@@ -2210,7 +2236,6 @@ let defaultEpic =
 
         let lsFinalParent = lsMainParent.concat(await Promise.all([...parentMissingArr]));
         // let lsFinalParent = lsMainParent.concat([...parentMissingArr]);
-        console.log("lsFinalParent", lsFinalParent);
         let finalListTask = [];
         lsFinalParent.map(function(item) {
             let _assignees = item.assignees.map(item4 => item4.username).join(',');
@@ -2221,10 +2246,12 @@ let defaultEpic =
             item.status_color = item.status.color;
             item.module = item.tags.length > 0 ? item.tags[0].name : "";
             if(item.due_date && item.due_date != null) {
-                item.due_date_str = moment(Number(item.due_date)).format("ddd, MMM DD");
+                item.due_date_str = moment(Number(item.due_date)).format("MM-DD-YYYY");
             } else {
                 item.due_date_str = "";
             }
+            item.USP = splitUSP(item);
+
             finalListTask.push(item);
 
             let lsTaskByParent = [...data.tasks.filter(item2 => item2.parent == item.id)];
@@ -2240,10 +2267,17 @@ let defaultEpic =
                     item3.status_color = item3.status.color;
                     item3.module = item3.tags.length > 0 ? item3.tags[0].name : "";
                     if(item3.due_date && item3.due_date != null) {
-                        item3.due_date_str = moment(Number(item3.due_date)).format("ddd, MMM DD");
+                        item3.due_date_str = moment(Number(item3.due_date)).format("MM-DD-YYYY");
                     } else {
                         item3.due_date_str = "";
                     }
+                    item3.USP = splitUSP(item3);
+                    if (moment(Number(item3.due_date)) < moment(new Date())) {
+                        item3.class_over = "over-due-date";
+                    } else if (moment(Number(item3.due_date)) == moment(new Date())) {
+                        item3.class_over = "due-date";
+                    }
+                  
                 })
                 finalListTask = [...finalListTask, ...lsTaskByParent];
             }
@@ -2259,6 +2293,63 @@ let defaultEpic =
     });
   }
 
+  const splitUSP = (item: any) => {
+    let usp = {
+        dev_nm: "",
+        dev_point: 0,
+        test_nm: "",
+        test_point: 0,
+        cross_nm: "",
+        cross_point: 0
+    }
+
+    if(item && item.name) {
+        let regexp = /\[(.*?)\]/gi;
+        const matches = item.name.matchAll(regexp);
+        // let arr = item.name.match(regexp);
+       
+        for (const match of matches) {
+            // console.log(match);
+            // console.log(match.index);
+            if(match) {
+                let arr = match[1].split(":");
+                let scope = [];
+                let point = [];
+                if(arr.length == 2) { //dev & Test
+                    scope = arr[0].split("-");
+                    point = arr[1].split("-");
+                }
+                let arrAssignees =  (item.assignees_ls && item.assignees_ls.length > 0) ? item.assignees_ls.split(",") : [];
+
+                let devArr = [];
+                let testArr = [];
+
+                if(arrAssignees && arrAssignees.length > 0) {
+                    for(let i = 0; i < arrAssignees.length; i ++){
+                        let mem = allOptions.filter(item => item.label == arrAssignees[i]);
+
+                        if(mem && mem.length > 0) {
+                            if("TEST" == mem[0].scope) {
+                                testArr.push(mem[0].label);
+                            } else {
+                                devArr.push(mem[0].label);
+                            } 
+
+                        }
+                    }
+                }
+                
+                usp.dev_nm = (devArr && devArr.length > 0) ? devArr.join(",") : "";
+                usp.dev_point = (point && point.length > 0) ? point[0] : "";
+                usp.test_nm = (testArr && testArr.length > 0) ? testArr.join(",") : "";
+                usp.test_point = (point && point.length > 1) ? point[1] : "";
+            }
+        }
+    }
+    return usp;
+
+  }
+
   const filterTaskList = async (member: any) => {
     setTaskList([]);
     let originList = [...originTaskList];
@@ -2269,11 +2360,9 @@ let defaultEpic =
             
 
         );
-        console.log("filterList", filterList);
         setTaskList(filterList);
 
     } else {
-        console.log("filterList2", filterList);
         setTaskList(originList);
     }
     
@@ -2283,11 +2372,22 @@ let defaultEpic =
     setTaskList([]);
     let originList = [...originTaskList];
     let filterList = [];
-    console.log("filterTaskLContent");
     if(name && name.target && name.target.value && name.target.value.length > 0){
-        console.log("filterTaskLContent", 1);
-        filterList = originList.filter(item => 
-            item.name.includes(name.target.value)
+        let nameCondition = name.target.value;
+        filterList = originList.filter((item) => { 
+                let firstCharacter = Array.from(nameCondition)[0];
+                if("#" == firstCharacter){
+                    return item.id.toUpperCase().includes(nameCondition.replace("#", "").toUpperCase());
+
+                } else {
+                    let tmp = item.name;
+                    if(item.parent_nm && item.parent_nm.length > 0){
+                        tmp = `${tmp} ${item.parent_nm}`;
+                    }
+                    
+                    return tmp.toUpperCase().includes(nameCondition.toUpperCase());
+                }            
+            }
         );
         setTaskList(filterList);
 
@@ -2415,14 +2515,24 @@ let defaultEpic =
                     onChange={(value) => {filterTaskLContent(value)}}
                 />
             </div>
-            <div className="w-170">
+            <div>
                 <Select
-                    closeMenuOnSelect={false}
+                    closeMenuOnSelect={true}
                     hideSelectedOptions={false}
+                    isMulti
                     options={defaultMem}
-                    onChange={async (mem) => {
-                        await filterTaskList(mem);
-                    }} 
+                    onChange={(options) => {
+                            if (Array.isArray(options)) {
+                                let tmp = options[0];
+                                if(options.length > 1){
+                                    tmp = options[options.length - 1];
+                                    
+                                }
+                                filterTaskList(tmp);
+
+                            }
+                        }
+                    }  
                     components={{
                     Option: InputOption
                 }}
@@ -2441,9 +2551,13 @@ let defaultEpic =
                 <th className="px-2 py-2 w-100 text-center">Module</th>
                 <th className="px-2 py-2">Parent</th>
                 <th className="px-2 py-2">Name</th>
-                <th className="px-2 py-2">Assignee</th>
+                <th className="px-2 py-2 w-150">Assignee</th>
+                <th className="px-2 py-2 w-100 text-center">PIC DEV</th>
+                <th className="px-2 py-2 w-30 text-right">USP</th>
+                <th className="px-2 py-2 w-100 text-center">PIC TEST</th>
+                <th className="px-2 py-2 w-30 text-right">USP</th>
                 <th className="px-2 py-2 w-100 text-center">Status</th>
-                <th className="px-2 py-2 text-center">Due Date</th>
+                <th className="px-2 py-2 text-center w-100">Due Date</th>
                 <th className="px-2 py-2 text-center w-100">Created By</th>
               
                 
@@ -2451,7 +2565,7 @@ let defaultEpic =
             </thead>
             <tbody className="border-t">
               {taskList.map((item, idx) => (
-                <tr key={item.id} className="border-t">
+                <tr key={item.id} className={ (item.USP.test_nm && item.USP.test_nm.length > 0) ? "border-t dev-test ".concat(item.class_over): "border-t ".concat(item.class_over)}>
                   <td className="px-2 py-2 w-30 text-center">{idx + 1}</td>
                   <td className="px-2 py-2 w-100 text-center">
                     <a onClick={event => openTask(item.url)}>
@@ -2468,13 +2582,18 @@ let defaultEpic =
                   <td className="px-2 py-2 text-blue">
                     {item.parent ? item.name : ""}
                   </td>
-                  <td className="px-2 py-2">{item.assignees_ls}</td>
-                  <td className="px-2 py-2 w-100 text-center" style={{
+                  <td className="px-2 py-2 w-150">{item.assignees_ls}</td>
+                  <td className="px-2 py-2 w-100 text-center">{item.USP.dev_nm}</td>
+                  <td className="px-2 py-2 w-30 text-right">{item.USP.dev_point}</td>
+                  <td className="px-2 py-2 w-100 text-center">{item.USP.test_nm}</td>
+                  <td className="px-2 py-2 w-30 text-right">{item.USP.test_point}</td>
+
+                  <td className="px-2 py-2 w-100 text-center w-100" style={{
                     color: item.status_color,
                     fontWeight: "bold",
 
                   }}>{item.status_nm}</td>
-                  <td className="px-2 py-2 text-center">{item.due_date_str}</td>
+                  <td className="px-2 py-2 text-center w-100">{item.due_date_str}</td>
                   <td className="px-2 py-2 text-center w-100">{item.creator_nm}</td> 
                  
                   

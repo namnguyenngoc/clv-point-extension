@@ -13,103 +13,132 @@
     ],
     "memList": [
         {
-            "userId": "hiennguyen",
-            "fullName": "Hien Nguyen",
-            "pointOnHour": {
-                "standard": 25,
-                "expect": 25,
-                "description": ""
-            }
-        },
-        {
-            "userId": "duytrn",
-            "fullName": "Duy Tran Nhut",
-            "pointOnHour": {
-                "standard": 25,
-                "expect": 17,
-                "description": ""
-            }
-        },
-        {
-            "userId": "huynhnh",
-            "fullName": "Huynh Nguyen",
-            "pointOnHour": {
-                "standard": 25,
-                "expect": 17,
-                "description": ""
-            }
-        },
-        {
             "userId": "vivo",
-            "fullName": "Vi Vo",
+            "fullName": "Vo Thi Thuy Vy",
+            "currentLevel": "Fsh",
             "pointOnHour": {
                 "standard": 25,
-                "expect": 25,
+                "expect": 19, //Jnr1
                 "description": ""
-            }
+            },
+            "role": ["test"],
+            "pointStandard": 13,
+            "workload": 1,
+            "teamLocal": [
+                "NEWFWD"
+            ]
         },
         {
             "userId": "anhtd",
             "fullName": "Anh Truong Dinh",
+            "currentLevel": "Fsh",
             "pointOnHour": {
                 "standard": 25,
                 "expect": 17,
                 "description": ""
-            }
+            },
+            "role": ["develop"],
+            "workload": 0.2, 
+            "pointStandard": 3,
+            "teamLocal": [
+                "NEWFWD"
+            ]
         },
         {
             "userId": "trinhle",
             "fullName": "Trinh Le",
+            "currentLevel": "Snr 2",
             "pointOnHour": {
                 "standard": 25,
-                "expect": 28,
+                "expect": 29,
                 "description": ""
-            }
+            },
+            "role": ["develop"],
+            "workload": 0.3, 
+            "pointStandard": 6,
+            "teamLocal": [
+                "NEWFWD"
+            ]
         },
         {
             "userId": "thaito",
             "fullName": "Thai To",
+            "currentLevel": "Fsh",
             "pointOnHour": {
                 "standard": 25,
-                "expect": 23,
+                "expect": 19,
                 "description": ""
-            }
+            },
+            "role": ["develop"],
+            "workload": 0.9, 
+            "pointStandard": 11,
+            "teamLocal": [
+                "NEWFWD"
+            ]
         },
         {
             "userId": "haonn",
             "fullName": "Hao Nguyen Nhat",
+            "currentLevel": "Jnr 1",
             "pointOnHour": {
                 "standard": 25,
-                "expect": 23,
+                "expect": 19,
                 "description": ""
-            }
+            },
+            "role": ["develop"],
+            "workload": 1, 
+            "pointStandard": 13,
+            "teamLocal": [
+                "NEWFWD"
+            ]
         },
         {
             "userId": "aopham",
             "fullName": "Ao Pham",
+            "currentLevel": "Jnr 1",
             "pointOnHour": {
                 "standard": 25,
-                "expect": 23,
+                "expect": 19,
                 "description": ""
-            }
+            },
+            "role": ["develop"],
+            "workload": 1, 
+            "pointStandard": 13,
+            "teamLocal": [
+                "NEWFWD"
+            ]
         },
         {
             "userId": "phucnguyenhoang",
             "fullName": "Phuc Hoang Nguyen",
+            "currentLevel": "Jnr 1",
             "pointOnHour": {
                 "standard": 25,
-                "expect": 23,
+                "expect": 19,
                 "description": ""
-            }
+            },
+            "role": ["develop"],
+            "workload": 1, 
+            "pointStandard": 13,
+            "teamLocal": [
+                "NEWFWD"
+            ]
         },
         {
             "userId": "phamvo",
             "fullName": "Pham Vo",
+            "currentLevel": "Fsh",
             "pointOnHour": {
                 "standard": 25,
-                "expect": 25,
+                "expect": 19, //Junior 1
                 "description": ""
-            }
+            },
+            "role": ["tester"],
+            "workload": 1, 
+            "pointStandard": 13,
+            "teamLocal": [
+                "NEWFWD"
+            ]
         },
         {
             "userId": "namnnguyen",
@@ -118,25 +147,119 @@
                 "standard": 25,
                 "expect": 29,
                 "description": ""
-            }
+            },
+            "role": ["lead"],
+            "workload": 1, 
+            "pointStandard": 13,
+            "teamLocal": [
+                "NEWFWD"
+            ]
         },
         {
             "userId": "sangng",
             "fullName": "Nguyen Van Sang",
+            "currentLevel": "Jnr 1",
             "pointOnHour": {
                 "standard": 17,
-                "expect": 19, //~ junior 2
+                "expect": 19, //~ Jnr 2
                 "description": ""
-            }
+            },
+            "role": ["develop"],
+            "workload": 1, 
+            "pointStandard": 13,
+            "teamLocal": [
+                "NEWFWD"
+            ]
         },
         {
             "userId": "thuanlai",
             "fullName": "Thuan Lai",
+            "currentLevel": "Jnr 1", //2023-06-04: Up from Fsh -> Jun1
             "pointOnHour": {
-                "standard": 13,
-                "expect": 17, //Junior 1
+                "standard": 17,
+                "expect": 19, //Jnr 1
                 "description": ""
-            }
+            },
+            "role": ["develop"],
+            "workload": 1, 
+            "pointStandard": 13,
+            "teamLocal": [
+                "NEWFWD"
+            ]
+        },
+        {
+            "userId": "namnph",
+            "fullName": "Nam Nguyen Phan Hoai",
+            "currentLevel": "Jnr 1",
+            "pointOnHour": {
+                "standard": 17,
+                "expect": 19, //Jnr 1
+                "description": ""
+            },
+            "role": ["develop"],
+            "workload": 1, 
+            "pointStandard": 13,
+            "teamLocal": [
+                "NEWFWD"
+            ]
+        },
+        {
+            "userId": "hieunt",
+            "fullName": "Hieu Nguyen",
+            "currentLevel": "Jnr 1",
+            "pointOnHour": {
+                "standard": 17,
+                "expect": 19, //Jnr 1
+                "description": ""
+            },
+            "role": ["develop"],
+            "workload": 0.85, 
+            "pointStandard": 13,
+            "teamLocal": [
+                "NEWFWD"
+            ]
+        },
+        {
+            "userId": "hiennguyen",
+            "fullName": "Hien Nguyen",
+            "pointOnHour": {
+                "standard": 25,
+                "expect": 25,
+                "description": ""
+            },
+            "role": ["develop"],
+            "workload": 1, 
+            "pointStandard": 13,
+            "teamLocal": [
+            ]
+        },
+        {
+            "userId": "duytrn",
+            "fullName": "Duy Tran Nhut",
+            "pointOnHour": {
+                "standard": 25,
+                "expect": 17,
+                "description": ""
+            },
+            "role": ["develop"],
+            "workload": 1, 
+            "pointStandard": 13,
+            "teamLocal": [
+            ]
+        },
+        {
+            "userId": "huynhnh",
+            "fullName": "Huynh Nguyen",
+            "pointOnHour": {
+                "standard": 25,
+                "expect": 17,
+                "description": ""
+            },
+            "role": ["develop"],
+            "workload": 1, 
+            "pointStandard": 13,
+            "teamLocal": [
+            ]
         }
     
     ],
