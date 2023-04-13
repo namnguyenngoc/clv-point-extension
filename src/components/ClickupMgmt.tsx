@@ -2099,7 +2099,8 @@ let defaultEpic =
     const config2 = {
         method: 'get',
         url: `${API_CLICKUP}/task/${item.parent}?subtasks=true`,
-        headers:  REQ_HEADER.headers
+        headers:  REQ_HEADER.headers,
+        delayed: false  // use this custom option to allow overrides
     };
     const response = axios(config2).then((res2) => {
         const data2 = res2.data;
@@ -2164,7 +2165,8 @@ let defaultEpic =
     const config = {
       method: 'get',
       url: _url,
-      headers:  REQ_HEADER.headers
+      headers:  REQ_HEADER.headers,
+      delayed: false  // use this custom option to allow overrides
     };
     axios(config)
     .then(async (res) => {
@@ -2405,52 +2407,55 @@ let defaultEpic =
     setIdList(ids);
    
   }
+//   useEffect(() => { searchTaskById()})}
 
-  const searchTaskById = async (event: any) => {  
-    setTaskList([]);
-    if(idList && idList.length > 0) {
-        let taskIdArr = idList.split("\n");
-        let finalListTask = [];
-        if(taskIdArr && taskIdArr.length > 0) {
-            
-            for( let i = 0; i < taskIdArr.length; i ++) {
-                let task = await getTask({
-                    parent: taskIdArr[i].trim()
-                });
-                if(task) {
-                    //Check parent
-                    let parent = null;
-                    if(task.parent) {
-                        parent = await getTask({
-                            parent: task.parent
-                        });  
-                    }
+const searchTaskById = async (event: any) => {  
+    // useEffect(() => { 
+        setTaskList([]);
+        if(idList && idList.length > 0) {
+            let taskIdArr = idList.split("\n");
+            let finalListTask = [];
+            if(taskIdArr && taskIdArr.length > 0) {
+                
+                for( let i = 0; i < taskIdArr.length; i ++) {
+                    let task = await getTask({
+                        parent: taskIdArr[i].trim()
+                    });
+                    if(task) {
+                        //Check parent
+                        let parent = null;
+                        if(task.parent) {
+                            parent = await getTask({
+                                parent: task.parent
+                            });  
+                        }
 
-                    const assignees = task.assignees.map(item => task.username).join(',');
-                    task.assignees_ls = assignees;
-                    task.creator_nm = task.creator.username;
-                    task.status_nm = task.status.status;
-                    task.status_tp = task.status.type;
-                    task.status_color = task.status.color;
-                    task.module = task.tags.length > 0 ? task.tags[0].name : "";
-                    if(task.due_date && task.due_date != null) {
-                        task.due_date_str = moment(Number(task.due_date)).format("MM-DD-YYYY");
-                    } else {
-                        task.due_date_str = "";
+                        const assignees = task.assignees.map(item => task.username).join(',');
+                        task.assignees_ls = assignees;
+                        task.creator_nm = task.creator.username;
+                        task.status_nm = task.status.status;
+                        task.status_tp = task.status.type;
+                        task.status_color = task.status.color;
+                        task.module = task.tags.length > 0 ? task.tags[0].name : "";
+                        if(task.due_date && task.due_date != null) {
+                            task.due_date_str = moment(Number(task.due_date)).format("MM-DD-YYYY");
+                        } else {
+                            task.due_date_str = "";
+                        }
+                        if(parent && parent != null) {
+                            task.parent_nm = parent.name;
+                        }
+                        task.USP = splitUSP(task);
+                        finalListTask.push(task);
                     }
-                    if(parent && parent != null) {
-                        task.parent_nm = parent.name;
-                    }
-                    task.USP = splitUSP(task);
-                    finalListTask.push(task);
+                
                 }
-               
+            
             }
-           
-        }
 
-        setTaskList(finalListTask);
-    }
+            setTaskList(finalListTask);
+        };
+    // })
 
   }
 
@@ -2465,7 +2470,8 @@ let defaultEpic =
     var config = {
       method: 'get',
       url: `${API_CLICKUP}/list/${listId}/member`,
-      headers:  REQ_HEADER.headers
+      headers:  REQ_HEADER.headers,
+      delayed: false  // use this custom option to allow overrides
     };
     return axios(config)
     .then(res => {
