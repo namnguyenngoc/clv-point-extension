@@ -2059,6 +2059,7 @@ let defaultEpic =
   const [selectEpic, setSelectEpic] = useState(defaultEpic);
   const [oneSelectMember, setOneSelectMember] = useState({});
   const [taskName, setTaskName] = useState("");
+  const [idList, setIdList] = useState("");
   
   let isEnableSearch = false;
   
@@ -2396,6 +2397,62 @@ let defaultEpic =
     }
     
   }
+  
+  const onChangeTaskList = (event: any) => {
+    event.preventDefault(); // Otherwise the form will be submitted
+
+    let ids = event.target.value;
+    setIdList(ids);
+   
+  }
+
+  const searchTaskById = async (event: any) => {  
+    setTaskList([]);
+    if(idList && idList.length > 0) {
+        let taskIdArr = idList.split("\n");
+        let finalListTask = [];
+        if(taskIdArr && taskIdArr.length > 0) {
+            
+            for( let i = 0; i < taskIdArr.length; i ++) {
+                let task = await getTask({
+                    parent: taskIdArr[i].trim()
+                });
+                if(task) {
+                    //Check parent
+                    let parent = null;
+                    if(task.parent) {
+                        parent = await getTask({
+                            parent: task.parent
+                        });  
+                    }
+
+                    const assignees = task.assignees.map(item => task.username).join(',');
+                    task.assignees_ls = assignees;
+                    task.creator_nm = task.creator.username;
+                    task.status_nm = task.status.status;
+                    task.status_tp = task.status.type;
+                    task.status_color = task.status.color;
+                    task.module = task.tags.length > 0 ? task.tags[0].name : "";
+                    if(task.due_date && task.due_date != null) {
+                        task.due_date_str = moment(Number(task.due_date)).format("MM-DD-YYYY");
+                    } else {
+                        task.due_date_str = "";
+                    }
+                    if(parent && parent != null) {
+                        task.parent_nm = parent.name;
+                    }
+                    task.USP = splitUSP(task);
+                    finalListTask.push(task);
+                }
+               
+            }
+           
+        }
+
+        setTaskList(finalListTask);
+    }
+
+  }
 
   /**
    * 
@@ -2508,37 +2565,49 @@ let defaultEpic =
             
           </div>
           <div className="grid grid-flow-col gap-1">
-            <div>
-                <input
-                    type="text"
-                    className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-full"
-                    onChange={(value) => {filterTaskLContent(value)}}
-                />
-            </div>
-            <div>
-                <Select
-                    closeMenuOnSelect={true}
-                    hideSelectedOptions={false}
-                    isMulti
-                    options={defaultMem}
-                    onChange={(options) => {
-                            if (Array.isArray(options)) {
-                                let tmp = options[0];
-                                if(options.length > 1){
-                                    tmp = options[options.length - 1];
-                                    
-                                }
-                                filterTaskList(tmp);
+                <div>
+                    <input
+                        type="text"
+                        className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-full"
+                        onChange={(value) => {filterTaskLContent(value)}}
+                    />
+                </div>
+                <div>
+                    <Select
+                        closeMenuOnSelect={true}
+                        hideSelectedOptions={false}
+                        isMulti
+                        options={defaultMem}
+                        onChange={(options) => {
+                                if (Array.isArray(options)) {
+                                    let tmp = options[0];
+                                    if(options.length > 1){
+                                        tmp = options[options.length - 1];
+                                        
+                                    }
+                                    filterTaskList(tmp);
 
+                                }
                             }
-                        }
-                    }  
-                    components={{
-                    Option: InputOption
-                }}
+                        }  
+                        components={{
+                        Option: InputOption
+                    }}
+                    />
+                </div>
+                <div></div>
+                <textarea
+                    type="text"
+                    className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg"
+                    onChange={(event) => {onChangeTaskList(event)}}
                 />
-            </div>
-            
+                <button 
+                    type="button" 
+                    className="bg-blue-500 text-white py-2 px-4 rounded-lg w-100"
+                    onClick={ event => searchTaskById()}>
+                        Get Tasks
+                    </button>
+                
             </div>
         </div>
         <div className="table-container-mgmt">

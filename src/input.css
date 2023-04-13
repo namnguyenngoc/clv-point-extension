@@ -117,7 +117,8 @@ table.custom-scroll tbody tr td {
   /* background: #2a2e34;
   color: #FFFFFF; */
 }
-.main-body-mgmt input {
+.main-body-mgmt input,
+.main-body-mgmt textarea {
   color: #2a2e34 !important;
 }
 
