@@ -31,6 +31,7 @@ const InputOption = ({
     backgroundColor: bg,
     color: "inherit",
     display: "flex "
+    
   };
 
   // prop assignment
@@ -52,7 +53,7 @@ const InputOption = ({
       innerProps={props}
     >
       <input type="checkbox" checked={isSelected} />
-       {children}
+         {children}
     </components.Option>
   );
 };
@@ -2008,20 +2009,20 @@ export default function ClickupMgmt(props) {
   ]
 
   let defaultTags = [
-    {
-        "value": "accounting",
-        "label": "accounting",
-        "tag_fg": "#FF7FAB",
-        "tag_bg": "#FF7FAB",
-        "creator": 32188582
-    },
-    {
-        "value": "sales",
-        "label": "sales",
-        "tag_fg": "#FF4081",
-        "tag_bg": "#FF4081",
-        "creator": 32188582
-    }
+    // {
+    //     "value": "accounting",
+    //     "label": "accounting",
+    //     "tag_fg": "#FF7FAB",
+    //     "tag_bg": "#FF7FAB",
+    //     "creator": 32188582
+    // },
+    // {
+    //     "value": "sales",
+    //     "label": "sales",
+    //     "tag_fg": "#FF4081",
+    //     "tag_bg": "#FF4081",
+    //     "creator": 32188582
+    // }
         
 ]
 
@@ -2060,6 +2061,8 @@ let defaultEpic =
   const [oneSelectMember, setOneSelectMember] = useState({});
   const [taskName, setTaskName] = useState("");
   const [idList, setIdList] = useState("");
+  const [page, setPage] = useState(1);
+
   
   let isEnableSearch = false;
   
@@ -2147,35 +2150,195 @@ let defaultEpic =
     let assignees = selectedOptions.map(item => `assignees=${item.value}`).join('&');
     let status = selectedStatus.map(item => `statuses=${item.label}`).join('&');
     let tags = selectedTags.map(item => `tags=${item.label}`).join('&');
+    let promiseTask = [];
+    let lsFinalParent = [];
+    for(let iPage = 0; iPage < page; iPage ++) {
+        let  _url = `${API_CLICKUP}/list/${listId}/task?subtasks=true&page=${iPage}`;
+        // let _url = `${API_CLICKUP}/list/${listId}/task?subtasks=true&${assignees}&` + status;
+        if(selectedOptions && selectedOptions.length > 0) {
+            _url += `&` + assignees;
+        }
 
-    let  _url = `${API_CLICKUP}/list/${listId}/task?subtasks=true`;
-    // let _url = `${API_CLICKUP}/list/${listId}/task?subtasks=true&${assignees}&` + status;
-    if(selectedOptions && selectedOptions.length > 0) {
-        _url += `&` + assignees;
-    }
+        if(selectedStatus && selectedStatus.length > 0) {
+            _url += `&` + status;
+        }
 
-    if(selectedStatus && selectedStatus.length > 0) {
-        _url += `&` + status;
-    }
+        if(selectedTags && selectedTags.length > 0) {
+            _url += `&` + tags;
+        }
+    
+        const config = {
+            method: 'get',
+            url: _url,
+            headers:  REQ_HEADER.headers,
+            delayed: false  // use this custom option to allow overrides
+        };
+        const apiResponseTask =  axios(config).then(async (res) => {
+            const data = res.data;
+            // console.log("data", data);
+            if(data && data.tasks) {
+                return data.tasks;
+            }
+            return [];
+            // if(data && data.tasks){
+            //     let uniqueIds = [];
+            //     let finalListTask = [];
+            //     const lsMainParent = [...data.tasks.filter(item => item.parent == null)];
+            //     const parentNotExitsTmp = [...data.tasks.filter(item => item.parent != null && lsMainParent.find(item2 => item2.id == item.parent) == undefined)];
+            //     if(parentNotExitsTmp){
+            //         const parentNotExits = [...parentNotExitsTmp.filter(element => {
+            //             const isDuplicate = uniqueIds.includes(element.parent);
+                    
+            //             if (!isDuplicate) {
+            //                 //check status
+            //                 let isAdd = true;
+            //                 if(status && status.length > 0){
+            //                     isAdd = checkStatus(element.status.status, selectedStatus);
 
-    if(selectedTags && selectedTags.length > 0) {
-        _url += `&` + tags;
+            //                 }
+
+            //                 if(isAdd){
+            //                     uniqueIds.push(element.parent);
+
+            //                 }
+            //                 return true;
+            //             }
+                    
+            //             return false;
+            //         })];
+            //     }
+
+            //     //get parent infor
+            //     let parentMissingArr = [];
+            //     if(uniqueIds && uniqueIds.length > 0){
+            //         for(let i = 0; i < uniqueIds.length; i ++) {
+                        
+            //             let task = await getTask({
+            //                 parent: uniqueIds[i]
+            //             });  
+
+            //             if(task.parent) {
+            //                 task = await getTask({
+            //                     parent: task.parent
+            //                 });  
+            //             }
+
+            //             let assignees = task.assignees.map(item => item.username).join(',');
+            //             task.assignees_ls = assignees;
+            //             task.creator_nm = task.creator.username;
+            //             task.status_nm = task.status.status;
+            //             task.status_tp = task.status.type;
+            //             task.status_color = task.status.color;
+            //             task.module = task.tags.length > 0 ? task.tags[0].name : "";
+            //             if(task.due_date && task.due_date != null) {
+            //                 task.due_date_str = moment(Number(task.due_date)).format("ddd, MMM DD");
+            //             } else {
+            //                 task.due_date_str = "";
+            //             }
+            //             task.parent_nm = task.name;
+            //             // taskListByParent.push(item); // push parent;
+            //             const isExit = parentMissingArr.find(item => item.id == task.id);
+            //             if(task && isExit == undefined) {
+            //                 parentMissingArr.push(task);
+            //             }
+                        
+                    
+            //         }
+            //     }
+
+            //     lsFinalParent = lsMainParent.concat(await Promise.all([...parentMissingArr]));
+            //     // let lsFinalParent = lsMainParent.concat([...parentMissingArr]);
+            //     console.log("lsFinalParent", lsFinalParent);
+            //     lsFinalParent.map(function(item) {
+            //         let _assignees = item.assignees.map(item4 => item4.username).join(',');
+            //         item.assignees_ls = _assignees;
+            //         item.creator_nm = item.creator.username;
+            //         item.status_nm = item.status.status;
+            //         item.status_tp = item.status.type;
+            //         item.status_color = item.status.color;
+            //         item.module = item.tags.length > 0 ? item.tags[0].name : "";
+            //         if(item.due_date && item.due_date != null) {
+            //             item.due_date_str = moment(Number(item.due_date)).format("MM-DD-YYYY");
+            //         } else {
+            //             item.due_date_str = "";
+            //         }
+            //         item.USP = splitUSP(item);
+
+            //         finalListTask.push(item);
+
+            //         let lsTaskByParent = [...data.tasks.filter(item2 => item2.parent == item.id)];
+            //         if(lsTaskByParent){
+            //             // console.log("lsTaskByParent", lsTaskByParent);
+            //             lsTaskByParent.map(function(item3) {
+            //                 let assignees = item3.assignees.map(item => item.username).join(',');
+            //                 item3.assignees_ls = assignees;
+            //                 // item3.username = assignees;
+            //                 item3.creator_nm = item3.creator.username;
+            //                 item3.status_nm = item3.status.status;
+            //                 item3.status_tp = item3.status.type;
+            //                 item3.status_color = item3.status.color;
+            //                 item3.module = item3.tags.length > 0 ? item3.tags[0].name : "";
+            //                 if(item3.due_date && item3.due_date != null) {
+            //                     item3.due_date_str = moment(Number(item3.due_date)).format("MM-DD-YYYY");
+            //                 } else {
+            //                     item3.due_date_str = "";
+            //                 }
+            //                 item3.USP = splitUSP(item3);
+            //                 if (moment(Number(item3.due_date)) < moment(new Date())) {
+            //                     item3.class_over = "over-due-date";
+            //                 } else if (moment(Number(item3.due_date)) == moment(new Date())) {
+            //                     item3.class_over = "due-date";
+            //                 }
+                        
+            //             })
+            //             finalListTask = [...finalListTask, ...lsTaskByParent];
+            //         }
+            //     });
+            
+            
+            //     isEnableSearch = false;
+            //     // const memList = await getListMembers(listId);
+            //     // setAllOptions(memList);
+            //     return finalListTask;
+
+            // }
+            // return res.data;
+        });
+        const pm = await Promise.resolve(apiResponseTask);
+        promiseTask.push(pm);
     }
+    // console.log("promiseTask", promiseTask);
+    const result = await Promise.all(promiseTask).then(async (data) => {
+        // console.log("data", data);
+        if(data && data.length > 0) {
+            let arr = [];
+            for(let i = 0; i < data.length; i ++) {
+                if(data[i].length > 0) {
+                    arr = [...arr, ...data[i]];
+                }
+            }
+
+            //Process mapping name
+
+            // console.log("arr", arr);
+            const resultTaskList = await Promise.resolve(genTaskInformation(arr));
+            // console.log("resultTaskList", resultTaskList);
+            setTaskList(resultTaskList);
+            setOriginTaskList(resultTaskList);
+        }
+    });
+
    
-    const config = {
-      method: 'get',
-      url: _url,
-      headers:  REQ_HEADER.headers,
-      delayed: false  // use this custom option to allow overrides
-    };
-    axios(config)
-    .then(async (res) => {
-      const data = res.data;
-      if(data && data.tasks){
-        let uniqueIds = [];
+    
+  }
 
-        const lsMainParent = [...data.tasks.filter(item => item.parent == null)];
-        const parentNotExitsTmp = [...data.tasks.filter(item => item.parent != null && lsMainParent.find(item2 => item2.id == item.parent) == undefined)];
+  const genTaskInformation = async (taskList: any) => {
+    if(taskList) {
+        let uniqueIds = [];
+        let finalListTask = [];
+        let lsFinalParent = [];
+        const lsMainParent = [...taskList.filter(item => item.parent == null)];
+        const parentNotExitsTmp = [...taskList.filter(item => item.parent != null && lsMainParent.find(item2 => item2.id == item.parent) == undefined)];
         if(parentNotExitsTmp){
             const parentNotExits = [...parentNotExitsTmp.filter(element => {
                 const isDuplicate = uniqueIds.includes(element.parent);
@@ -2185,7 +2348,6 @@ let defaultEpic =
                     let isAdd = true;
                     if(status && status.length > 0){
                         isAdd = checkStatus(element.status.status, selectedStatus);
-
                     }
 
                     if(isAdd){
@@ -2237,9 +2399,9 @@ let defaultEpic =
             }
         }
 
-        let lsFinalParent = lsMainParent.concat(await Promise.all([...parentMissingArr]));
+        lsFinalParent = lsMainParent.concat(await Promise.all([...parentMissingArr]));
         // let lsFinalParent = lsMainParent.concat([...parentMissingArr]);
-        let finalListTask = [];
+        // console.log("lsFinalParent", lsFinalParent);
         lsFinalParent.map(function(item) {
             let _assignees = item.assignees.map(item4 => item4.username).join(',');
             item.assignees_ls = _assignees;
@@ -2257,7 +2419,7 @@ let defaultEpic =
 
             finalListTask.push(item);
 
-            let lsTaskByParent = [...data.tasks.filter(item2 => item2.parent == item.id)];
+            let lsTaskByParent = [...taskList.filter(item2 => item2.parent == item.id)];
             if(lsTaskByParent){
                 // console.log("lsTaskByParent", lsTaskByParent);
                 lsTaskByParent.map(function(item3) {
@@ -2280,21 +2442,20 @@ let defaultEpic =
                     } else if (moment(Number(item3.due_date)) == moment(new Date())) {
                         item3.class_over = "due-date";
                     }
-                  
+                
                 })
                 finalListTask = [...finalListTask, ...lsTaskByParent];
             }
         });
-       
-        setTaskList(finalListTask);
-        setOriginTaskList(finalListTask);
+    
+    
         isEnableSearch = false;
         // const memList = await getListMembers(listId);
         // setAllOptions(memList);
-      }
-      // return res.data;
-    });
-  }
+        return finalListTask;
+
+    }
+  } //End GenTask
 
   const splitUSP = (item: any) => {
     let usp = {
@@ -2459,6 +2620,14 @@ const searchTaskById = async (event: any) => {
 
   }
 
+  const setPageSearch = (val) => {
+    if(val > 0) {
+        setPage(val);
+    } else {
+        setPage(1);
+    }
+  }
+
   /**
    * 
    * @param listId 
@@ -2496,89 +2665,140 @@ const searchTaskById = async (event: any) => {
   return (
     <div className="grid grid-flow-col gap-2 px-4">
       <form className="grid grid-flow-row gap-2 col-span-2">
-        
-        <div className="grid grid-flow-row gap-1">
-          <div className="grid grid-flow-col gap-1">
-            <Select
-              defaultValue={defaultMem}
-              isMulti
-              closeMenuOnSelect={false}
-              hideSelectedOptions={false}
-              onChange={(options) => {
-                if (Array.isArray(options)) {
-                  setSelectedOptions(options);
-                }
-              }
-              } 
-              options={allOptions}
-              components={{
-                Option: InputOption
-              }}
-            />
-            <Select
-              defaultValue={defaultEpic}
-              closeMenuOnSelect={false}
-              hideSelectedOptions={false}
-              onChange={(options) => {
-                setSelectEpic(options);
-              }
-              } 
-              options={allEpic}
-              components={{
-                Option: InputOption
-              }}
-            />
-           <button 
-              type="button" 
-              className="bg-blue-500 text-white py-2 px-4 rounded-lg w-100"
-              onClick={ event => getTasks(selectEpic.value)}>
-              Search
-            </button>
-          </div>
-          <div className="grid grid-flow-col gap-1">
-            <Select
-              defaultValue={defaultStatus}
-              isMulti
-              closeMenuOnSelect={false}
-              hideSelectedOptions={false}
-              onChange={(options) => {
-                    if (Array.isArray(options)) {
-                        setSelectedStatus(options);
-                    }
-                }
-              } 
-              options={allStatus}
-              components={{
-                Option: InputOption
-              }}
-            />
-            <Select
-              defaultValue={defaultTags}
-              isMulti
-              closeMenuOnSelect={false}
-              hideSelectedOptions={false}
-              onChange={(options) => {
-                    if (Array.isArray(options)) {
-                        setSelectedTags(options);
-                    }
-                }
-              } 
-              options={allTags}
-              components={{
-                Option: InputOption
-              }}
-            />
+        <div className="flex flex-flow-col gap-1">
+            <div className="grid grid-flow-row gap-3 w-full">
+                <div className="flex flex-flow-col gap-1">
+                    <div className="w-300">
+                        <Select
+                            defaultValue={defaultEpic}
+                            closeMenuOnSelect={false}
+                            hideSelectedOptions={false}
+                            onChange={(options) => {
+                                setSelectEpic(options);
+                            }
+                            } 
+                            options={allEpic}
+                            components={{
+                                Option: InputOption
+                            }}
+                        />
+                    </div>
+                    <div className="w-300">
+                        <Select
+                        defaultValue={defaultTags}
+                        isMulti
+                        closeMenuOnSelect={false}
+                        hideSelectedOptions={false}
+                        onChange={(options) => {
+                                if (Array.isArray(options)) {
+                                    setSelectedTags(options);
+                                }
+                            }
+                        } 
+                        options={allTags}
+                        components={{
+                            Option: InputOption
+                        }}
+                        />
+                    </div>
+                    <div>
+                        <Select
+                            defaultValue={defaultStatus}
+                            isMulti
+                            closeMenuOnSelect={false}
+                            hideSelectedOptions={false}
+                            onChange={(options) => {
+                                    if (Array.isArray(options)) {
+                                        setSelectedStatus(options);
+                                    }
+                                }
+                            } 
+                            options={allStatus}
+                            components={{
+                                Option: InputOption
+                            }}
+                        />
+                    
+                    </div>
+                </div>
+                <div className="flex flex-flow-col gap-1">
+                    <Select
+                        defaultValue={defaultMem}
+                        isMulti
+                        closeMenuOnSelect={false}
+                        hideSelectedOptions={false}
+                        onChange={(options) => {
+                            if (Array.isArray(options)) {
+                            setSelectedOptions(options);
+                            }
+                        }
+                        } 
+                        options={allOptions}
+                        components={{
+                            Option: InputOption
+                        }}
+                    />
+                    <div className="w-100">
+                        <input
+                            type="text"
+                            defaultValue={page}
+                            className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-100"
+                            onChange={(event) => { setPageSearch(event.target.value)}}
+                        />
+                    </div>
+                    <button 
+                        type="button" 
+                        className="bg-blue-500 text-white py-2 px-4 rounded-lg w-100"
+                        onClick={ event => getTasks(selectEpic.value)}>
+                        Search
+                    </button>
+                </div>
+            </div>
+            <div className="grid grid-flow-row gap-1 w-300">
+                <textarea
+                    type="text"
+                    className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-300"
+                    onChange={(event) => {onChangeTaskList(event)}}
+                />
+                <button 
+                    type="button" 
+                    className="bg-blue-500 text-white py-2 px-4 rounded-lg w-300"
+                    onClick={ event => searchTaskById()}>
+                        Get Task By Ids
+                </button>
+            </div>
             
-          </div>
-          <div className="grid grid-flow-col gap-1">
-                <div>
+        </div>
+        
+        <div className="table-container-mgmt">
+            
+            <div className="flex flex-flow-col gap-1">
+                <div className="w-100 vertical-middle">
+                 Size: {taskList.length}
+                </div>
+                <div className="grid grid-flow-col w-500">
+                    <div className="over-due-date">
+                       OVER DUE-DATE 
+                    </div>
+                    <div className="due-date-lbl">
+                       TODAY 
+                    </div>
+                    <div className="dev-test">
+                       DEV & TEST 
+                    </div>
+                </div>
+            
+                <div className="w-100 vertical-middle text-right">
+                    Filter:
+                </div>
+                <div className="w-full">
                     <input
                         type="text"
                         className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-full"
                         onChange={(value) => {filterTaskLContent(value)}}
                     />
                 </div>
-                <div>
+                <div className="w-500">
                     <Select
                         closeMenuOnSelect={true}
                         hideSelectedOptions={false}
@@ -2601,26 +2821,12 @@ const searchTaskById = async (event: any) => {
                     }}
                     />
                 </div>
-                <div></div>
-                <textarea
-                    type="text"
-                    className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg"
-                    onChange={(event) => {onChangeTaskList(event)}}
-                />
-                <button 
-                    type="button" 
-                    className="bg-blue-500 text-white py-2 px-4 rounded-lg w-100"
-                    onClick={ event => searchTaskById()}>
-                        Get Tasks
-                    </button>
-                
             </div>
-        </div>
-        <div className="table-container-mgmt">
-            {taskList.length}
+            
           <table className="w-full border border-gray-500 custom-scroll">
             <thead>
               <tr className="bg-gray-200">
+                <th className="px-2 py-2 w-150">Backlogs</th>
                 <th className="px-2 py-2 w-30 text-center">#</th>
                 <th className="px-2 py-2 w-100 text-center">ID</th>
                 <th className="px-2 py-2 w-100 text-center">Module</th>
@@ -2641,13 +2847,15 @@ const searchTaskById = async (event: any) => {
             <tbody className="border-t">
               {taskList.map((item, idx) => (
                 <tr key={item.id} className={ (item.USP.test_nm && item.USP.test_nm.length > 0) ? "border-t dev-test ".concat(item.class_over): "border-t ".concat(item.class_over)}>
+                  <td className="px-2 py-2 w-150">{item.list.name}</td>
                   <td className="px-2 py-2 w-30 text-center">{idx + 1}</td>
                   <td className="px-2 py-2 w-100 text-center">
                     <a onClick={event => openTask(item.url)}>
                         {item.id}
                     </a>
-                    </td>
-                 <td className="px-2 py-2 w-100 text-center">{item.module}</td>
+                  </td>
+                  
+                  <td className="px-2 py-2 w-100 text-center">{item.module}</td>
                   <td className="px-2 py-2" style={{
                     color: item.status_color,
                     fontWeight: "bold",

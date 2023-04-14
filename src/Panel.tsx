@@ -8,6 +8,7 @@ import ClickupMgmt from './components/ClickupMgmt';
 export default function Panel({ onWidthChange, initialEnabled }: { onWidthChange: (value: number) => void, initialEnabled: boolean }): ReactElement {
   const [enabledMgmt, setEnabledMgmt] = useState(initialEnabled);
   const [enabledClickup, setEnabledClickup] = useState(false);
+  const [classPnl, setClassPnl] = useState("absolute bottom-2 z-max bg-[#F5F8FA] ease-in-out duration-300 overflow-hidden grid grid-flow-row gap-1 main-body-mgmt");
 
   
   const [sidePanelWidthMgmt, setSidePanelWidthMgmt] = useState(enabledMgmt ? APP_EXTEND_MGMT_WIDTH: APP_COLLAPSE_MGMT_WIDTH);
@@ -24,9 +25,33 @@ export default function Panel({ onWidthChange, initialEnabled }: { onWidthChange
   }
 
   function openPanel(force?: boolean) {
-    const newValue = force || !enabledMgmt;
-    setEnabledMgmt(newValue);
-    handleOnToggle(newValue);
+    const domain = window.location.hostname;
+    if(domain) {
+      if ("BLUEPRINT.CYBERLOGITEC.COM.VN" == domain.toUpperCase()) {
+        const newValue = force || !enabledMgmt;
+        setEnabledMgmt(newValue);
+        handleOnToggle(newValue);
+        
+      } else if ("APP.CLICKUP.COM" == domain.toUpperCase()) {
+        setEnabledMgmt(false);
+   
+        const newValue = force || !enabledClickup;
+        console.log("openClickUp");
+        handleOnToggle(newValue);
+        setEnabledClickup(newValue); 
+      }
+    }
+
+    if(!enabledMgmt || !enabledClickup) {
+      setClassPnl("absolute bottom-2 z-max bg-[#F5F8FA] ease-in-out duration-300 overflow-hidden grid grid-flow-row gap-1 main-body-mgmt");
+    } else {
+      setClassPnl("absolute bottom-2 z-max bg-transparent ease-in-out duration-300 overflow-hidden grid grid-flow-row gap-1 main-body-mgmt");
+      
+    }
+
+
+    
+    
   }
   
   function openClickUp(force?: boolean) {
@@ -56,8 +81,7 @@ export default function Panel({ onWidthChange, initialEnabled }: { onWidthChange
         width: sidePanelWidthMgmt - 5,
         height: sidePanelHeightMgmt,
       }}
-      className={(!enabledMgmt || !enabledClickup) ? "absolute bottom-0 z-max bg-[#F5F8FA] ease-in-out duration-300 overflow-hidden grid grid-flow-row gap-1 main-body-mgmt border-hidden" 
-        : "absolute bottom-0 z-max bg-[#F5F8FA] ease-in-out duration-300 overflow-hidden grid grid-flow-row gap-1 main-body-mgmt"}
+      className={classPnl}
     >
       <div className='main-layout-mgmt'>
        
@@ -79,11 +103,7 @@ export default function Panel({ onWidthChange, initialEnabled }: { onWidthChange
         </div> */}
       </div>
       
-      <div className="absolute bottom-0 left-0 w-[50px] z-10 flex justify-center items-center custom-button-expand grid grid-flow-row gap-3">
-        <Button active={enabledClickup} onClick={() => openClickUp()}>
-          ClickUp
-        </Button>
-
+      <div className="absolute bottom-2 left-0 w-[50px] z-10 flex justify-center items-center custom-button-expand grid grid-flow-row gap-3">
         <Button active={enabledMgmt} onClick={() => openPanel()}>
           <span>
             <svg

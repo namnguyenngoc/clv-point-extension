@@ -117,6 +117,11 @@ table.custom-scroll tbody tr td {
   /* background: #2a2e34;
   color: #FFFFFF; */
 }
+#side-bar-extension-root div,
+#side-bar-extension-root label,
+#side-bar-extension-root span {
+  color: #2a2e34 !important;
+}
 .main-body-mgmt input,
 .main-body-mgmt textarea {
   color: #2a2e34 !important;
@@ -129,13 +134,13 @@ table.custom-scroll tbody tr td {
 }
 
 .custom-button-expand {
-  background: white;
+  background: #FFFFFF;
+  border-width: 1px;
+  border-style: dotted;
   border-radius: 50%;
-  bottom: 60px;
-  left: 20px;
-  height: 90px;
-  width: 90px;
-  border-radius: 4px;
+  height: 50px;
+  width: 50px;
+
 }
 
 .border-hidden {
@@ -152,6 +157,13 @@ table.custom-scroll tbody tr td {
 .w-150 {
   width: 150px;
 }
+.w-300 {
+  width: 300px;
+}
+.w-500 {
+  width: 500px;
+}
+
 button:disabled {
   opacity: 0.8;
   background-color: gray !important;
@@ -283,4 +295,41 @@ div[id="react-select*"] label {
 
 .due-date {
   background-color: #F0FFF0;
+}
+
+div.over-due-date {
+  line-height: 38px;
+  background-color: #FFE4E1;
+  vertical-align: middle;
+  text-align: center;
+  font-weight: bold;
+}
+
+div.dev-test {
+  background-color: beige;
+  line-height: 38px;
+  vertical-align: middle;
+  text-align: center;
+  font-weight: bold;
+}
+
+div.due-date-lbl {
+  line-height: 38px;
+  background-color: #F0FFF0;
+  vertical-align: middle;
+  text-align: center;
+  font-weight: bold;
+}
+
+div.vertical-middle {
+  line-height: 38px;
+  vertical-align: middle;
+}
+
+div[class*="control"] {
+  min-width: 250px !important;
+}
+
+.bg-transparent {
+  background-color: transparent;
 }

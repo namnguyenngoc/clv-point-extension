@@ -28,8 +28,8 @@ export const URLS = [
 
 export const APP_EXTEND_MGMT_WIDTH = 1900;
 export const APP_EXTEND_MGMT_HEIGHT = 900;
-export const APP_COLLAPSE_MGMT_WIDTH = 55;
-export const APP_COLLAPSE_MGMT_HEIGHT = 55;
+export const APP_COLLAPSE_MGMT_WIDTH = 65;
+export const APP_COLLAPSE_MGMT_HEIGHT = 60;
 
 export const REQ_HEADER = {
   headers: {
