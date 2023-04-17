@@ -19,7 +19,7 @@
             "currentLevel": "Fsh",
             "pointOnHour": {
                 "standard": 25,
-                "expect": 17, //Jnr
+                "expect": 19, //Jnr1
                 "description": ""
             },
             "role": ["test"],
@@ -131,7 +131,7 @@
             "currentLevel": "Fsh",
             "pointOnHour": {
                 "standard": 25,
-                "expect": 17,
+                "expect": 19, //Junior 1
                 "description": ""
             },
             "role": ["tester"],
