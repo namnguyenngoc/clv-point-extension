@@ -326,7 +326,7 @@ div.vertical-middle {
   vertical-align: middle;
 }
 
-div[class*="control"] {
+.main-body-mgmt div[class*="control"] {
   min-width: 250px !important;
 }
 
