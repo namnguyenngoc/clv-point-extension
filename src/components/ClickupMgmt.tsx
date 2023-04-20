@@ -1734,6 +1734,7 @@ const override: CSSProperties = {
     };
 export default function ClickupMgmt(props) {
   const API_CLICKUP = 'https://api.clickup.com/api/v2';
+  const API_WORKNG = 'http://anvatchibeo.ddns.net:9789/api';
 
   let [taskList, setTaskList] = React.useState([]);
   let [originTaskList, setOriginTaskList] = useState([]);
@@ -2428,6 +2429,37 @@ let defaultEpic =
     
   }
 
+  const filterTaskContent = (type) =>{
+    setTaskList([]);
+    let originList = [...originTaskList];
+    let filterList = [];
+    console.log("ty", type);
+    if(type) {
+        
+        filterList = originList.filter(function (item) { 
+            let flag = "";
+            if (moment(Number(item.due_date)) < moment(new Date())) {
+                flag = "over-due-date";
+            } else if (moment(Number(item.due_date)) == moment(new Date())) {
+                flag = "today";
+            } else {
+                let usp = splitUSP(item);
+                if(usp.test_nm && usp.length > 0) {
+                    flag = "dev-test";
+                }
+            }
+            if(flag == type) {
+                return item;
+            }
+            
+        });
+        setTaskList(filterList);
+    } else {
+        setTaskList(originList);
+    }
+
+  };
+
   const filterTaskLContent = async (name: any) => {
     setTaskList([]);
     let originList = [...originTaskList];
@@ -2468,7 +2500,7 @@ let defaultEpic =
   }
 //   useEffect(() => { searchTaskById()})}
 
-const searchTaskById = async (event: any) => {  
+    const searchTaskById = async (event: any) => {  
     // useEffect(() => { 
         setLoading(true);
         setTaskList([]);
@@ -2523,6 +2555,7 @@ const searchTaskById = async (event: any) => {
                         })
 
                         setTaskList(finalListTask);
+                        setOriginTaskList(finalListTask);
                         setLoading(false);
                     }
                 });
@@ -2533,6 +2566,145 @@ const searchTaskById = async (event: any) => {
             
         };
     // })
+
+  }
+  const bpSearchRequirement = async (prjId: string, reqTitNm: string) => {
+    // API_WORKNG
+    const data = {
+        "reqBody": {
+            "pjtId": prjId,
+            "reqNm": reqTitNm,
+            "advFlg": "N",
+            "reqStsCd": [
+                "REQ_STS_CDPRC",
+                "REQ_STS_CDOPN"
+            ],
+            "jbTpCd": "_ALL_",
+            "itrtnId": "_ALL_",
+            "beginIdx": 0,
+            "endIdx": 200,
+            "picId": "_ALL_"
+        }
+      };
+    // let lsPharseMember = requirementDetail.lstSkdUsr
+    const config = {
+        method: 'post',
+        url: `${API_WORKNG}/searchRequirement`,
+        // headers:  REQ_HEADER.headers,
+        delayed: false,  // use this custom option to allow overrides
+        data: data
+    };
+    // const apiResponseTask =  axios(config).then(async (res) => {
+    //     // const data = res.data;
+    //     console.log("data", res.data.lsReq);
+    //     return res.data.lsReq;
+    // });
+
+    const response = await axios
+        .request({
+            url:  `${API_WORKNG}/searchRequirement`,
+            method: "POST",
+            data: data,
+            //     proxy: {
+            //     host: "103.155.217.105",
+            //     port: 41416,
+            // },
+        })
+        .then((response) => {
+            return  response.data.lsReq;
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+        
+    const pm = Promise.resolve(response);
+    return pm;
+
+  }
+
+  const syncBlueprint = async () => {
+    // API_WORKNG
+    const prjId = "PJT20211119000000001";
+    let promiseArr = [];
+   
+    // setLoading(true);
+    if(originTaskList) {
+        // bpSearchRequirement
+        console.log("originTaskList", originTaskList);
+        for(let i = 0; originTaskList.length; i++) {
+            const item = originTaskList[i];
+            if(item && item.name) {
+                const promise = await bpSearchRequirement(prjId, item.name);
+                // const pm = Promise.resolve(promise);
+                // promiseArr.push(promise);
+                originTaskList.blueprint = promise[0];
+                console.log("originTaskList", JSON.stringify(promise[0]));
+            }
+           
+        }
+        setTaskList(originTaskList);
+        setLoading(false);
+        console.log("originTaskList", originTaskList);
+        // const result = await Promise.all(promiseArr).then(async (data) => {
+        //     console.log("data", JSON.stringify(data));
+        // //     let finalListTask = [];
+        // //     if(data && data.length > 0) {
+        // //         // data.map(function (task) {
+        // //         //     // const assignees = task.assignees.map(item => task.username).join(',');
+        // //         //     // task.assignees_ls = assignees;
+        // //         //     // task.creator_nm = task.creator.username;
+        // //         //     // task.status_nm = task.status.status;
+        // //         //     // task.status_tp = task.status.type;
+        // //         //     // task.status_color = task.status.color;
+        // //         //     // task.module = task.tags.length > 0 ? task.tags[0].name : "";
+        // //         //     // if(task.due_date && task.due_date != null) {
+        // //         //     //     task.due_date_str = moment(Number(task.due_date)).format("MM-DD-YYYY");
+        // //         //     // } else {
+        // //         //     //     task.due_date_str = "";
+        // //         //     // }
+        // //         //     // if(parent && parent != null) {
+        // //         //     //     task.parent_nm = parent.name;
+        // //         //     // }
+        // //         //     // task.USP = splitUSP(task);
+        // //         //     // finalListTask.push(task);
+        // //         // })
+
+        // //         setTaskList(finalListTask);
+        //         setLoading(false);
+        // //     }
+        // }) .catch((error) => {
+        //     console.log(error);
+        //     setLoading(false);
+        // });
+
+
+    //     const pm = await Promise.resolve(apiResponseTask);
+    //     promiseTask.push(pm);
+    // }
+    // // console.log("promiseTask", promiseTask);
+    // const result = await Promise.all(promiseTask).then(async (data) => {
+    //     // console.log("data", data);
+    //     if(data && data.length > 0) {
+    //         let arr = [];
+    //         for(let i = 0; i < data.length; i ++) {
+    //             if(data[i].length > 0) {
+    //                 arr = [...arr, ...data[i]];
+    //             }
+    //         }
+
+    //         //Process mapping name
+
+    //         // console.log("arr", arr);
+    //         const resultTaskList = await Promise.resolve(genTaskInformation(arr));
+    //         // console.log("resultTaskList", resultTaskList);
+    //         setTaskList(resultTaskList);
+    //         setOriginTaskList(resultTaskList);
+    //         setLoading(false);
+    //     }
+    // });
+    } else {
+        setLoading(false);
+    }
 
   }
 
@@ -2679,7 +2851,13 @@ const searchTaskById = async (event: any) => {
                     />
                     <button 
                         type="button" 
-                        className="bg-blue-500 text-white py-2 px-4 rounded-lg w-300"
+                        className="bg-blue-500 text-white py-2 px-4 rounded-lg w-150"
+                        onClick={ event => syncBlueprint()}>
+                            SYNC BLUEPRINT
+                    </button>
+                    <button 
+                        type="button" 
+                        className="bg-blue-500 text-white py-2 px-4 rounded-lg w-150"
                         onClick={ event => searchTaskById()}>
                             Get Task By Ids ({countId})
                     </button>
@@ -2694,14 +2872,22 @@ const searchTaskById = async (event: any) => {
                     Size: {taskList.length}
                     </div>
                     <div className="grid grid-flow-col w-500">
-                        <div className="over-due-date">
+                        <div className="over-due-date"
+                          onClick={ event => filterTaskContent("over-due-date")}
+                        >
                         OVER DUE-DATE 
                         </div>
-                        <div className="due-date-lbl">
+                        <div className="due-date-lbl"
+                        onClick={ event => filterTaskContent("today")}>
                         TODAY 
                         </div>
-                        <div className="dev-test">
+                        <div className="dev-test"
+                        onClick={ event => filterTaskContent("dev-test")}>
                         DEV & TEST 
+                        </div>
+                        <div
+                        onClick={ event => filterTaskContent()}>
+                            ALL
                         </div>
                     </div>
                 
@@ -2757,6 +2943,7 @@ const searchTaskById = async (event: any) => {
                     <th className="px-2 py-2 w-100 text-center">Status</th>
                     <th className="px-2 py-2 text-center w-100">Due Date</th>
                     <th className="px-2 py-2 text-center w-100">Created By</th>
+                    <th className="px-2 py-2 text-center w-100">Blueprint#ID</th>
                 
                     
                 </tr>
@@ -2795,7 +2982,11 @@ const searchTaskById = async (event: any) => {
                     }}>{item.status_nm}</td>
                     <td className="px-2 py-2 text-center w-100">{item.due_date_str}</td>
                     <td className="px-2 py-2 text-center w-100">{item.creator_nm}</td> 
-                    
+                    <td className="px-2 py-2 text-center w-100">
+                        <a onClick={event => openTask(item.url)}>
+                            {item.blueprintSeq}
+                        </a>
+                    </td> 
                     
                     </tr>
                 ))}
