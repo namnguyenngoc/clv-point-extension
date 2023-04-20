@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, CSSProperties } from "react";
 import axios from "axios";
 import 'moment-timezone';
 import moment from 'moment'
 
 import { REQ_HEADER } from '../const';
 import Select, { components } from "react-select";
+import ScaleLoader from "react-spinners/ScaleLoader";
 
 const InputOption = ({
   getStyles,
@@ -1717,6 +1718,21 @@ const allEpic = [
             "permission_level": "create"
         }
     ]
+
+const override: CSSProperties = {
+        display: "block",
+        margin: "0 auto",
+        borderColor: "#36d7b7",
+        position: "absolute",
+        top: "0",
+        left: "0",
+        width: "100%",
+        height: "100%",
+        opacity: "0.4",
+        background: "darkgray",
+        textAlign: "center",
+        paddingTop: "21%",
+    };
 export default function ClickupMgmt(props) {
   const API_CLICKUP = 'https://api.clickup.com/api/v2';
 
@@ -2062,10 +2078,12 @@ let defaultEpic =
   const [taskName, setTaskName] = useState("");
   const [idList, setIdList] = useState("");
   const [page, setPage] = useState(1);
-
+  const [countId, setCountId] = useState(0);
   
   let isEnableSearch = false;
-  
+  let [loading, setLoading] = useState(false);
+  let [color, setColor] = useState("#0E71CC");
+
 //   setSelectedOptions(defaultMem);
 //   setSelectedStatus(defaultStatus);
 //   setSelectedTags(defaultTags);
@@ -2134,6 +2152,7 @@ let defaultEpic =
    */
   const getTasks = async (listId) => {
     isEnableSearch = true;
+    setLoading(true);
     setTaskList([]);
     setOriginTaskList([]);
     // if(selectedOptions || selectedOptions.length == 0) {
@@ -2180,129 +2199,6 @@ let defaultEpic =
                 return data.tasks;
             }
             return [];
-            // if(data && data.tasks){
-            //     let uniqueIds = [];
-            //     let finalListTask = [];
-            //     const lsMainParent = [...data.tasks.filter(item => item.parent == null)];
-            //     const parentNotExitsTmp = [...data.tasks.filter(item => item.parent != null && lsMainParent.find(item2 => item2.id == item.parent) == undefined)];
-            //     if(parentNotExitsTmp){
-            //         const parentNotExits = [...parentNotExitsTmp.filter(element => {
-            //             const isDuplicate = uniqueIds.includes(element.parent);
-                    
-            //             if (!isDuplicate) {
-            //                 //check status
-            //                 let isAdd = true;
-            //                 if(status && status.length > 0){
-            //                     isAdd = checkStatus(element.status.status, selectedStatus);
-
-            //                 }
-
-            //                 if(isAdd){
-            //                     uniqueIds.push(element.parent);
-
-            //                 }
-            //                 return true;
-            //             }
-                    
-            //             return false;
-            //         })];
-            //     }
-
-            //     //get parent infor
-            //     let parentMissingArr = [];
-            //     if(uniqueIds && uniqueIds.length > 0){
-            //         for(let i = 0; i < uniqueIds.length; i ++) {
-                        
-            //             let task = await getTask({
-            //                 parent: uniqueIds[i]
-            //             });  
-
-            //             if(task.parent) {
-            //                 task = await getTask({
-            //                     parent: task.parent
-            //                 });  
-            //             }
-
-            //             let assignees = task.assignees.map(item => item.username).join(',');
-            //             task.assignees_ls = assignees;
-            //             task.creator_nm = task.creator.username;
-            //             task.status_nm = task.status.status;
-            //             task.status_tp = task.status.type;
-            //             task.status_color = task.status.color;
-            //             task.module = task.tags.length > 0 ? task.tags[0].name : "";
-            //             if(task.due_date && task.due_date != null) {
-            //                 task.due_date_str = moment(Number(task.due_date)).format("ddd, MMM DD");
-            //             } else {
-            //                 task.due_date_str = "";
-            //             }
-            //             task.parent_nm = task.name;
-            //             // taskListByParent.push(item); // push parent;
-            //             const isExit = parentMissingArr.find(item => item.id == task.id);
-            //             if(task && isExit == undefined) {
-            //                 parentMissingArr.push(task);
-            //             }
-                        
-                    
-            //         }
-            //     }
-
-            //     lsFinalParent = lsMainParent.concat(await Promise.all([...parentMissingArr]));
-            //     // let lsFinalParent = lsMainParent.concat([...parentMissingArr]);
-            //     console.log("lsFinalParent", lsFinalParent);
-            //     lsFinalParent.map(function(item) {
-            //         let _assignees = item.assignees.map(item4 => item4.username).join(',');
-            //         item.assignees_ls = _assignees;
-            //         item.creator_nm = item.creator.username;
-            //         item.status_nm = item.status.status;
-            //         item.status_tp = item.status.type;
-            //         item.status_color = item.status.color;
-            //         item.module = item.tags.length > 0 ? item.tags[0].name : "";
-            //         if(item.due_date && item.due_date != null) {
-            //             item.due_date_str = moment(Number(item.due_date)).format("MM-DD-YYYY");
-            //         } else {
-            //             item.due_date_str = "";
-            //         }
-            //         item.USP = splitUSP(item);
-
-            //         finalListTask.push(item);
-
-            //         let lsTaskByParent = [...data.tasks.filter(item2 => item2.parent == item.id)];
-            //         if(lsTaskByParent){
-            //             // console.log("lsTaskByParent", lsTaskByParent);
-            //             lsTaskByParent.map(function(item3) {
-            //                 let assignees = item3.assignees.map(item => item.username).join(',');
-            //                 item3.assignees_ls = assignees;
-            //                 // item3.username = assignees;
-            //                 item3.creator_nm = item3.creator.username;
-            //                 item3.status_nm = item3.status.status;
-            //                 item3.status_tp = item3.status.type;
-            //                 item3.status_color = item3.status.color;
-            //                 item3.module = item3.tags.length > 0 ? item3.tags[0].name : "";
-            //                 if(item3.due_date && item3.due_date != null) {
-            //                     item3.due_date_str = moment(Number(item3.due_date)).format("MM-DD-YYYY");
-            //                 } else {
-            //                     item3.due_date_str = "";
-            //                 }
-            //                 item3.USP = splitUSP(item3);
-            //                 if (moment(Number(item3.due_date)) < moment(new Date())) {
-            //                     item3.class_over = "over-due-date";
-            //                 } else if (moment(Number(item3.due_date)) == moment(new Date())) {
-            //                     item3.class_over = "due-date";
-            //                 }
-                        
-            //             })
-            //             finalListTask = [...finalListTask, ...lsTaskByParent];
-            //         }
-            //     });
-            
-            
-            //     isEnableSearch = false;
-            //     // const memList = await getListMembers(listId);
-            //     // setAllOptions(memList);
-            //     return finalListTask;
-
-            // }
-            // return res.data;
         });
         const pm = await Promise.resolve(apiResponseTask);
         promiseTask.push(pm);
@@ -2325,6 +2221,7 @@ let defaultEpic =
             // console.log("resultTaskList", resultTaskList);
             setTaskList(resultTaskList);
             setOriginTaskList(resultTaskList);
+            setLoading(false);
         }
     });
 
@@ -2564,7 +2461,9 @@ let defaultEpic =
   const onChangeTaskList = (event: any) => {
     event.preventDefault(); // Otherwise the form will be submitted
 
-    let ids = event.target.value;
+    let ids = event.target.value.trim();
+    let taskIdArr = ids.split("\n");
+    setCountId(taskIdArr ? taskIdArr.length : 0);
     setIdList(ids);
    
   }
@@ -2572,49 +2471,67 @@ let defaultEpic =
 
 const searchTaskById = async (event: any) => {  
     // useEffect(() => { 
+        setLoading(true);
         setTaskList([]);
         if(idList && idList.length > 0) {
             let taskIdArr = idList.split("\n");
-            let finalListTask = [];
+           
             if(taskIdArr && taskIdArr.length > 0) {
-                
+                let promiseTaskID = [];
+
                 for( let i = 0; i < taskIdArr.length; i ++) {
-                    let task = await getTask({
+                    let task = getTask({
                         parent: taskIdArr[i].trim()
                     });
                     if(task) {
                         //Check parent
                         let parent = null;
                         if(task.parent) {
-                            parent = await getTask({
+                            parent = getTask({
                                 parent: task.parent
                             });  
                         }
-
-                        const assignees = task.assignees.map(item => task.username).join(',');
-                        task.assignees_ls = assignees;
-                        task.creator_nm = task.creator.username;
-                        task.status_nm = task.status.status;
-                        task.status_tp = task.status.type;
-                        task.status_color = task.status.color;
-                        task.module = task.tags.length > 0 ? task.tags[0].name : "";
-                        if(task.due_date && task.due_date != null) {
-                            task.due_date_str = moment(Number(task.due_date)).format("MM-DD-YYYY");
-                        } else {
-                            task.due_date_str = "";
-                        }
-                        if(parent && parent != null) {
-                            task.parent_nm = parent.name;
-                        }
-                        task.USP = splitUSP(task);
-                        finalListTask.push(task);
+                        const pm = await Promise.resolve(task);
+                        promiseTaskID.push(pm);
                     }
                 
                 }
+
+
+                //Process data
+                const result = await Promise.all(promiseTaskID).then(async (data) => {
+                    // console.log("data", data);
+                    let finalListTask = [];
+                    if(data && data.length > 0) {
+                        data.map(function (task) {
+                            const assignees = task.assignees.map(item => task.username).join(',');
+                            task.assignees_ls = assignees;
+                            task.creator_nm = task.creator.username;
+                            task.status_nm = task.status.status;
+                            task.status_tp = task.status.type;
+                            task.status_color = task.status.color;
+                            task.module = task.tags.length > 0 ? task.tags[0].name : "";
+                            if(task.due_date && task.due_date != null) {
+                                task.due_date_str = moment(Number(task.due_date)).format("MM-DD-YYYY");
+                            } else {
+                                task.due_date_str = "";
+                            }
+                            if(parent && parent != null) {
+                                task.parent_nm = parent.name;
+                            }
+                            task.USP = splitUSP(task);
+                            finalListTask.push(task);
+                        })
+
+                        setTaskList(finalListTask);
+                        setLoading(false);
+                    }
+                });
+
+              
             
             }
-
-            setTaskList(finalListTask);
+            
         };
     // })
 
@@ -2663,231 +2580,239 @@ const searchTaskById = async (event: any) => {
   }
   // const allOptions = getListMembers(900800090277);
   return (
-    <div className="grid grid-flow-col gap-2 px-4">
-      <form className="grid grid-flow-row gap-2 col-span-2">
-        <div className="flex flex-flow-col gap-1">
-            <div className="grid grid-flow-row gap-3 w-full">
-                <div className="flex flex-flow-col gap-1">
-                    <div className="w-300">
-                        <Select
-                            defaultValue={defaultEpic}
-                            closeMenuOnSelect={false}
-                            hideSelectedOptions={false}
-                            onChange={(options) => {
-                                setSelectEpic(options);
-                            }
-                            } 
-                            options={allEpic}
-                            components={{
-                                Option: InputOption
-                            }}
-                        />
-                    </div>
-                    <div className="w-300">
-                        <Select
-                        defaultValue={defaultTags}
-                        isMulti
-                        closeMenuOnSelect={false}
-                        hideSelectedOptions={false}
-                        onChange={(options) => {
-                                if (Array.isArray(options)) {
-                                    setSelectedTags(options);
+    <div className="grid grid-flow-col gap-2 px-4 sweet-loading">
+      <form>
+        <div className="grid grid-flow-row gap-2 col-span-2">
+            <div className="flex flex-flow-col gap-1">
+                <div className="grid grid-flow-row gap-3 w-full">
+                    <div className="flex flex-flow-col gap-1">
+                        <div className="w-300">
+                            <Select
+                                defaultValue={defaultEpic}
+                                closeMenuOnSelect={false}
+                                hideSelectedOptions={false}
+                                onChange={(options) => {
+                                    setSelectEpic(options);
                                 }
-                            }
-                        } 
-                        options={allTags}
-                        components={{
-                            Option: InputOption
-                        }}
-                        />
-                    </div>
-                    <div>
-                        <Select
-                            defaultValue={defaultStatus}
+                                } 
+                                options={allEpic}
+                                components={{
+                                    Option: InputOption
+                                }}
+                            />
+                        </div>
+                        <div className="w-300">
+                            <Select
+                            defaultValue={defaultTags}
                             isMulti
                             closeMenuOnSelect={false}
                             hideSelectedOptions={false}
                             onChange={(options) => {
                                     if (Array.isArray(options)) {
-                                        setSelectedStatus(options);
+                                        setSelectedTags(options);
                                     }
                                 }
                             } 
-                            options={allStatus}
+                            options={allTags}
+                            components={{
+                                Option: InputOption
+                            }}
+                            />
+                        </div>
+                        <div>
+                            <Select
+                                defaultValue={defaultStatus}
+                                isMulti
+                                closeMenuOnSelect={false}
+                                hideSelectedOptions={false}
+                                onChange={(options) => {
+                                        if (Array.isArray(options)) {
+                                            setSelectedStatus(options);
+                                        }
+                                    }
+                                } 
+                                options={allStatus}
+                                components={{
+                                    Option: InputOption
+                                }}
+                            />
+                        
+                        </div>
+                    </div>
+                    <div className="flex flex-flow-col gap-1">
+                        <Select
+                            defaultValue={defaultMem}
+                            isMulti
+                            closeMenuOnSelect={false}
+                            hideSelectedOptions={false}
+                            onChange={(options) => {
+                                if (Array.isArray(options)) {
+                                setSelectedOptions(options);
+                                }
+                            }
+                            } 
+                            options={allOptions}
                             components={{
                                 Option: InputOption
                             }}
                         />
-                    
+                        <div className="w-100">
+                            <input
+                                type="text"
+                                defaultValue={page}
+                                className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-100"
+                                onChange={(event) => { setPageSearch(event.target.value)}}
+                            />
+                        </div>
+                        <button 
+                            type="button" 
+                            className="bg-blue-500 text-white py-2 px-4 rounded-lg w-100"
+                            onClick={ event => getTasks(selectEpic.value)}>
+                            Search
+                        </button>
                     </div>
                 </div>
-                <div className="flex flex-flow-col gap-1">
-                    <Select
-                        defaultValue={defaultMem}
-                        isMulti
-                        closeMenuOnSelect={false}
-                        hideSelectedOptions={false}
-                        onChange={(options) => {
-                            if (Array.isArray(options)) {
-                            setSelectedOptions(options);
-                            }
-                        }
-                        } 
-                        options={allOptions}
-                        components={{
-                            Option: InputOption
-                        }}
+                <div className="grid grid-flow-row gap-1 w-300">
+                    <textarea
+                        type="text"
+                        className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-300"
+                        onChange={(event) => {onChangeTaskList(event)}}
                     />
-                    <div className="w-100">
-                        <input
-                            type="text"
-                            defaultValue={page}
-                            className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-100"
-                            onChange={(event) => { setPageSearch(event.target.value)}}
-                        />
-                    </div>
                     <button 
                         type="button" 
-                        className="bg-blue-500 text-white py-2 px-4 rounded-lg w-100"
-                        onClick={ event => getTasks(selectEpic.value)}>
-                        Search
+                        className="bg-blue-500 text-white py-2 px-4 rounded-lg w-300"
+                        onClick={ event => searchTaskById()}>
+                            Get Task By Ids ({countId})
                     </button>
                 </div>
-            </div>
-            <div className="grid grid-flow-row gap-1 w-300">
-                <textarea
-                    type="text"
-                    className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-300"
-                    onChange={(event) => {onChangeTaskList(event)}}
-                />
-                <button 
-                    type="button" 
-                    className="bg-blue-500 text-white py-2 px-4 rounded-lg w-300"
-                    onClick={ event => searchTaskById()}>
-                        Get Task By Ids
-                </button>
-            </div>
-            
-        </div>
-        
-        <div className="table-container-mgmt">
-            
-            <div className="flex flex-flow-col gap-1">
-                <div className="w-100 vertical-middle">
-                 Size: {taskList.length}
-                </div>
-                <div className="grid grid-flow-col w-500">
-                    <div className="over-due-date">
-                       OVER DUE-DATE 
-                    </div>
-                    <div className="due-date-lbl">
-                       TODAY 
-                    </div>
-                    <div className="dev-test">
-                       DEV & TEST 
-                    </div>
-                </div>
-            
-                <div className="w-100 vertical-middle text-right">
-                    Filter:
-                </div>
-                <div className="w-full">
-                    <input
-                        type="text"
-                        className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-full"
-                        onChange={(value) => {filterTaskLContent(value)}}
-                    />
-                </div>
-                <div className="w-500">
-                    <Select
-                        closeMenuOnSelect={true}
-                        hideSelectedOptions={false}
-                        isMulti
-                        options={defaultMem}
-                        onChange={(options) => {
-                                if (Array.isArray(options)) {
-                                    let tmp = options[0];
-                                    if(options.length > 1){
-                                        tmp = options[options.length - 1];
-                                        
-                                    }
-                                    filterTaskList(tmp);
-
-                                }
-                            }
-                        }  
-                        components={{
-                        Option: InputOption
-                    }}
-                    />
-                </div>
-            </div>
-            
-          <table className="w-full border border-gray-500 custom-scroll">
-            <thead>
-              <tr className="bg-gray-200">
-                <th className="px-2 py-2 w-150">Backlogs</th>
-                <th className="px-2 py-2 w-30 text-center">#</th>
-                <th className="px-2 py-2 w-100 text-center">ID</th>
-                <th className="px-2 py-2 w-100 text-center">Module</th>
-                <th className="px-2 py-2">Parent</th>
-                <th className="px-2 py-2">Name</th>
-                <th className="px-2 py-2 w-150">Assignee</th>
-                <th className="px-2 py-2 w-100 text-center">PIC DEV</th>
-                <th className="px-2 py-2 w-30 text-right">USP</th>
-                <th className="px-2 py-2 w-100 text-center">PIC TEST</th>
-                <th className="px-2 py-2 w-30 text-right">USP</th>
-                <th className="px-2 py-2 w-100 text-center">Status</th>
-                <th className="px-2 py-2 text-center w-100">Due Date</th>
-                <th className="px-2 py-2 text-center w-100">Created By</th>
-              
                 
-              </tr>
-            </thead>
-            <tbody className="border-t">
-              {taskList.map((item, idx) => (
-                <tr key={item.id} className={ (item.USP.test_nm && item.USP.test_nm.length > 0) ? "border-t dev-test ".concat(item.class_over): "border-t ".concat(item.class_over)}>
-                  <td className="px-2 py-2 w-150">{item.list.name}</td>
-                  <td className="px-2 py-2 w-30 text-center">{idx + 1}</td>
-                  <td className="px-2 py-2 w-100 text-center">
-                    <a onClick={event => openTask(item.url)}>
-                        {item.id}
-                    </a>
-                  </td>
-                  
-                  <td className="px-2 py-2 w-100 text-center">{item.module}</td>
-                  <td className="px-2 py-2" style={{
-                    color: item.status_color,
-                    fontWeight: "bold",
-                  }}>
-                    {item.parent == null ? item.name : item.parent_nm}
-                  </td>
-                  <td className="px-2 py-2 text-blue">
-                    {item.parent ? item.name : ""}
-                  </td>
-                  <td className="px-2 py-2 w-150">{item.assignees_ls}</td>
-                  <td className="px-2 py-2 w-100 text-center">{item.USP.dev_nm}</td>
-                  <td className="px-2 py-2 w-30 text-right">{item.USP.dev_point}</td>
-                  <td className="px-2 py-2 w-100 text-center">{item.USP.test_nm}</td>
-                  <td className="px-2 py-2 w-30 text-right">{item.USP.test_point}</td>
+            </div>
+            
+            <div className="table-container-mgmt">
+                
+                <div className="flex flex-flow-col gap-1">
+                    <div className="w-100 vertical-middle">
+                    Size: {taskList.length}
+                    </div>
+                    <div className="grid grid-flow-col w-500">
+                        <div className="over-due-date">
+                        OVER DUE-DATE 
+                        </div>
+                        <div className="due-date-lbl">
+                        TODAY 
+                        </div>
+                        <div className="dev-test">
+                        DEV & TEST 
+                        </div>
+                    </div>
+                
+                    <div className="w-100 vertical-middle text-right">
+                        Filter:
+                    </div>
+                    <div className="w-full">
+                        <input
+                            type="text"
+                            className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-full"
+                            onChange={(value) => {filterTaskLContent(value)}}
+                        />
+                    </div>
+                    <div className="w-500">
+                        <Select
+                            closeMenuOnSelect={true}
+                            hideSelectedOptions={false}
+                            isMulti
+                            options={defaultMem}
+                            onChange={(options) => {
+                                    if (Array.isArray(options)) {
+                                        let tmp = options[0];
+                                        if(options.length > 1){
+                                            tmp = options[options.length - 1];
+                                            
+                                        }
+                                        filterTaskList(tmp);
 
-                  <td className="px-2 py-2 w-100 text-center w-100" style={{
-                    color: item.status_color,
-                    fontWeight: "bold",
-
-                  }}>{item.status_nm}</td>
-                  <td className="px-2 py-2 text-center w-100">{item.due_date_str}</td>
-                  <td className="px-2 py-2 text-center w-100">{item.creator_nm}</td> 
-                 
-                  
+                                    }
+                                }
+                            }  
+                            components={{
+                            Option: InputOption
+                        }}
+                        />
+                    </div>
+                </div>
+                
+            <table className="w-full border border-gray-500 custom-scroll">
+                <thead>
+                <tr className="bg-gray-200">
+                    <th className="px-2 py-2 w-150">Backlogs</th>
+                    <th className="px-2 py-2 w-30 text-center">#</th>
+                    <th className="px-2 py-2 w-100 text-center">ID</th>
+                    <th className="px-2 py-2 w-100 text-center">Module</th>
+                    <th className="px-2 py-2">Parent</th>
+                    <th className="px-2 py-2">Name</th>
+                    <th className="px-2 py-2 w-150">Assignee</th>
+                    <th className="px-2 py-2 w-100 text-center">PIC DEV</th>
+                    <th className="px-2 py-2 w-30 text-right">USP</th>
+                    <th className="px-2 py-2 w-100 text-center">PIC TEST</th>
+                    <th className="px-2 py-2 w-30 text-right">USP</th>
+                    <th className="px-2 py-2 w-100 text-center">Status</th>
+                    <th className="px-2 py-2 text-center w-100">Due Date</th>
+                    <th className="px-2 py-2 text-center w-100">Created By</th>
+                
+                    
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                </thead>
+                <tbody className="border-t">
+                {taskList.map((item, idx) => (
+                    <tr key={item.id} className={ (item.USP.test_nm && item.USP.test_nm.length > 0) ? "border-t dev-test ".concat(item.class_over): "border-t ".concat(item.class_over)}>
+                    <td className="px-2 py-2 w-150">{item.list.name}</td>
+                    <td className="px-2 py-2 w-30 text-center">{idx + 1}</td>
+                    <td className="px-2 py-2 w-100 text-center">
+                        <a onClick={event => openTask(item.url)}>
+                            {item.id}
+                        </a>
+                    </td>
+                    
+                    <td className="px-2 py-2 w-100 text-center">{item.module}</td>
+                    <td className="px-2 py-2" style={{
+                        color: item.status_color,
+                        fontWeight: "bold",
+                    }}>
+                        {item.parent == null ? item.name : item.parent_nm}
+                    </td>
+                    <td className="px-2 py-2 text-blue">
+                        {item.parent ? item.name : ""}
+                    </td>
+                    <td className="px-2 py-2 w-150">{item.assignees_ls}</td>
+                    <td className="px-2 py-2 w-100 text-center">{item.USP.dev_nm}</td>
+                    <td className="px-2 py-2 w-30 text-right">{item.USP.dev_point}</td>
+                    <td className="px-2 py-2 w-100 text-center">{item.USP.test_nm}</td>
+                    <td className="px-2 py-2 w-30 text-right">{item.USP.test_point}</td>
 
-        
+                    <td className="px-2 py-2 w-100 text-center w-100" style={{
+                        color: item.status_color,
+                        fontWeight: "bold",
+
+                    }}>{item.status_nm}</td>
+                    <td className="px-2 py-2 text-center w-100">{item.due_date_str}</td>
+                    <td className="px-2 py-2 text-center w-100">{item.creator_nm}</td> 
+                    
+                    
+                    </tr>
+                ))}
+                </tbody>
+            </table>
+            </div>
+        </div>
+        <ScaleLoader
+            color={color}
+            loading={loading}
+            cssOverride={override}
+            aria-label="Loading Spinner"
+            data-testid="loader"
+        />
       </form>
+    
   </div>
 
   );
