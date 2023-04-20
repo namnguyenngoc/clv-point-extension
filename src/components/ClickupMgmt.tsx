@@ -1728,8 +1728,7 @@ const override: CSSProperties = {
         left: "0",
         width: "100%",
         height: "100%",
-        opacity: "0.4",
-        background: "darkgray",
+        background: "rgb(255, 255, 255, 0.4)",
         textAlign: "center",
         paddingTop: "21%",
     };
