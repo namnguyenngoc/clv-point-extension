@@ -6,6 +6,20 @@ import moment from 'moment'
 import { REQ_HEADER } from '../const';
 import Select, { components } from "react-select";
 import ScaleLoader from "react-spinners/ScaleLoader";
+import ReactDOM from 'react-dom';
+import Modal from 'react-modal';
+// Modal.setAppElement('#side-bar-extension-root');
+
+const customStyles = {
+    content: {
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      marginRight: '-50%',
+      transform: 'translate(-50%, -50%)',
+    },
+  };
 
 const InputOption = ({
   getStyles,
@@ -2083,14 +2097,21 @@ let defaultEpic =
   let isEnableSearch = false;
   let [loading, setLoading] = useState(false);
   let [color, setColor] = useState("#0E71CC");
-
+  let subtitle;
+  const [modalIsOpen, setIsOpen] = React.useState(false);
 //   setSelectedOptions(defaultMem);
 //   setSelectedStatus(defaultStatus);
 //   setSelectedTags(defaultTags);
 //   window['chrome'].storage?.local.set({defaultMem});
 //   window['chrome'].storage?.local.set({defaultStatus});
 //   window['chrome'].storage?.local.set({defaultTags});
+function openTaskBP(item) {
+    const bp = 'https://blueprint.cyberlogitec.com.vn/UI_PIM_001_1';
+    if(item.blueprint){
+        window.open(`${bp}/${item.blueprint.reqId}`, "_blank"); //to open new page
 
+    }
+}
   function openTask(url) {
    
     window.open(url, "_blank"); //to open new page
@@ -2355,6 +2376,7 @@ let defaultEpic =
   } //End GenTask
 
   const splitUSP = (item: any) => {
+   
     let usp = {
         dev_nm: "",
         dev_point: 0,
@@ -2365,10 +2387,12 @@ let defaultEpic =
     }
 
     if(item && item.name) {
+        let name = item.name.replace(/ /g,'');
         let regexp = /\[(.*?)\]/gi;
-        const matches = item.name.matchAll(regexp);
+        const matches = name.matchAll(regexp);
         // let arr = item.name.match(regexp);
-       
+        console.log("matches", matches);
+        let flag = false;
         for (const match of matches) {
             // console.log(match);
             // console.log(match.index);
@@ -2379,31 +2403,32 @@ let defaultEpic =
                 if(arr.length == 2) { //dev & Test
                     scope = arr[0].split("-");
                     point = arr[1].split("-");
-                }
-                let arrAssignees =  (item.assignees_ls && item.assignees_ls.length > 0) ? item.assignees_ls.split(",") : [];
+               
+                    let arrAssignees =  (item.assignees_ls && item.assignees_ls.length > 0) ? item.assignees_ls.split(",") : [];
 
-                let devArr = [];
-                let testArr = [];
+                    let devArr = [];
+                    let testArr = [];
 
-                if(arrAssignees && arrAssignees.length > 0) {
-                    for(let i = 0; i < arrAssignees.length; i ++){
-                        let mem = allOptions.filter(item => item.label == arrAssignees[i]);
+                    if(arrAssignees && arrAssignees.length > 0) {
+                        for(let i = 0; i < arrAssignees.length; i ++){
+                            let mem = allOptions.filter(item => item.label == arrAssignees[i]);
 
-                        if(mem && mem.length > 0) {
-                            if("TEST" == mem[0].scope) {
-                                testArr.push(mem[0].label);
-                            } else {
-                                devArr.push(mem[0].label);
-                            } 
+                            if(mem && mem.length > 0) {
+                                if("TEST" == mem[0].scope) {
+                                    testArr.push(mem[0].label);
+                                } else {
+                                    devArr.push(mem[0].label);
+                                } 
 
+                            }
                         }
                     }
+                    
+                    usp.dev_nm = (devArr && devArr.length > 0) ? devArr.join(",") : "";
+                    usp.dev_point = (point && point.length > 0) ? point[0].replace("P", "") : "";
+                    usp.test_nm = (testArr && testArr.length > 0) ? testArr.join(",") : "";
+                    usp.test_point = (point && point.length > 1) ? point[1].replace("P", "") : "";
                 }
-                
-                usp.dev_nm = (devArr && devArr.length > 0) ? devArr.join(",") : "";
-                usp.dev_point = (point && point.length > 0) ? point[0] : "";
-                usp.test_nm = (testArr && testArr.length > 0) ? testArr.join(",") : "";
-                usp.test_point = (point && point.length > 1) ? point[1] : "";
             }
         }
     }
@@ -2535,7 +2560,7 @@ let defaultEpic =
                     let finalListTask = [];
                     if(data && data.length > 0) {
                         data.map(function (task) {
-                            const assignees = task.assignees.map(item => task.username).join(',');
+                            const assignees = task.assignees.map(item => item.username).join(',');
                             task.assignees_ls = assignees;
                             task.creator_nm = task.creator.username;
                             task.status_nm = task.status.status;
@@ -2575,10 +2600,8 @@ let defaultEpic =
             "pjtId": prjId,
             "reqNm": reqTitNm,
             "advFlg": "N",
-            "reqStsCd": [
-                "REQ_STS_CDPRC",
-                "REQ_STS_CDOPN"
-            ],
+            "reqStsCd": 
+            ["REQ_STS_CDPRC", "REQ_STS_CDOPN", "REQ_STS_CDFIN", "REQ_STS_CDCC", "REQ_STS_CDPD"],
             "jbTpCd": "_ALL_",
             "itrtnId": "_ALL_",
             "beginIdx": 0,
@@ -2594,118 +2617,106 @@ let defaultEpic =
         delayed: false,  // use this custom option to allow overrides
         data: data
     };
-    // const apiResponseTask =  axios(config).then(async (res) => {
-    //     // const data = res.data;
-    //     console.log("data", res.data.lsReq);
-    //     return res.data.lsReq;
-    // });
-
-    const response = await axios
-        .request({
-            url:  `${API_WORKNG}/searchRequirement`,
-            method: "POST",
-            data: data,
-            //     proxy: {
-            //     host: "103.155.217.105",
-            //     port: 41416,
-            // },
-        })
-        .then((response) => {
-            return  response.data.lsReq;
-        })
-        .catch((error) => {
-            console.log(error);
-        });
+    const apiResponseTask =  axios(config).then(async (res) => {
+        // const data = res.data;
+        return res.data.lsReq;
+    });
         
-    const pm = Promise.resolve(response);
+    const pm = Promise.resolve(apiResponseTask);
     return pm;
 
   }
 
-  const syncBlueprint = async () => {
+  const taskBPDetail = (task: any, pharseCD: any) => {
+    let result = {
+        startDate: "",
+        endDate: "",
+        sumActEfrtMnt: 0, //hour
+    }
+    if(task) {
+        let lstActEfrtPnt = task.actualEffort.lstActEfrtPnt;
+        let logPharse = lstActEfrtPnt.filter(item => item.phsCd == pharseCD);
+        if(logPharse && logPharse.length > 0) {
+            result.startDate = logPharse[0].wrkDt;
+            result.endDate = logPharse[logPharse.length - 1].wrkDt;
+
+            let startDate = moment(result.startDate, 'YYYYMMDD').format("MM-DD-YYYY");
+            let endDate = moment(result.endDate, 'YYYYMMDD').format("MM-DD-YYYY");
+
+            result.startDateFm = startDate;
+            result.endDateFm = endDate;
+            result.startDateObj = moment(result.startDate, 'YYYYMMDD');
+            result.endDateObj = moment(result.endDate, 'YYYYMMDD');
+
+            const sum = logPharse.reduce((accumulator, object) => {
+                return accumulator + Number(object.actEfrtMnt);
+            }, 0);
+            result.sumActEfrtMnt = (sum / 60).toFixed(2) ;
+
+        }
+    }  
+    return result;
+  }
+
+  const syncBlueprint = async (event: any) => {
     // API_WORKNG
+    setLoading(true);
     const prjId = "PJT20211119000000001";
-    let promiseArr = [];
-   
+     let copyTaskList = [...taskList];
     // setLoading(true);
-    if(originTaskList) {
+    if(copyTaskList) {
         // bpSearchRequirement
-        console.log("originTaskList", originTaskList);
-        for(let i = 0; originTaskList.length; i++) {
-            const item = originTaskList[i];
+        for(let i = 0; i < copyTaskList.length; i++) {
+            let item = copyTaskList[i];
             if(item && item.name) {
-                const promise = await bpSearchRequirement(prjId, item.name);
-                // const pm = Promise.resolve(promise);
-                // promiseArr.push(promise);
-                originTaskList.blueprint = promise[0];
-                console.log("originTaskList", JSON.stringify(promise[0]));
+                let promise = await bpSearchRequirement(prjId, item.name);
+                if(!promise || promise.length == 0){
+                    const arr = item.name.split("] ");
+                    if(arr.length == 2) {
+                        promise = await bpSearchRequirement(prjId, arr[1]);
+                        if(promise && promise.length > 0) {
+                            promise[0].css = "wrong-name";
+                        }
+                    }
+                } else {
+                    promise[0].css = "";
+                }
+
+                if(promise && promise.length > 0) {
+                    item.blueprint = promise[0];
+                  
+                   
+
+                } else {
+                    // item.blueprint = {};
+                    // item.blueprint.css = "";
+                }
+
+                item.compare_data = taskBPDetail(item.blueprint, "PIM_PHS_CDIMP");
+
+                if(item.compare_data){
+                    if (moment(Number(item.due_date)) < item.compare_data.endDateObj) {
+                        item.class_over = "over-due-date";
+                    }
+                }
+               
             }
            
         }
-        setTaskList(originTaskList);
-        setLoading(false);
-        console.log("originTaskList", originTaskList);
-        // const result = await Promise.all(promiseArr).then(async (data) => {
-        //     console.log("data", JSON.stringify(data));
-        // //     let finalListTask = [];
-        // //     if(data && data.length > 0) {
-        // //         // data.map(function (task) {
-        // //         //     // const assignees = task.assignees.map(item => task.username).join(',');
-        // //         //     // task.assignees_ls = assignees;
-        // //         //     // task.creator_nm = task.creator.username;
-        // //         //     // task.status_nm = task.status.status;
-        // //         //     // task.status_tp = task.status.type;
-        // //         //     // task.status_color = task.status.color;
-        // //         //     // task.module = task.tags.length > 0 ? task.tags[0].name : "";
-        // //         //     // if(task.due_date && task.due_date != null) {
-        // //         //     //     task.due_date_str = moment(Number(task.due_date)).format("MM-DD-YYYY");
-        // //         //     // } else {
-        // //         //     //     task.due_date_str = "";
-        // //         //     // }
-        // //         //     // if(parent && parent != null) {
-        // //         //     //     task.parent_nm = parent.name;
-        // //         //     // }
-        // //         //     // task.USP = splitUSP(task);
-        // //         //     // finalListTask.push(task);
-        // //         // })
-
-        // //         setTaskList(finalListTask);
-        //         setLoading(false);
-        // //     }
-        // }) .catch((error) => {
-        //     console.log(error);
-        //     setLoading(false);
-        // });
-
-
-    //     const pm = await Promise.resolve(apiResponseTask);
-    //     promiseTask.push(pm);
-    // }
-    // // console.log("promiseTask", promiseTask);
-    // const result = await Promise.all(promiseTask).then(async (data) => {
-    //     // console.log("data", data);
-    //     if(data && data.length > 0) {
-    //         let arr = [];
-    //         for(let i = 0; i < data.length; i ++) {
-    //             if(data[i].length > 0) {
-    //                 arr = [...arr, ...data[i]];
-    //             }
-    //         }
-
-    //         //Process mapping name
-
-    //         // console.log("arr", arr);
-    //         const resultTaskList = await Promise.resolve(genTaskInformation(arr));
-    //         // console.log("resultTaskList", resultTaskList);
-    //         setTaskList(resultTaskList);
-    //         setOriginTaskList(resultTaskList);
-    //         setLoading(false);
-    //     }
-    // });
-    } else {
+        setTaskList(copyTaskList);
         setLoading(false);
     }
 
+    setLoading(false);
+
+  }
+
+  const showFullName = (item: any) => {
+    openModal();
+    if(item){
+        alert(item.blueprint.reqTitNm);
+
+    }
   }
 
   const setPageSearch = (val) => {
@@ -2749,6 +2760,21 @@ let defaultEpic =
     //     { value: "option 4", label: "option 4" }
     // ]
   }
+
+  function openModal() {
+    setIsOpen(true);
+  }
+
+  function afterOpenModal() {
+    // references are now sync'd and can be accessed.
+    subtitle.style.color = '#f00';
+  }
+
+  function closeModal() {
+    setIsOpen(false);
+  }
+
+
   // const allOptions = getListMembers(900800090277);
   return (
     <div className="grid grid-flow-col gap-2 px-4 sweet-loading">
@@ -2852,7 +2878,7 @@ let defaultEpic =
                     <button 
                         type="button" 
                         className="bg-blue-500 text-white py-2 px-4 rounded-lg w-150"
-                        onClick={ event => syncBlueprint()}>
+                        onClick={ (event) => syncBlueprint(event)}>
                             SYNC BLUEPRINT
                     </button>
                     <button 
@@ -2929,10 +2955,10 @@ let defaultEpic =
             <table className="w-full border border-gray-500 custom-scroll">
                 <thead>
                 <tr className="bg-gray-200">
-                    <th className="px-2 py-2 w-150">Backlogs</th>
+                    <th className="px-2 py-2 w-50 text-eclipse">URL</th>
                     <th className="px-2 py-2 w-30 text-center">#</th>
-                    <th className="px-2 py-2 w-100 text-center">ID</th>
-                    <th className="px-2 py-2 w-100 text-center">Module</th>
+                    <th className="px-2 py-2 w-70 text-center">ID</th>
+                    <th className="px-2 py-2 w-70 text-center">Module</th>
                     <th className="px-2 py-2">Parent</th>
                     <th className="px-2 py-2">Name</th>
                     <th className="px-2 py-2 w-150">Assignee</th>
@@ -2940,26 +2966,31 @@ let defaultEpic =
                     <th className="px-2 py-2 w-30 text-right">USP</th>
                     <th className="px-2 py-2 w-100 text-center">PIC TEST</th>
                     <th className="px-2 py-2 w-30 text-right">USP</th>
+                    <th className="px-2 py-2 w-100 text-right">StartDate</th>
+                    <th className="px-2 py-2 w-100 text-right">EndDate</th>
+                    <th className="px-2 py-2 w-100 text-right">Total</th>
                     <th className="px-2 py-2 w-100 text-center">Status</th>
                     <th className="px-2 py-2 text-center w-100">Due Date</th>
                     <th className="px-2 py-2 text-center w-100">Created By</th>
-                    <th className="px-2 py-2 text-center w-100">Blueprint#ID</th>
-                
+                    <th className="px-2 py-2 text-center w-50">BP#Seq</th>
+                    <th className="px-2 py-2 text-center w-100 blueprint-name">BP#Name</th>
                     
                 </tr>
                 </thead>
                 <tbody className="border-t">
                 {taskList.map((item, idx) => (
                     <tr key={item.id} className={ (item.USP.test_nm && item.USP.test_nm.length > 0) ? "border-t dev-test ".concat(item.class_over): "border-t ".concat(item.class_over)}>
-                    <td className="px-2 py-2 w-150">{item.list.name}</td>
+                    {/* <td className="px-2 py-2 w-100">{item.list.name}</td> */}
+                   
+                    <td className="px-2 py-2 w-50 text-center text-eclipse">{ item.url }</td>
                     <td className="px-2 py-2 w-30 text-center">{idx + 1}</td>
-                    <td className="px-2 py-2 w-100 text-center">
+                    <td className="px-2 py-2 w-70 text-center">
                         <a onClick={event => openTask(item.url)}>
                             {item.id}
                         </a>
                     </td>
                     
-                    <td className="px-2 py-2 w-100 text-center">{item.module}</td>
+                    <td className="px-2 py-2 w-70 text-center">{item.module}</td>
                     <td className="px-2 py-2" style={{
                         color: item.status_color,
                         fontWeight: "bold",
@@ -2975,6 +3006,10 @@ let defaultEpic =
                     <td className="px-2 py-2 w-100 text-center">{item.USP.test_nm}</td>
                     <td className="px-2 py-2 w-30 text-right">{item.USP.test_point}</td>
 
+                    <td className="px-2 py-2 w-100 text-right">{item.compare_data ? item.compare_data.startDateFm : ""}</td>
+                    <td className="px-2 py-2 w-100 text-right">{item.compare_data ? item.compare_data.endDateFm : ""}</td>
+                    <td className="px-2 py-2 w-100 text-right">{item.compare_data ? item.compare_data.sumActEfrtMnt : ""}</td>
+
                     <td className="px-2 py-2 w-100 text-center w-100" style={{
                         color: item.status_color,
                         fontWeight: "bold",
@@ -2982,10 +3017,16 @@ let defaultEpic =
                     }}>{item.status_nm}</td>
                     <td className="px-2 py-2 text-center w-100">{item.due_date_str}</td>
                     <td className="px-2 py-2 text-center w-100">{item.creator_nm}</td> 
-                    <td className="px-2 py-2 text-center w-100">
-                        <a onClick={event => openTask(item.url)}>
-                            {item.blueprintSeq}
+                    <td className="px-2 py-2 text-center w-50">
+                        <a onClick={event => openTaskBP(item)}>
+                            {item.blueprint ? item.blueprint.seqNo : ""}
                         </a>
+                    </td> 
+                    <td className={"px-2 py-2 text-center w-100  " + (item.blueprint ? (item.blueprint.css ? item.blueprint.css : "") : "")}>
+                        <div className="blueprint-name" onClick={event => showFullName(item)} >
+                            {item.blueprint ? item.blueprint.reqTitNm : ""}
+
+                        </div>
                     </td> 
                     
                     </tr>
@@ -2994,6 +3035,24 @@ let defaultEpic =
             </table>
             </div>
         </div>
+        <Modal
+            isOpen={modalIsOpen}
+            onAfterOpen={afterOpenModal}
+            onRequestClose={closeModal}
+            style={customStyles}
+            contentLabel="Example Modal"
+        >
+            <h2 ref={(_subtitle) => (subtitle = _subtitle)}>Hello</h2>
+            <button onClick={closeModal}>close</button>
+            <div>I am a modal</div>
+            <form>
+            <input />
+            <button>tab navigation</button>
+            <button>stays</button>
+            <button>inside</button>
+            <button>the modal</button>
+            </form>
+        </Modal>
         <ScaleLoader
             color={color}
             loading={loading}

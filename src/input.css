@@ -333,3 +333,27 @@ div.vertical-middle {
 .bg-transparent {
   background-color: transparent;
 }
+
+
+.blueprint-name {
+  width: 100px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.w-50 {
+  width: 50px;
+}
+
+.wrong-name {
+  color: #FF0000;
+  font-weight: bold;
+}
+
+.text-eclipse {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
