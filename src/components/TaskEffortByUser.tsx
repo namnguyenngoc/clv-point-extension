@@ -142,7 +142,7 @@ export default function TaskEffortByUser(props) {
     const strFrm = moment(startDate);
     const endFrm = moment(endDate);
     const workday = workday_count(strFrm, endFrm);
-    console.log("workday", workday);
+    const lvlList = myData.levelList;
     setWorkday(workday);
 
     const diffMonth = moment(endFrm._i).diff(moment(strFrm._i), 'months', true);
@@ -159,6 +159,20 @@ export default function TaskEffortByUser(props) {
 
           item.effortPoint = sumEfrtKnt (res.dailyRsrcLst);
           item.timeWorked = 0;
+          let pointStd = lvlList.filter(itm => itm.code.toUpperCase() == item.lvlCode.toUpperCase());
+          if(pointStd && pointStd.length > 0){
+            item.pointStd = pointStd[0];
+
+          } else {
+            item.pointStd = {
+              "min": 0,
+              "max": 0,
+              "gap": 0,
+              "taskLevelMax": 0,
+              "agvDay": 0,
+              "agvMonth": 0
+            }
+          }
         }
         return item;
       })
@@ -256,9 +270,13 @@ export default function TaskEffortByUser(props) {
               <th className="px-4 py-2 text-center w-70">Level</th>
               <th className="px-4 py-2 w-70 text-right">P/H</th>
               <th className="px-4 py-2 w-100 text-right">Effort Point</th>
-              <th className="px-4 py-2 text-right w-100">Standard</th>
+              <th className="px-4 py-2 w-100 text-right">Standard</th>
               <th className="px-4 py-2 text-right w-100">Avg</th>
               <th className="px-4 py-2 text-right w-70">Gap</th>
+              <th className="px-4 py-2 text-right w-70">Min</th>
+              <th className="px-4 py-2 text-right w-70">Max</th>
+              <th className="px-4 py-2 text-right w-70">Avg Day</th>
+
             </tr>
           </thead>
           <tbody className="border-t">
@@ -271,6 +289,9 @@ export default function TaskEffortByUser(props) {
                 <td className="px-4 py-2 text-right w-100">{formatPrice(item.pointOnHour.expect * workday * 8, 0)}</td>
                 <td className="px-4 py-2 text-right w-100">{formatPrice(item.effortPoint / monthDay, 0)}</td>
                 <td className="px-4 py-2 text-right w-70">{ formatPrice((item.effortPoint - item.pointOnHour.expect * workday * 8), 0)}</td>
+                <td className="px-4 py-2 text-right w-70">{item.pointStd.point.min}</td>
+                <td className="px-4 py-2 text-right w-70">{item.pointStd.point.max}</td>
+                <td className="px-4 py-2 text-right w-70">{item.pointStd.point.agvDay}</td>
               </tr>
             ))}
           </tbody>
