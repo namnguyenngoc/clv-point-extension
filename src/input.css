@@ -232,6 +232,9 @@ h4.parent {
   font-weight: 600;
 }
 
+.bg-add-point td {
+  background-color: #4f9bc5;
+}
 
 /* table */
 /* html {

@@ -111,10 +111,10 @@
         {
             "userId": "phucnguyenhoang",
             "fullName": "Phuc Hoang Nguyen",
-            "currentLevel": "Jnr 1",
+            "currentLevel": "Jnr 1 (+)",
             "pointOnHour": {
                 "standard": 25,
-                "expect": 19,
+                "expect": 21,
                 "description": ""
             },
             "role": ["develop"],
@@ -144,8 +144,8 @@
             "userId": "namnnguyen",
             "fullName": "Nam Nguyen Ngoc",
             "pointOnHour": {
-                "standard": 25,
-                "expect": 29,
+                "standard": 35,
+                "expect": 35,
                 "description": ""
             },
             "role": ["lead"],

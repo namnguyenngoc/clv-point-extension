@@ -2966,9 +2966,11 @@ function openTaskBP(item) {
                     <th className="px-2 py-2 w-30 text-right">USP</th>
                     <th className="px-2 py-2 w-100 text-center">PIC TEST</th>
                     <th className="px-2 py-2 w-30 text-right">USP</th>
+                    <th className="px-2 py-2 w-30 text-right">UD</th>
                     <th className="px-2 py-2 w-100 text-right">StartDate</th>
                     <th className="px-2 py-2 w-100 text-right">EndDate</th>
-                    <th className="px-2 py-2 w-100 text-right">Total</th>
+                    <th className="px-2 py-2 w-30 text-right">DEV</th>
+                    <th className="px-2 py-2 w-30 text-right">TEST</th>
                     <th className="px-2 py-2 w-100 text-center">Status</th>
                     <th className="px-2 py-2 text-center w-100">Due Date</th>
                     <th className="px-2 py-2 text-center w-100">Created By</th>
@@ -3005,7 +3007,7 @@ function openTaskBP(item) {
                     <td className="px-2 py-2 w-30 text-right">{item.USP.dev_point}</td>
                     <td className="px-2 py-2 w-100 text-center">{item.USP.test_nm}</td>
                     <td className="px-2 py-2 w-30 text-right">{item.USP.test_point}</td>
-
+                    <th className="px-2 py-2 w-30 text-right">{item.USP.test_point + item.USP.dev_point}</th>
                     <td className="px-2 py-2 w-100 text-right">{item.compare_data ? item.compare_data.startDateFm : ""}</td>
                     <td className="px-2 py-2 w-100 text-right">{item.compare_data ? item.compare_data.endDateFm : ""}</td>
                     <td className="px-2 py-2 w-100 text-right">{item.compare_data ? item.compare_data.sumActEfrtMnt : ""}</td>
@@ -3015,6 +3017,8 @@ function openTaskBP(item) {
                         fontWeight: "bold",
 
                     }}>{item.status_nm}</td>
+                    <td className="px-2 py-2 w-30 text-right">0</td>
+                    <td className="px-2 py-2 w-30 text-right">0</td>
                     <td className="px-2 py-2 text-center w-100">{item.due_date_str}</td>
                     <td className="px-2 py-2 text-center w-100">{item.creator_nm}</td> 
                     <td className="px-2 py-2 text-center w-50">

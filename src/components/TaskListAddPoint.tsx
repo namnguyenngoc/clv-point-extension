@@ -872,7 +872,7 @@ export default function TaskListAddPoint(props) {
             <tbody className="border-t">
               {taskList.map((item, idx) => (
                 <tr key={item.reqId} 
-                    className={item.countFb > 0 ? "border-t bg-fb" : "border-t"}>
+                    className={item.countFb > 0 ? "border-t bg-fb" : (item.pntNo >= item.actEffort ? "border-t":"border-t bg-add-point")}>
                   <td className="px-4 py-2 w-30 text-center">{idx + 1}</td>
                   <td className="px-4 py-2 w-40 text-center">{item.seqNo}</td>
                   
