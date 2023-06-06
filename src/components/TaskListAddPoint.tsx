@@ -174,9 +174,10 @@ export default function TaskListAddPoint(props) {
     return `${hour}h ${min}m`;
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     //https://blueprint.cyberlogitec.com.vn/api/getUserInfoDetails
+    console.log("LOAD", "doc.title");
     searchRequirement();
  
   };
@@ -665,56 +666,56 @@ export default function TaskListAddPoint(props) {
     return comment;
   } 
   const saveBP = async (suggestList, total, totalPoint) => {
-//     let cmtCtnt = "";
-//     let cmtVO = {};
-//     let lstAdd = [...suggestList];
-//     let lstPrt = [];
-//     for(let j = 0; j < suggestList.length; j ++){
-//       const itemPrt = suggetPrtList.filter(item => item.jbId == suggestList[j].prntJbId);
-//       if(itemPrt){
-//         lstPrt.push(itemPrt[0]);  
-//       }
-//     }
-    
-//     // RO
-//     // {"categoryList":[{"utPnt":0,"jbId":"JOB20211125000000139","jbNm":"Inbound","itmAmt":0,"$parent":0},{"utPnt":50,"jbId":"JOB20211125000000144","jbNm":"COARRI","itmAmt":1,"$parent":"JOB20211125000000139","prntNm":"Inbound"},{"utPnt":0,"jbId":"JOB20211125000000086","jbNm":"UI Layout","itmAmt":0,"$parent":0},{"utPnt":5,"jbId":"JOB20211125000000095","jbNm":"Change Label Charater","itmAmt":1,"$parent":"JOB20211125000000086","prntNm":"UI Layout"},{"utPnt":0,"jbId":"JOB20211125000000033","jbNm":"SQL","itmAmt":0,"$parent":0},{"utPnt":50,"jbId":"JOB20211125000000036","jbNm":"Change delete logic","itmAmt":1,"$parent":"JOB20211125000000033"},{"utPnt":0,"jbId":"JOB20211125000000006","jbNm":"Data Correction","itmAmt":0,"$parent":0},{"utPnt":10,"jbId":"JOB20211125000000008","jbNm":"Updated Column","itmAmt":1,"$parent":1677656482208},{"utPnt":5,"jbId":"JOB20211125000000007","jbNm":"Related table","itmAmt":1,"$parent":1677656482208},{"utPnt":0,"jbId":"JOB20211125000000011","jbNm":"UI Logic","itmAmt":0,"$parent":0},{"utPnt":10,"jbId":"JOB20211125000000013","jbNm":"Data Mapping/Unmapping","itmAmt":1,"$parent":1677656482210},{"utPnt":25,"jbId":"JOB20211125000000015","jbNm":"Change component status","itmAmt":1,"$parent":1677656482210},{"utPnt":50,"jbId":"JOB20211125000000018","jbNm":"Change UI Action","itmAmt":1,"$parent":1677656482210},{"utPnt":15,"jbId":"JOB20211125000000019","jbNm":"Recall function","itmAmt":1,"$parent":1677656482210},{"utPnt":0,"jbId":"JOB20211125000000044","jbNm":"Data model","itmAmt":0,"$parent":0},{"utPnt":30,"jbId":"JOB20211125000000045","jbNm":"Change length","itmAmt":1,"$parent":1677656482215,"prntNm":"Data model"},{"utPnt":5,"jbId":"JOB20211125000000046","jbNm":"Add column","itmAmt":1,"$parent":1677656482215}],"totalPoint":285,"reqId":"PRQ20230301000000085","cmtCtnt":"<div class=\\"system-comment\\"> • Added Point: </div>   <div style=\\"margin-left: 10px\\"> <b>&nbsp;Inbound:</b></div>  <div style=\\"margin-left: 10px\\"><i> &nbsp;&nbsp;COARRI: </i>50 </div>  <div style=\\"margin-left: 10px\\"> <b>&nbsp;UI Layout:</b></div>  <div style=\\"margin-left: 10px\\"><i> &nbsp;&nbsp;Change Label Charater: </i>5 </div>  <div style=\\"margin-left: 10px\\"> <b>&nbsp;Data model:</b></div>  <div style=\\"margin-left: 10px\\"><i> &nbsp;&nbsp;Change length: </i>30 </div> ","pjtId":"PJT20211119000000001","subPjtId":"PJT20211119000000001","action":"REQ_WTC_EFRT"}
-// //   //Update category
-//     let parentDetail = [...suggestList.filter(item => item.$parent == "0")];
-//     if(lstAdd.length > 0){
-//         lstAdd.map(function(item){
-//         const prt = parentDetail.filter((prtItm) => prtItm.jbId == item.prntJbId);
-//           if(prt && prt.length > 0 && prt.jbId != item.jbId){
-//             item.category = prt[0].jbNm;
-
-//           } 
-//         });
-//         cmtVO.lstPoint = [...lstAdd];
-//         cmtVO.type = "addPnt";
-//         cmtCtnt += buildComment(cmtVO);
-//     };
-   
-//     if(cmtCtnt != ""){
-//       cmtVO.cmtCtnt = cmtCtnt;
-//       let ro = {
-//           categoryList    : lstAdd,
-//           totalPoint      : Number(props.total + totalPoint),
-//           reqId           : reqDetail.detailReqVO.reqId,
-//           cmtCtnt         : cmtCtnt,
-//           pjtId           : reqDetail.detailReqVO.pjtId,
-//           subPjtId        : reqDetail.detailReqVO.subPjtId,
-//           action          : 'REQ_WTC_EFRT',
-//       };
-//       console.log("RO", ro);
-
-//       // console.log("reqee", req)
-//       const response = await axios.put(`${url}/save-req-job-detail`, ro).then(async function (response) {
-//         const msg =   response.data.saveFlg;//saveFlg: 'SAVE_SUCCEED', pstId: 'PST20230303000001056'}
-
-//         alert(msg);
+  //     let cmtCtnt = "";
+  //     let cmtVO = {};
+  //     let lstAdd = [...suggestList];
+  //     let lstPrt = [];
+  //     for(let j = 0; j < suggestList.length; j ++){
+  //       const itemPrt = suggetPrtList.filter(item => item.jbId == suggestList[j].prntJbId);
+  //       if(itemPrt){
+  //         lstPrt.push(itemPrt[0]);  
+  //       }
+  //     }
       
-//       });
+  //     // RO
+  //     // {"categoryList":[{"utPnt":0,"jbId":"JOB20211125000000139","jbNm":"Inbound","itmAmt":0,"$parent":0},{"utPnt":50,"jbId":"JOB20211125000000144","jbNm":"COARRI","itmAmt":1,"$parent":"JOB20211125000000139","prntNm":"Inbound"},{"utPnt":0,"jbId":"JOB20211125000000086","jbNm":"UI Layout","itmAmt":0,"$parent":0},{"utPnt":5,"jbId":"JOB20211125000000095","jbNm":"Change Label Charater","itmAmt":1,"$parent":"JOB20211125000000086","prntNm":"UI Layout"},{"utPnt":0,"jbId":"JOB20211125000000033","jbNm":"SQL","itmAmt":0,"$parent":0},{"utPnt":50,"jbId":"JOB20211125000000036","jbNm":"Change delete logic","itmAmt":1,"$parent":"JOB20211125000000033"},{"utPnt":0,"jbId":"JOB20211125000000006","jbNm":"Data Correction","itmAmt":0,"$parent":0},{"utPnt":10,"jbId":"JOB20211125000000008","jbNm":"Updated Column","itmAmt":1,"$parent":1677656482208},{"utPnt":5,"jbId":"JOB20211125000000007","jbNm":"Related table","itmAmt":1,"$parent":1677656482208},{"utPnt":0,"jbId":"JOB20211125000000011","jbNm":"UI Logic","itmAmt":0,"$parent":0},{"utPnt":10,"jbId":"JOB20211125000000013","jbNm":"Data Mapping/Unmapping","itmAmt":1,"$parent":1677656482210},{"utPnt":25,"jbId":"JOB20211125000000015","jbNm":"Change component status","itmAmt":1,"$parent":1677656482210},{"utPnt":50,"jbId":"JOB20211125000000018","jbNm":"Change UI Action","itmAmt":1,"$parent":1677656482210},{"utPnt":15,"jbId":"JOB20211125000000019","jbNm":"Recall function","itmAmt":1,"$parent":1677656482210},{"utPnt":0,"jbId":"JOB20211125000000044","jbNm":"Data model","itmAmt":0,"$parent":0},{"utPnt":30,"jbId":"JOB20211125000000045","jbNm":"Change length","itmAmt":1,"$parent":1677656482215,"prntNm":"Data model"},{"utPnt":5,"jbId":"JOB20211125000000046","jbNm":"Add column","itmAmt":1,"$parent":1677656482215}],"totalPoint":285,"reqId":"PRQ20230301000000085","cmtCtnt":"<div class=\\"system-comment\\"> • Added Point: </div>   <div style=\\"margin-left: 10px\\"> <b>&nbsp;Inbound:</b></div>  <div style=\\"margin-left: 10px\\"><i> &nbsp;&nbsp;COARRI: </i>50 </div>  <div style=\\"margin-left: 10px\\"> <b>&nbsp;UI Layout:</b></div>  <div style=\\"margin-left: 10px\\"><i> &nbsp;&nbsp;Change Label Charater: </i>5 </div>  <div style=\\"margin-left: 10px\\"> <b>&nbsp;Data model:</b></div>  <div style=\\"margin-left: 10px\\"><i> &nbsp;&nbsp;Change length: </i>30 </div> ","pjtId":"PJT20211119000000001","subPjtId":"PJT20211119000000001","action":"REQ_WTC_EFRT"}
+  // //   //Update category
+  //     let parentDetail = [...suggestList.filter(item => item.$parent == "0")];
+  //     if(lstAdd.length > 0){
+  //         lstAdd.map(function(item){
+  //         const prt = parentDetail.filter((prtItm) => prtItm.jbId == item.prntJbId);
+  //           if(prt && prt.length > 0 && prt.jbId != item.jbId){
+  //             item.category = prt[0].jbNm;
 
-//     }
+  //           } 
+  //         });
+  //         cmtVO.lstPoint = [...lstAdd];
+  //         cmtVO.type = "addPnt";
+  //         cmtCtnt += buildComment(cmtVO);
+  //     };
+    
+  //     if(cmtCtnt != ""){
+  //       cmtVO.cmtCtnt = cmtCtnt;
+  //       let ro = {
+  //           categoryList    : lstAdd,
+  //           totalPoint      : Number(props.total + totalPoint),
+  //           reqId           : reqDetail.detailReqVO.reqId,
+  //           cmtCtnt         : cmtCtnt,
+  //           pjtId           : reqDetail.detailReqVO.pjtId,
+  //           subPjtId        : reqDetail.detailReqVO.subPjtId,
+  //           action          : 'REQ_WTC_EFRT',
+  //       };
+  //       console.log("RO", ro);
+
+  //       // console.log("reqee", req)
+  //       const response = await axios.put(`${url}/save-req-job-detail`, ro).then(async function (response) {
+  //         const msg =   response.data.saveFlg;//saveFlg: 'SAVE_SUCCEED', pstId: 'PST20230303000001056'}
+
+  //         alert(msg);
+        
+  //       });
+
+  //     }
 
   }
 
@@ -749,6 +750,8 @@ export default function TaskListAddPoint(props) {
   const parentToChild = () => {
     console.log("This is data from Parent Component to the Child Component.");
   }
+
+  
   return (
     <div className="grid grid-flow-col gap-2 px-4">
       <form className="grid grid-flow-row gap-2 col-span-2" 

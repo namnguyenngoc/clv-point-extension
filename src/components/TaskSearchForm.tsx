@@ -3,6 +3,7 @@ import axios from "axios";
 import myData from '../data.json';
 import PointSuggest from './PointSuggest';
 import TaskComment from './TaskComment';
+import MemberList from "./MemberList";
 
 export default function TaskSearchForm(props, { term }) {
   const [children, setChildren] = useState([]);
@@ -304,7 +305,7 @@ export default function TaskSearchForm(props, { term }) {
         />
       </div>
       <div>
-        <PointSuggest 
+        {/* <PointSuggest 
           total = { (props.taskInfo && props.taskInfo.lstReq && props.taskInfo.lstReq.length > 0) ? props.taskInfo.lstReq[0].pntNo : 0}
           actualtotal = {props.taskInfo.totalPoint}
           prjId = { prjId }
@@ -313,8 +314,13 @@ export default function TaskSearchForm(props, { term }) {
           detailReqVO = { props.taskInfo }
           seqNo =  { props.seqNo }
           suggestList = { props.suggestList }
+        /> */}
+        <MemberList
+          seqNo = { props.seqNo }
+          reqId = { props.reqId }
+          comment = { props.comment }
+          countFB = { props.countFB }
         />
-       
       </div>
       <form className="grid grid-flow-row gap-2" 
             onSubmit={handleSubmit}>
