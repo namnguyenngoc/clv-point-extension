@@ -50,11 +50,11 @@
         {
             "userId": "trinhle",
             "fullName": "Trinh Le",
-            "currentLevel": "Snr 2",
-            "lvlCode": "SEN2",
+            "currentLevel": "Principal",
+            "lvlCode": "PRP",
             "pointOnHour": {
                 "standard": 25,
-                "expect": 29,
+                "expect": 32,
                 "description": ""
             },
             "role": ["develop"],
@@ -67,8 +67,8 @@
         {
             "userId": "thaito",
             "fullName": "Thai To",
-            "currentLevel": "Fsh",
-            "lvlCode": "FSH",
+            "currentLevel": "Junior 1",
+            "lvlCode": "JUN1",
             "pointOnHour": {
                 "standard": 25,
                 "expect": 19,
@@ -152,10 +152,10 @@
         {
             "userId": "namnnguyen",
             "fullName": "Nam Nguyen Ngoc",
-            "lvlCode": "SEN2",
+            "lvlCode": "TA",
             "pointOnHour": {
                 "standard": 25,
-                "expect": 29,
+                "expect": 35,
                 "description": ""
             },
             "role": ["lead"],
@@ -378,7 +378,7 @@
         },
         {
             "no": 7,
-            "code": "TECH",
+            "code": "TA",
             "name": "Technical Architect",
             "point": {
                 "min": 5800,
