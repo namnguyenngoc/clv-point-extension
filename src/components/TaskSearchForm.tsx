@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, CSSProperties } from "react";
 import axios from "axios";
 import myData from '../data.json';
 import PointSuggest from './PointSuggest';
 import Select, { components } from "react-select";
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 import ACC_SHEET_API from '../credentials.json';
+import ScaleLoader from "react-spinners/ScaleLoader";
+import Modal from 'react-modal';
 
 const InputTrongSoOption = ({
   getStyles,
@@ -16,31 +18,31 @@ const InputTrongSoOption = ({
   innerProps,
   ...rest
 }) => {
-  const [isActive, setIsActive] = useState(false);
-  const onMouseDown = () => setIsActive(true);
-  const onMouseUp = () => setIsActive(false);
-  const onMouseLeave = () => setIsActive(false);
+const [isActive, setIsActive] = useState(false);
+const onMouseDown = () => setIsActive(true);
+const onMouseUp = () => setIsActive(false);
+const onMouseLeave = () => setIsActive(false);
 
-  // styles
-  let bg = "transparent";
-  if (isFocused) bg = "#eee";
-  if (isActive) bg = "#B2D4FF";
+// styles
+let bg = "transparent";
+if (isFocused) bg = "#eee";
+if (isActive) bg = "#B2D4FF";
 
-  const style = {
-    alignItems: "center",
-    backgroundColor: bg,
-    color: "inherit",
-    display: "flex "
-  };
+const style = {
+  alignItems: "center",
+  backgroundColor: bg,
+  color: "inherit",
+  display: "flex "
+};
 
-  // prop assignment
-  const props = {
-    ...innerProps,
-    onMouseDown,
-    onMouseUp,
-    onMouseLeave,
-    style
-  };
+// prop assignment
+const props = {
+  ...innerProps,
+  onMouseDown,
+  onMouseUp,
+  onMouseLeave,
+  style
+};
 
   return (
     <components.Option
@@ -55,6 +57,29 @@ const InputTrongSoOption = ({
       {children}
     </components.Option>
   );
+};
+const override: CSSProperties = {
+  display: "block",
+  margin: "0 auto",
+  borderColor: "#36d7b7",
+  position: "absolute",
+  top: "0",
+  left: "0",
+  width: "100%",
+  height: "100%",
+  background: "rgb(255, 255, 255, 0.4)",
+  textAlign: "center",
+  paddingTop: "21%",
+};
+const customStyles = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+  },
 };
 
 export default function TaskSearchForm() {
@@ -82,6 +107,10 @@ export default function TaskSearchForm() {
   const SPREADSHEET_ID = "10WPahmoB6Im1PyCdUZ_uda3fYijC8jKtHnRBasnTK3Y";
   let [docTitle, setDocTitle] = useState();
   let [memList, setMemList] = useState([]);
+  const [modalIsOpen, setIsOpen] = React.useState(false);
+  let subtitle;
+  let [loading, setLoading] = useState(false);
+  let [color, setColor] = useState("#0E71CC");
 
   const onChangeLevel = (option: any) => {
     setTaskLevel(option);
@@ -258,10 +287,11 @@ export default function TaskSearchForm() {
   }
 
   const handleSubmit = async (event) => {
+    openModal();
     event.preventDefault();
     //https://blueprint.cyberlogitec.com.vn/api/getUserInfoDetails
-    searchRequirement();
-    
+    await searchRequirement();
+    closeModal()
 
   };
 
@@ -422,7 +452,22 @@ export default function TaskSearchForm() {
     });
       
       
-      //Sheet End
+    //Sheet End
+   
+  }
+
+  // modal
+  function openModal() {
+    setIsOpen(true);
+  }
+
+  function afterOpenModal() {
+    // references are now sync'd and can be accessed.
+    subtitle.style.color = '#f00';
+  }
+
+  function closeModal() {
+    setIsOpen(false);
   }
   
   return (
@@ -510,6 +555,31 @@ export default function TaskSearchForm() {
             </tbody>
           </table>
         </div>
+        <Modal
+            isOpen={modalIsOpen}
+            onAfterOpen={afterOpenModal}
+            onRequestClose={closeModal}
+            style={customStyles}
+            contentLabel="Example Modal"
+        >
+            <h2 ref={(_subtitle) => (subtitle = _subtitle)}>Hello</h2>
+            <button onClick={closeModal}>close</button>
+            <div>I am a modal</div>
+            <form>
+            <input />
+            <button>tab navigation</button>
+            <button>stays</button>
+            <button>inside</button>
+            <button>the modal</button>
+            </form>
+        </Modal>
+        <ScaleLoader
+            color={color}
+            loading={loading}
+            cssOverride={override}
+            aria-label="Loading Spinner"
+            data-testid="loader"
+        />
       </form>
       <div className="comment" dangerouslySetInnerHTML={{__html: comment}}></div>
       <div className="pt-8">
