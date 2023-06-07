@@ -3,6 +3,8 @@ import axios from "axios";
 import myData from '../data.json';
 import PointSuggest from './PointSuggest';
 import Select, { components } from "react-select";
+import { GoogleSpreadsheet } from 'google-spreadsheet';
+import ACC_SHEET_API from '../credentials.json';
 
 const InputTrongSoOption = ({
   getStyles,
@@ -71,11 +73,15 @@ export default function TaskSearchForm() {
   const url = 'https://blueprint.cyberlogitec.com.vn/api';
   const currentURL = window.location.href // returns the absolute URL of a page
   const pointDefaultByPharse = myData.pointDefaultByPharse;
-  const lsMember = myData.memList;
+  // const lsMember = myData.memList;
 
   const taskLevelList = myData.taskLevel;
   const defaultTrongSo = taskLevelList[0];
   const [taskLevel, setTaskLevel] = useState(taskLevelList[0]);
+  const SHEET_ID = "Member_List";
+  const SPREADSHEET_ID = "10WPahmoB6Im1PyCdUZ_uda3fYijC8jKtHnRBasnTK3Y";
+  let [docTitle, setDocTitle] = useState();
+  let [memList, setMemList] = useState([]);
 
   const onChangeLevel = (option: any) => {
     setTaskLevel(option);
@@ -100,6 +106,7 @@ export default function TaskSearchForm() {
     const requirementDetail = await  axios.get(`${url}/searchRequirementDetails?reqId=${reqId}`)
     .then(res => {
       setReqDetail(res.data);
+      // selectMemberList();
       return res.data;
     });
 
@@ -123,103 +130,105 @@ export default function TaskSearchForm() {
       return res.data;
     });
     // console.log("requirementDetail", requirementDetail);
-    console.log("myData", myData);
-    
-    axios.get(`${url}/task-details/get-actual-effort-point?reqId=${reqId}`)
-    .then(res => {
-      // console.log("lsPharseMember", lsPharseMember);
-      // console.log("requeriment", requirement);
-      // await setTaskInfo(requirement);
-      let lsReq = res.data;
-      let tmpResult = new Array();
-      if(lsReq.lstActEfrtPnt != undefined && lsReq.lstActEfrtPnt != null && lsReq.lstActEfrtPnt.length > 0) {
-        console.log("----------------");
-        // let addedPoint = taskInfo.lstReq[0].pntNo;
-        let currentTotalPoint = 0;
-        for(let idx = 0; idx < lsPharseMember.length; idx ++){
-          let item = lsPharseMember[idx];
-          const userid = lsPharseMember[idx].usrId;
-          const phsCd =  lsPharseMember[idx].phsCd;
-          const member = lsMember.find(mem => mem.userId == userid);
-          const total = sumEffort(lsReq.lstActEfrtPnt, userid, phsCd);
-       
-          let totalTask = total;
-
-          for(let idx = 0; idx < pointDefaultByPharse.length; idx ++){
-            totalTask += pointDefaultByPharse[idx].mins;
-          }
-
-
-          //Check in default
-          let itemPointDefault = pointDefaultByPharse.filter(point => point.code == phsCd);
-          let standardPoint = 25;
-          let expectPoint = 25;
-          if(member){
-            expectPoint = member.pointOnHour.expect;
-            standardPoint = member.pointOnHour.standard;
-          }
-          item.standardPoint = standardPoint;
-          item.expectPoint = expectPoint;
+    // console.log("myData", myData);
+    let lsMember = await selectMemberList();
+    await axios.get(`${url}/task-details/get-actual-effort-point?reqId=${reqId}`)
+      .then(async (res) => {
+        // console.log("lsPharseMember", lsPharseMember);
+        // console.log("requeriment", requirement);
+        // await setTaskInfo(requirement);
         
-          if(itemPointDefault && itemPointDefault.length > 0){ 
-            //Check Neu la point default
-            item.effortHours = itemPointDefault[0].mins; //12min = 5 point
-            item.bpAdddpoint = itemPointDefault[0].point;
-            item.point = itemPointDefault[0].point;
-           
-          } else {
-            item.effortHours = total; 
-            item.point = parseInt((total / (60 * 1.0)) * expectPoint);
+        // await Promise.resolve(selectMemberList);
+        let lsReq = res.data;
+        let tmpResult = new Array();
+        if(lsReq.lstActEfrtPnt != undefined && lsReq.lstActEfrtPnt != null && lsReq.lstActEfrtPnt.length > 0) {
+          console.log("----------------");
+          // let addedPoint = taskInfo.lstReq[0].pntNo;
+          let currentTotalPoint = 0;
+          for(let idx = 0; idx < lsPharseMember.length; idx ++){
+            let item = lsPharseMember[idx];
+            const userid = lsPharseMember[idx].usrId;
+            const phsCd =  lsPharseMember[idx].phsCd;
+            const member =  lsMember.find(mem => mem.userId == userid);
+            const total = sumEffort(lsReq.lstActEfrtPnt, userid, phsCd);
+        
+            let totalTask = total;
+
+            for(let idx = 0; idx < pointDefaultByPharse.length; idx ++){
+              totalTask += pointDefaultByPharse[idx].mins;
+            }
+
+
+            //Check in default
+            let itemPointDefault = pointDefaultByPharse.filter(point => point.code == phsCd);
+            let standardPoint = 25;
+            let expectPoint = 25;
+            if(member){
+              expectPoint = member.pointOnHour.expect;
+              standardPoint = member.pointOnHour.standard;
+            }
+            item.standardPoint = standardPoint;
+            item.expectPoint = expectPoint;
+          
+            if(itemPointDefault && itemPointDefault.length > 0){ 
+              //Check Neu la point default
+              item.effortHours = itemPointDefault[0].mins; //12min = 5 point
+              item.bpAdddpoint = itemPointDefault[0].point;
+              item.point = itemPointDefault[0].point;
+            
+            } else {
+              item.effortHours = total; 
+              item.point = parseInt((total / (60 * 1.0)) * expectPoint);
+            }
+
+
+            //Tinh theo level task
+            console.log("taskLevel", taskLevel);
+            console.log("taskLevelList", taskLevelList);
+
+            // if(taskLevel.value == undefined) {
+            //   setTaskLevel(taskLevelList[0]);
+            // }
+            if(item.bpAdddpoint > 0 && "PIM_PHS_CDFIN" != item.phsCd){
+              item.bpAdddpoint = item.bpAdddpoint + (expectPoint * taskLevel.value);
+
+            }
+            if(item.point > 0 && "PIM_PHS_CDFIN" != item.phsCd){
+              item.point = (item.point == undefined ? 0: item.point) + (expectPoint * taskLevel.value);
+
+            }
+            tmpResult.push(item);
+
           }
 
-
-          //Tinh theo level task
-          console.log("taskLevel", taskLevel);
-          console.log("taskLevelList", taskLevelList);
-
-          // if(taskLevel.value == undefined) {
-          //   setTaskLevel(taskLevelList[0]);
+          //Update finished pharseeffortHours
+          
+        }
+        // tmpResult.pntNo = lsReq.pntNo;
+        let totalPoint = 0;
+        for(let k = 0; k < tmpResult.length; k ++){
+          totalPoint += tmpResult[k].point;
+          // if("PIM_PHS_CDFIN" == tmpResult[k].phsCd){
+          //   tmpResult[k].point = 1000;
           // }
-          if(item.bpAdddpoint > 0 && "PIM_PHS_CDFIN" != item.phsCd){
-            item.bpAdddpoint = item.bpAdddpoint + (expectPoint * taskLevel.value);
-
-          }
-          if(item.point > 0 && "PIM_PHS_CDFIN" != item.phsCd){
-            item.point = (item.point == undefined ? 0: item.point) + (expectPoint * taskLevel.value);
-
-          }
-          tmpResult.push(item);
-
         }
-
-        //Update finished pharseeffortHours
-        
-      }
-      // tmpResult.pntNo = lsReq.pntNo;
-      let totalPoint = 0;
-      for(let k = 0; k < tmpResult.length; k ++){
-        totalPoint += tmpResult[k].point;
-        // if("PIM_PHS_CDFIN" == tmpResult[k].phsCd){
-        //   tmpResult[k].point = 1000;
-        // }
-      }
-     
-
-      //Check total 
-      requirement.lstReq = requirement.lstReq.filter(item => item.reqId == reqId);
       
-      const gapPoint = requirement.lstReq[0].pntNo - totalPoint; //pntNo
-      console.log("totalPoint", totalPoint);
-      console.log("requirement.lstReq[0]", requirement.lstReq[0].pntNo);
 
-      for(let k = 0; k < tmpResult.length; k ++){
-        if("PIM_PHS_CDFIN" == tmpResult[k].phsCd){
-          tmpResult[k].bpAdddpoint = tmpResult[k].point + gapPoint;
+        //Check total 
+        requirement.lstReq = requirement.lstReq.filter(item => item.reqId == reqId);
+        
+        const gapPoint = requirement.lstReq[0].pntNo - totalPoint; //pntNo
+        console.log("totalPoint", totalPoint);
+        console.log("requirement.lstReq[0]", requirement.lstReq[0].pntNo);
+
+        for(let k = 0; k < tmpResult.length; k ++){
+          if("PIM_PHS_CDFIN" == tmpResult[k].phsCd){
+            tmpResult[k].bpAdddpoint = tmpResult[k].point + gapPoint;
+          }
         }
-      }
-      requirement.totalPoint = totalPoint;
-      setTaskInfo(requirement);
-      setEffortWithMember(tmpResult);
+        requirement.totalPoint = totalPoint;
+        setTaskInfo(requirement);
+        setEffortWithMember(tmpResult);
 
     })
 
@@ -252,6 +261,7 @@ export default function TaskSearchForm() {
     event.preventDefault();
     //https://blueprint.cyberlogitec.com.vn/api/getUserInfoDetails
     searchRequirement();
+    
 
   };
 
@@ -333,6 +343,86 @@ export default function TaskSearchForm() {
     }
     console.log("comment", cmtCtnt);
     setComment(cmtCtnt);
+  }
+  const selectMemberList = async () => {
+    let arrMember = [];
+    //Sheet Start
+    // Initialize the sheet - doc ID is the long id in the sheets URL
+    const doc = new GoogleSpreadsheet(SPREADSHEET_ID); //script data
+    // const doc = new GoogleSpreadsheet('16S2LDwOP3xkkGqXLBb30Pcvvnfui-IPJTXeTOMGCOjk');
+
+    
+    
+    // Initialize Auth - see https://theoephraim.github.io/node-google-spreadsheet/#/getting-started/authentication
+    await doc.useServiceAccountAuth({
+      // env var values are copied from service account credentials generated by google
+      // see "Authentication" section in docs for more info
+      client_email:  ACC_SHEET_API.client_id,
+      private_key: ACC_SHEET_API.private_key,
+    });
+    await doc.loadInfo(); // loads document properties and worksheets
+    console.log("LOAD", doc.title);
+    setDocTitle(doc.title);
+
+    const sheet = doc.sheetsByTitle[SHEET_ID]; // or use doc.sheetsById[id] or doc.sheetsByTitle[title]
+    console.log(sheet.title);
+    console.log(sheet.rowCount);
+    const range = 'A1:AB50';
+    await sheet.loadCells(range); // loads range of cells into local cache - DOES NOT RETURN THE CELLS
+    
+    for(let i = 0; i < 50; i ++) {
+      const empCode = sheet.getCell(i, 0); // access cells using a zero-based index
+      const userId = sheet.getCell(i, 1); // access cells using a zero-based index
+      const fullName = sheet.getCell(i, 2); // access cells using a zero-based index
+      const leaveTeam = sheet.getCell(i, 26); // access cells using a zero-based index = sheet.getCell(i, 2); // access cells using a zero-based index
+      // console.log("leaveTeam.formattedValue", leaveTeam.formattedValue);
+      if(empCode.formattedValue != "" 
+        && userId.formattedValue != "" 
+        && fullName.formattedValue != ""
+        && leaveTeam.formattedValue == "N") {
+            let mem = {
+                "empCode":        sheet.getCell(i, 0).formattedValue,
+                "userId":         sheet.getCell(i, 1).formattedValue,
+                "fullName":       sheet.getCell(i, 2).formattedValue,
+                "currentLevel":   sheet.getCell(i, 3).formattedValue,
+                "lvlCode":        sheet.getCell(i, 4).formattedValue,
+                "levelRating":    sheet.getCell(i, 5).formattedValue,
+                "targetLevel":    sheet.getCell(i, 6).formattedValue,
+                "tagartRating":   sheet.getCell(i, 7).formattedValue,
+                "pointOnHour": {
+                  "standard":   sheet.getCell(i, 8).formattedValue,
+                  "expect":     sheet.getCell(i, 9).formattedValue,
+                  "description": sheet.getCell(i, 10).formattedValue
+                },
+                "role":           sheet.getCell(i, 11).formattedValue.split(","),
+                "workload":       sheet.getCell(i, 12).formattedValue,
+                "pointStandard":  sheet.getCell(i, 13).formattedValue,
+                "teamLocal":      sheet.getCell(i, 14).formattedValue.split(","),
+                "dedicated":      sheet.getCell(i, 15).formattedValue,
+                "blueprint_id":   sheet.getCell(i, 16).formattedValue,
+                "blueprint_nm":   sheet.getCell(i, 17).formattedValue,
+                "clickup_id":     sheet.getCell(i, 18).formattedValue,
+                "clickup_nm":     sheet.getCell(i, 19).formattedValue,
+                "effectDateFrom": sheet.getCell(i, 20).formattedValue,
+                "effectDateTo":   sheet.getCell(i, 21).formattedValue,
+                "preReviewDate":  sheet.getCell(i, 22).formattedValue,
+                "nextReviewDate": sheet.getCell(i, 23).formattedValue,
+                "phone":          sheet.getCell(i, 24).formattedValue,
+                "clvEmail":       sheet.getCell(i, 25).formattedValue,
+                "leaveTeam":      sheet.getCell(i, 26).formattedValue,
+                "leaveCompany":   sheet.getCell(i, 27).formattedValue
+            }
+            arrMember.push(mem);
+      }
+      
+    }
+    // console.log("arrMember", arrMember);
+    return new Promise((resolve, reject) => {
+      resolve(arrMember);
+    });
+      
+      
+      //Sheet End
   }
   
   return (
