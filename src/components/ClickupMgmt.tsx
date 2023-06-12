@@ -9,6 +9,8 @@ import ScaleLoader from "react-spinners/ScaleLoader";
 import ReactDOM from 'react-dom';
 import Modal from 'react-modal';
 // Modal.setAppElement('#side-bar-extension-root');
+import ClickupTableGrid from './ClickupTableGrid';
+import { APP_COLLAPSE_MGMT_WIDTH, APP_EXTEND_MGMT_WIDTH, APP_EXTEND_MGMT_HEIGHT, APP_COLLAPSE_MGMT_HEIGHT} from '../const';
 
 const customStyles = {
     content: {
@@ -2240,7 +2242,16 @@ function openTaskBP(item) {
             // console.log("arr", arr);
             const resultTaskList = await Promise.resolve(genTaskInformation(arr));
             // console.log("resultTaskList", resultTaskList);
-            setTaskList(resultTaskList);
+                    
+            //Format data table 
+            // const task2 = finalListTask.map(function(item, idx) {
+            //     item.idx = idx + 1;
+            //     item.clk_parent_nm = item.parent == null ? item.name : item.parent_nm;
+            //     item.task_nm = item.parent ? item.name : "";
+            //     return item;
+            // });
+            //End format data table
+            setTaskList([]);
             setOriginTaskList(resultTaskList);
             setLoading(false);
         }
@@ -2370,6 +2381,7 @@ function openTaskBP(item) {
         isEnableSearch = false;
         // const memList = await getListMembers(listId);
         // setAllOptions(memList);
+
         return finalListTask;
 
     }
@@ -2559,7 +2571,7 @@ function openTaskBP(item) {
                     // console.log("data", data);
                     let finalListTask = [];
                     if(data && data.length > 0) {
-                        data.map(function (task) {
+                        data.map(function (task, idx) {
                             const assignees = task.assignees.map(item => item.username).join(',');
                             task.assignees_ls = assignees;
                             task.creator_nm = task.creator.username;
@@ -2576,6 +2588,17 @@ function openTaskBP(item) {
                                 task.parent_nm = parent.name;
                             }
                             task.USP = splitUSP(task);
+
+                            //format task
+                            task.idx = idx + 1;
+                            task.clk_parent_nm = task.parent == null ? task.name : task.parent_nm;
+                            task.task_nm = task.parent ? task.name : "";
+                            task.USP_dev_nm = task.USP.dev_nm;
+                            task.USP_dev_point = task.USP.dev_point;
+                            task.USP_test_nm = task.USP.test_nm;
+                            task.USP_test_point = task.USP.test_point;
+                            task.USP_DONE =  parseInt(task.USP.test_point) + parseInt(task.USP.dev_point);
+
                             finalListTask.push(task);
                         })
 
@@ -2669,14 +2692,19 @@ function openTaskBP(item) {
         for(let i = 0; i < copyTaskList.length; i++) {
             let item = copyTaskList[i];
             if(item && item.name) {
-                let promise = await bpSearchRequirement(prjId, item.name);
+                let promise = await bpSearchRequirement(prjId, item.id);
                 if(!promise || promise.length == 0){
-                    const arr = item.name.split("] ");
-                    if(arr.length == 2) {
-                        promise = await bpSearchRequirement(prjId, arr[1]);
-                        if(promise && promise.length > 0) {
-                            promise[0].css = "wrong-name";
+                    promise = await bpSearchRequirement(prjId, item.name);
+                    if(!promise || promise.length == 0){
+                        const arr = item.name.split("] ");
+                        if(arr.length == 2) {
+                            promise = await bpSearchRequirement(prjId, arr[1]);
+                            if(promise && promise.length > 0) {
+                                promise[0].css = "wrong-name";
+                            }
                         }
+                    } else {
+                        promise[0].css = "";
                     }
                 } else {
                     promise[0].css = "";
@@ -2890,7 +2918,6 @@ function openTaskBP(item) {
                 </div>
                 
             </div>
-            
             <div className="table-container-mgmt">
                 
                 <div className="flex flex-flow-col gap-1">
@@ -2951,7 +2978,11 @@ function openTaskBP(item) {
                         />
                     </div>
                 </div>
-                
+                <div style={{width: APP_EXTEND_MGMT_WIDTH - 56}} className="dsg-custom-table">
+                    <ClickupTableGrid 
+                        taskList = {taskList}
+                    />   
+                </div>
             <table className="w-full border border-gray-500 custom-scroll">
                 <thead>
                 <tr className="bg-gray-200">

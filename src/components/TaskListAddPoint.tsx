@@ -5,7 +5,7 @@ import Moment from 'react-moment';
 import 'moment-timezone';
 import TaskDetaillAddPoint from './TaskDetaillAddPoint';
 import TaskSearchForm from './TaskSearchForm';
-
+import ClickupTableGrid from './ClickupTableGrid';
 
 export default function TaskListAddPoint(props) {
   // Moment.locale('en');
