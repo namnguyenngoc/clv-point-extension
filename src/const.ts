@@ -26,7 +26,7 @@ export const URLS = [
   // },
 ] as const;
 
-export const APP_EXTEND_WIDTH = 1200;
+export const APP_EXTEND_WIDTH = 1400;
 export const APP_EXTEND_HEIGHT = 805;
 export const APP_COLLAPSE_WIDTH = 55;
 export const APP_COLLAPSE_HEIGHT = 55;
