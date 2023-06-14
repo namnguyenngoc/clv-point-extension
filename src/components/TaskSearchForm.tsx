@@ -79,6 +79,7 @@ const customStyles = {
     bottom: 'auto',
     marginRight: '-50%',
     transform: 'translate(-50%, -50%)',
+    zindex: '-1',
   },
 };
 
@@ -104,7 +105,9 @@ export default function TaskSearchForm() {
   const defaultTrongSo = taskLevelList[0];
   const [taskLevel, setTaskLevel] = useState(taskLevelList[0]);
   const SHEET_ID = "Member_List";
+  const RANGE_MEMBER_SHEET = 'A1:AM50';
   const SPREADSHEET_ID = "10WPahmoB6Im1PyCdUZ_uda3fYijC8jKtHnRBasnTK3Y";
+
   let [docTitle, setDocTitle] = useState();
   let [memList, setMemList] = useState([]);
   const [modalIsOpen, setIsOpen] = React.useState(false);
@@ -151,7 +154,8 @@ export default function TaskSearchForm() {
         "itrtnId": "_ALL_",
         "beginIdx": 0,
         "endIdx": 200,
-        "picId": "_ALL_"
+        "picId": "_ALL_",
+        "isLoadLast": false
     };
     let lsPharseMember = requirementDetail.lstSkdUsr
     let requirement = await axios.post(`${url}/uiPim001/searchRequirement`,   data
@@ -291,7 +295,7 @@ export default function TaskSearchForm() {
     event.preventDefault();
     //https://blueprint.cyberlogitec.com.vn/api/getUserInfoDetails
     await searchRequirement();
-    closeModal()
+    await closeModal();
 
   };
 
@@ -397,7 +401,7 @@ export default function TaskSearchForm() {
     const sheet = doc.sheetsByTitle[SHEET_ID]; // or use doc.sheetsById[id] or doc.sheetsByTitle[title]
     console.log(sheet.title);
     console.log(sheet.rowCount);
-    const range = 'A1:AB50';
+    const range = RANGE_MEMBER_SHEET; //'A1:AB50'
     await sheet.loadCells(range); // loads range of cells into local cache - DOES NOT RETURN THE CELLS
     
     for(let i = 0; i < 50; i ++) {
@@ -440,7 +444,8 @@ export default function TaskSearchForm() {
                 "phone":          sheet.getCell(i, 24).formattedValue,
                 "clvEmail":       sheet.getCell(i, 25).formattedValue,
                 "leaveTeam":      sheet.getCell(i, 26).formattedValue,
-                "leaveCompany":   sheet.getCell(i, 27).formattedValue
+                "leaveCompany":   sheet.getCell(i, 27).formattedValue,
+                "maxLevelTaskGap":sheet.getCell(i, 33).formattedValue
             }
             arrMember.push(mem);
       }
@@ -466,12 +471,12 @@ export default function TaskSearchForm() {
     subtitle.style.color = '#f00';
   }
 
-  function closeModal() {
+  async function closeModal() {
     setIsOpen(false);
   }
   
   return (
-    <div className="grid grid-flow-row ">
+    <div className="grid grid-flow-row sweet-loading">
       <form className="grid grid-flow-row gap-2" 
             onSubmit={handleSubmit}>
         <div className="grid grid-flow-col gap-1">
@@ -517,7 +522,24 @@ export default function TaskSearchForm() {
           </table>
         </div>
         <div>
-          
+          <Modal
+              isOpen={modalIsOpen}
+              onAfterOpen={afterOpenModal}
+              onRequestClose={closeModal}
+              style={customStyles}
+              contentLabel="Example Modal"
+          >
+              <h2 ref={(_subtitle) => (subtitle = _subtitle)}>Hello</h2>
+              <button onClick={closeModal}>close</button>
+              <div>I am a modal</div>
+          </Modal>
+          <ScaleLoader
+              color={color}
+              loading={loading}
+              cssOverride={override}
+              aria-label="Loading Spinner"
+              data-testid="loader"
+          />
         </div>
         <div>
           <table className="w-full border border-gray-500">
@@ -555,31 +577,7 @@ export default function TaskSearchForm() {
             </tbody>
           </table>
         </div>
-        <Modal
-            isOpen={modalIsOpen}
-            onAfterOpen={afterOpenModal}
-            onRequestClose={closeModal}
-            style={customStyles}
-            contentLabel="Example Modal"
-        >
-            <h2 ref={(_subtitle) => (subtitle = _subtitle)}>Hello</h2>
-            <button onClick={closeModal}>close</button>
-            <div>I am a modal</div>
-            <form>
-            <input />
-            <button>tab navigation</button>
-            <button>stays</button>
-            <button>inside</button>
-            <button>the modal</button>
-            </form>
-        </Modal>
-        <ScaleLoader
-            color={color}
-            loading={loading}
-            cssOverride={override}
-            aria-label="Loading Spinner"
-            data-testid="loader"
-        />
+        
       </form>
       <div className="comment" dangerouslySetInnerHTML={{__html: comment}}></div>
       <div className="pt-8">

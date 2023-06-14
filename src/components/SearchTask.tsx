@@ -154,7 +154,8 @@ export default function SearchTask() {
       "beginIdx": 0,
       "endIdx": 200,
       "seqNo": seqNo,
-      "reqNm": reqNm
+      "reqNm": reqNm,
+      "isLoadLast": false
     };
     console.log("data", data);
     let requirement = await axios.post(`${url}/uiPim001/searchRequirement`, data
