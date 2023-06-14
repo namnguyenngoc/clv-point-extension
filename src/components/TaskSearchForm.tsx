@@ -98,14 +98,14 @@ export default function TaskSearchForm() {
 
   const url = 'https://blueprint.cyberlogitec.com.vn/api';
   const currentURL = window.location.href // returns the absolute URL of a page
-  const pointDefaultByPharse = myData.pointDefaultByPharse;
+  // const pointDefaultByPharse = myData.pointDefaultByPharse;
   // const lsMember = myData.memList;
 
   const taskLevelList = myData.taskLevel;
   const defaultTrongSo = taskLevelList[0];
   const [taskLevel, setTaskLevel] = useState(taskLevelList[0]);
   const SHEET_ID = "Member_List";
-  const RANGE_MEMBER_SHEET = 'A1:AM50';
+  const RANGE_MEMBER_SHEET = 'A1:AQ50';
   const SPREADSHEET_ID = "10WPahmoB6Im1PyCdUZ_uda3fYijC8jKtHnRBasnTK3Y";
 
   let [docTitle, setDocTitle] = useState();
@@ -165,6 +165,7 @@ export default function TaskSearchForm() {
     // console.log("requirementDetail", requirementDetail);
     // console.log("myData", myData);
     let lsMember = await selectMemberList();
+    console.log("----------------lsMember");
     await axios.get(`${url}/task-details/get-actual-effort-point?reqId=${reqId}`)
       .then(async (res) => {
         // console.log("lsPharseMember", lsPharseMember);
@@ -184,30 +185,46 @@ export default function TaskSearchForm() {
             const phsCd =  lsPharseMember[idx].phsCd;
             const member =  lsMember.find(mem => mem.userId == userid);
             const total = sumEffort(lsReq.lstActEfrtPnt, userid, phsCd);
-        
-            let totalTask = total;
-
-            for(let idx = 0; idx < pointDefaultByPharse.length; idx ++){
-              totalTask += pointDefaultByPharse[idx].mins;
+            let pointDefaultByPharse = {
+                "standard": 25,
+                "timeStandard": 0,
+                "expect": 19, //Jnr1
+                "description": ""
             }
-
+            
+           
+            if(member) {
+              pointDefaultByPharse =  member.pointOnHour;
+            }
+            let totalTask = total;
+            // "standard":   sheet.getCell(i, 38).formattedValue,
+            // "timeStandard":  
+            // for(let idx = 0; idx < pointDefaultByPharse.length; idx ++){
+            //   totalTask += pointDefaultByPharse[idx].timeStandard;
+            // }
+            totalTask += parseInt(pointDefaultByPharse.timeStandard);
 
             //Check in default
-            let itemPointDefault = pointDefaultByPharse.filter(point => point.code == phsCd);
+            // let itemPointDefault = pointDefaultByPharse.filter(point => point.code == phsCd);
             let standardPoint = 25;
             let expectPoint = 25;
+
             if(member){
               expectPoint = member.pointOnHour.expect;
               standardPoint = member.pointOnHour.standard;
+              item.minPoint = member.minPoint;
+              item.maxPoint = member.maxPoint;
+              item.target = member.target;
             }
             item.standardPoint = standardPoint;
             item.expectPoint = expectPoint;
+        
           
-            if(itemPointDefault && itemPointDefault.length > 0){ 
+            if("PIM_PHS_CDREG" == phsCd){ 
               //Check Neu la point default
-              item.effortHours = itemPointDefault[0].mins; //12min = 5 point
-              item.bpAdddpoint = itemPointDefault[0].point;
-              item.point = itemPointDefault[0].point;
+              item.effortHours =  parseInt(pointDefaultByPharse.timeStandard); //12min = 5 point
+              item.bpAdddpoint =  parseInt(pointDefaultByPharse.standard);
+              item.point =  parseInt(pointDefaultByPharse.standard);
             
             } else {
               item.effortHours = total; 
@@ -256,7 +273,13 @@ export default function TaskSearchForm() {
 
         for(let k = 0; k < tmpResult.length; k ++){
           if("PIM_PHS_CDFIN" == tmpResult[k].phsCd){
-            tmpResult[k].bpAdddpoint = tmpResult[k].point + gapPoint;
+            const member =  lsMember.find(mem => mem.userId == tmpResult[k].usrId);
+            let FIN_POINT =  tmpResult[k].point + gapPoint;
+            if(member && FIN_POINT < member.pointStandard){
+              FIN_POINT = member.pointStandard;
+            }
+            tmpResult[k].bpAdddpoint = FIN_POINT;
+            totalPoint += parseInt(FIN_POINT);
           }
         }
         requirement.totalPoint = totalPoint;
@@ -424,13 +447,14 @@ export default function TaskSearchForm() {
                 "targetLevel":    sheet.getCell(i, 6).formattedValue,
                 "tagartRating":   sheet.getCell(i, 7).formattedValue,
                 "pointOnHour": {
-                  "standard":   sheet.getCell(i, 8).formattedValue,
+                  "standard":   sheet.getCell(i, 38).formattedValue,
+                  "timeStandard":   sheet.getCell(i, 39).formattedValue,
                   "expect":     sheet.getCell(i, 9).formattedValue,
                   "description": sheet.getCell(i, 10).formattedValue
                 },
                 "role":           sheet.getCell(i, 11).formattedValue.split(","),
                 "workload":       sheet.getCell(i, 12).formattedValue,
-                "pointStandard":  sheet.getCell(i, 13).formattedValue,
+                "pointStandard":  sheet.getCell(i, 13).formattedValue, //FINISHE / RECEIVED
                 "teamLocal":      sheet.getCell(i, 14).formattedValue.split(","),
                 "dedicated":      sheet.getCell(i, 15).formattedValue,
                 "blueprint_id":   sheet.getCell(i, 16).formattedValue,
@@ -445,7 +469,10 @@ export default function TaskSearchForm() {
                 "clvEmail":       sheet.getCell(i, 25).formattedValue,
                 "leaveTeam":      sheet.getCell(i, 26).formattedValue,
                 "leaveCompany":   sheet.getCell(i, 27).formattedValue,
-                "maxLevelTaskGap":sheet.getCell(i, 33).formattedValue
+                "maxLevelTaskGap":sheet.getCell(i, 32).formattedValue,
+                "minPoint"        :sheet.getCell(i, 33).formattedValue,
+                "maxPoint"        :sheet.getCell(i, 34).formattedValue,
+                "target"        :sheet.getCell(i, 36).formattedValue,
             }
             arrMember.push(mem);
       }
@@ -558,8 +585,11 @@ export default function TaskSearchForm() {
                 <th className="px-4 py-2">Pharse Name</th>
                 <th className="px-4 py-2 text-right">Hours</th>
                 <th className="px-4 py-2 text-right">Exp P/H</th>
-                <th className="px-4 py-2">Point</th>
-                <th className="px-4 py-2">BP Point</th>
+                <th className="px-4 py-2 text-right">Point</th>
+                <th className="px-4 py-2 text-right">BP Point</th>
+                <th className="px-4 py-2 text-right">Min</th>
+                <th className="px-4 py-2 text-right">Max</th>
+                <th className="px-4 py-2 text-right">Target</th>
               </tr>
             </thead>
             <tbody>
@@ -571,6 +601,9 @@ export default function TaskSearchForm() {
                   <td className="px-4 py-2 text-right">{result.expectPoint}</td>
                   <td className="px-4 py-2 text-right">{result.point}</td>
                   <td className="px-4 py-2 text-right text-blue-600">{ "PIM_PHS_CDFIN" === result.phsCd ? result.bpAdddpoint : result.point }</td>
+                  <td className="px-4 py-2 text-right bg-light-green">{result.minPoint}</td>
+                  <td className="px-4 py-2 text-right bg-light-green">{result.maxPoint}</td>
+                  <td className="px-4 py-2 text-right bg-light-green">{result.target}</td>
                 </tr>
               ))}
              

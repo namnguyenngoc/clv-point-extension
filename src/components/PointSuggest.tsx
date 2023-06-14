@@ -78,6 +78,7 @@ export default function PointSuggest(props) {
   } 
 
   const datasuggestList = async () => {
+    console.log("PropsSuggest", props);
     const param = {
       "pjtId": prjId,
       "isSearchDeleted":"N",
