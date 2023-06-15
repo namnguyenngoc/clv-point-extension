@@ -1,4 +1,4 @@
-import React, { useState, CSSProperties } from "react";
+import React, { useState, CSSProperties, useEffect } from "react";
 import axios from "axios";
 import myData from '../data.json';
 import PointSuggest from './PointSuggest';
@@ -239,11 +239,11 @@ export default function TaskSearchForm() {
             // if(taskLevel.value == undefined) {
             //   setTaskLevel(taskLevelList[0]);
             // }
-            if(item.bpAdddpoint > 0 && "PIM_PHS_CDFIN" != item.phsCd){
+            if(item.bpAdddpoint > 0){
               item.bpAdddpoint = item.bpAdddpoint + (expectPoint * taskLevel.value);
 
             }
-            if(item.point > 0 && "PIM_PHS_CDFIN" != item.phsCd){
+            if(item.point > 0){
               item.point = (item.point == undefined ? 0: item.point) + (expectPoint * taskLevel.value);
 
             }
@@ -273,18 +273,19 @@ export default function TaskSearchForm() {
 
         for(let k = 0; k < tmpResult.length; k ++){
           if("PIM_PHS_CDFIN" == tmpResult[k].phsCd){
-            const member =  lsMember.find(mem => mem.userId == tmpResult[k].usrId);
-            let FIN_POINT =  tmpResult[k].point + gapPoint;
-            if(member && FIN_POINT < member.pointStandard){
-              FIN_POINT = member.pointStandard;
-            }
-            tmpResult[k].bpAdddpoint = FIN_POINT;
-            totalPoint += parseInt(FIN_POINT);
+            // const member =  lsMember.find(mem => mem.userId == tmpResult[k].usrId);
+            // let FIN_POINT =  tmpResult[k].point + gapPoint;
+            // if(member && FIN_POINT < member.pointStandard){
+            //   FIN_POINT = member.pointStandard;
+            // }
+            tmpResult[k].point = tmpResult[k].point + gapPoint;
+            // totalPoint += parseInt(FIN_POINT);
           }
         }
         requirement.totalPoint = totalPoint;
         setTaskInfo(requirement);
         setEffortWithMember(tmpResult);
+        closeModal();
 
     })
 
@@ -351,11 +352,12 @@ export default function TaskSearchForm() {
       let item = lstSkdObj[i];
           //For update automatic
       item.oldPoint = (item.efrtNo) ? item.efrtNo : 0;
-      if("PIM_PHS_CDFIN" === item.phsCd ){
-        item.newPoint = item.bpAdddpoint;
-      } else {
-        item.newPoint = item.point;
-      }
+      // if("PIM_PHS_CDFIN" === item.phsCd ){
+      //   item.newPoint = item.bpAdddpoint;
+      // } else {
+      //   item.newPoint = item.point;
+      // }
+      item.newPoint = item.point;
       lstPhsPoint.push({
         skdId: item.skdId,
         efrtNo: (item.newPoint) ? item.newPoint : "0"
@@ -502,6 +504,15 @@ export default function TaskSearchForm() {
     setIsOpen(false);
   }
   
+  useEffect(()=>{
+    console.log("Request searchRequirement");
+    // handleSubmit();
+    const reqRequest = async () => {
+      return await searchRequirement();
+    };
+    reqRequest();
+  },[])
+
   return (
     <div className="grid grid-flow-row sweet-loading">
       <form className="grid grid-flow-row gap-2" 
@@ -600,7 +611,7 @@ export default function TaskSearchForm() {
                   <td className="px-4 py-2 text-right">{formatTime(result.effortHours)}</td>
                   <td className="px-4 py-2 text-right">{result.expectPoint}</td>
                   <td className="px-4 py-2 text-right">{result.point}</td>
-                  <td className="px-4 py-2 text-right text-blue-600">{ "PIM_PHS_CDFIN" === result.phsCd ? result.bpAdddpoint : result.point }</td>
+                  <td className="px-4 py-2 text-right text-blue-600">{result.point }</td>
                   <td className="px-4 py-2 text-right bg-light-green">{result.minPoint}</td>
                   <td className="px-4 py-2 text-right bg-light-green">{result.maxPoint}</td>
                   <td className="px-4 py-2 text-right bg-light-green">{result.target}</td>
