@@ -257,18 +257,20 @@ export default function PointSuggest(props) {
           action          : 'REQ_WTC_EFRT',
       };
       console.log("RO", ro);
+      if(cmtCtnt && !cmtCtnt.toUpperCase().includes("UNDEFINED") && !cmtCtnt.toUpperCase().includes("NAN")) {
+        // console.log("reqee", req)
+        const response = await axios.put(`${url}/save-req-job-detail`, ro).then(async function (response) {
+          const msg =   response.data.saveFlg;//saveFlg: 'SAVE_SUCCEED', pstId: 'PST20230303000001056'}
 
-      // console.log("reqee", req)
-      const response = await axios.put(`${url}/save-req-job-detail`, ro).then(async function (response) {
-        const msg =   response.data.saveFlg;//saveFlg: 'SAVE_SUCCEED', pstId: 'PST20230303000001056'}
+          alert(msg);
+          if('SAVE_SUCCEED' == msg) {
+            window.location.reload(false);
 
-        alert(msg);
-        if('SAVE_SUCCEED' == msg) {
-          window.location.reload(false);
-
-        }
-      });
-
+          }
+        });
+      } else {
+        alert(cmtCtnt);
+      }
   }
 
   }

@@ -146,3 +146,17 @@ table.custom-scroll {
 a.link {
   color: blue;
 }
+
+div.ReactModalPortal .ReactModal__Overlay.ReactModal__Overlay--after-open {
+  z-index: 9999;
+  
+}
+
+div.ReactModalPortal .ReactModal__Content.ReactModal__Content--after-open {
+  background: transparent !important;
+  border: none !important;
+}
+
+#side-bar-extension-root .overflow-hidden.main-body {
+  z-index: 9998;
+}
