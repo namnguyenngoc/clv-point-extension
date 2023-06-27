@@ -7,6 +7,7 @@ import { GoogleSpreadsheet } from 'google-spreadsheet';
 import ACC_SHEET_API from '../credentials.json';
 import ScaleLoader from "react-spinners/ScaleLoader";
 import Modal from 'react-modal';
+import moment from 'moment';
 
 const InputTrongSoOption = ({
   getStyles,
@@ -89,6 +90,7 @@ export default function TaskSearchForm() {
 
   let [effortWithMember, setEffortWithMember] = useState([]);
   let [taskInfo, setTaskInfo] = useState({});
+  let [taskInfoSheet, setTaskInfoSheet] = useState({});
   let [reqDetail, setReqDetail] = useState({});
   
   let [suggetList, setSuggetList] = useState([]);
@@ -138,178 +140,198 @@ export default function TaskSearchForm() {
   };
 
   const searchRequirement = async () => {
-    // https://blueprint.cyberlogitec.com.vn/api/uiPim001/searchRequirement
+    openModal();
+       // https://blueprint.cyberlogitec.com.vn/api/uiPim001/searchRequirement
     //https://blueprint.cyberlogitec.com.vn/api/task-details/get-actual-effort-point?reqId=${lsReq[i].reqId}
     const requirementDetail = await  axios.get(`${url}/searchRequirementDetails?reqId=${reqId}`)
-    .then(res => {
+    .then(async(res) => {
       setReqDetail(res.data);
       // selectMemberList();
-      return res.data;
-    });
+      let reqDetail = res.data;
+      const data = {
+        "pjtId": reqDetail.detailReqVO.pjtId,
+          "reqNm": reqDetail.detailReqVO.reqTitNm,
+          "advFlg": "N",
+          "reqStsCd": [
+              "REQ_STS_CDPRC",
+              "REQ_STS_CDOPN"
+          ],
+          "jbTpCd": "_ALL_",
+          "itrtnId": "_ALL_",
+          "beginIdx": 0,
+          "endIdx": 200,
+          "picId": "_ALL_",
+          "isLoadLast": false
+      };
+      let lsPharseMember = reqDetail.lstSkdUsr;
+      let requirement = await axios.post(`${url}/uiPim001/searchRequirement`,   data
+      ).then(async (res) => {
+        let requirementRP = res.data;
+        console.log("----------------lsMember");
+        const detail = await axios.get(`${url}/task-details/get-actual-effort-point?reqId=${reqId}`)
+          .then(async (res) => {
+            let arrReq = [];
+            let lsMember = await selectMemberList();
 
-    const data = {
-      "pjtId": requirementDetail.detailReqVO.pjtId,
-        "reqNm": requirementDetail.detailReqVO.reqTitNm,
-        "advFlg": "N",
-        "reqStsCd": [
-            "REQ_STS_CDPRC",
-            "REQ_STS_CDOPN"
-        ],
-        "jbTpCd": "_ALL_",
-        "itrtnId": "_ALL_",
-        "beginIdx": 0,
-        "endIdx": 200,
-        "picId": "_ALL_",
-        "isLoadLast": false
-    };
-    let lsPharseMember = requirementDetail.lstSkdUsr
-    let requirement = await axios.post(`${url}/uiPim001/searchRequirement`,   data
-    ).then(res => {
-      return res.data;
-    });
-    // console.log("requirementDetail", requirementDetail);
-    // console.log("myData", myData);
-    let lsMember = await selectMemberList();
-    console.log("----------------lsMember");
-    await axios.get(`${url}/task-details/get-actual-effort-point?reqId=${reqId}`)
-      .then(async (res) => {
-        // console.log("lsPharseMember", lsPharseMember);
-        // console.log("requeriment", requirement);
-        // await setTaskInfo(requirement);
-        
-        // await Promise.resolve(selectMemberList);
-        let lsReq = res.data;
-        let tmpResult = new Array();
-        if(lsReq.lstActEfrtPnt != undefined && lsReq.lstActEfrtPnt != null && lsReq.lstActEfrtPnt.length > 0) {
-          console.log("----------------");
-          // let addedPoint = taskInfo.lstReq[0].pntNo;
-          let currentTotalPoint = 0;
-          for(let idx = 0; idx < lsPharseMember.length; idx ++){
-            let item = lsPharseMember[idx];
-            const userid = lsPharseMember[idx].usrId;
-            const phsCd =  lsPharseMember[idx].phsCd;
-            const member =  lsMember.find(mem => mem.userId == userid);
-            const total = sumEffort(lsReq.lstActEfrtPnt, userid, phsCd);
-            let pointDefaultByPharse = {
-                "standard": 25,
-                "timeStandard": 0,
-                "expect": 19, //Jnr1
-                "description": ""
-            }
-            
-           
-            if(member) {
-              pointDefaultByPharse =  member.pointOnHour;
-            }
-            let totalTask = total;
-            // "standard":   sheet.getCell(i, 38).formattedValue,
-            // "timeStandard":  
-            // for(let idx = 0; idx < pointDefaultByPharse.length; idx ++){
-            //   totalTask += pointDefaultByPharse[idx].timeStandard;
-            // }
-            totalTask += parseInt(pointDefaultByPharse.timeStandard);
-
-            //Check in default
-            // let itemPointDefault = pointDefaultByPharse.filter(point => point.code == phsCd);
-            let standardPoint = 25;
-            let expectPoint = 25;
-
-            if(member){
-              expectPoint = member.pointOnHour.expect;
-              standardPoint = member.pointOnHour.standard;
-              item.minPoint = member.minPoint;
-              item.maxPoint = member.maxPoint;
-              item.target = member.target;
-            }
-            item.standardPoint = standardPoint;
-            item.expectPoint = expectPoint;
-        
+            await selectTaskList("A", requirementRP).then(async (result) => {
+              let taskSheet = result;
+              // let taskGoogleSheet = await selectTaskList("A");
+              // let newTask: any;
+              // if(taskInfo && taskGoogleSheet.length > 0){
+              //   newTask = {
+              //     sheetTask: taskGoogleSheet[0]
+              //   };
           
-            if("PIM_PHS_CDREG" == phsCd){ 
-              //Check Neu la point default
-              item.effortHours =  parseInt(pointDefaultByPharse.timeStandard); //12min = 5 point
-              item.bpAdddpoint =  parseInt(pointDefaultByPharse.standard);
-              item.point =  parseInt(pointDefaultByPharse.standard);
+              // }
+              // await Promise.resolve(selectMemberList);
+              let lsReq = res.data;
+              let tmpResult = new Array();
+              if(lsReq.lstActEfrtPnt != undefined && lsReq.lstActEfrtPnt != null && lsReq.lstActEfrtPnt.length > 0) {
+                console.log("----------------");
+                // let addedPoint = taskInfo.lstReq[0].pntNo;
+                let currentTotalPoint = 0;
+                for(let idx = 0; idx < lsPharseMember.length; idx ++){
+                  let item = lsPharseMember[idx];
+                  const userid = lsPharseMember[idx].usrId;
+                  const phsCd =  lsPharseMember[idx].phsCd;
+                  const member =  lsMember.find(mem => mem.userId == userid);
+                  const total = sumEffort(lsReq.lstActEfrtPnt, userid, phsCd);
+                  let pointDefaultByPharse = {
+                      "standard": 25,
+                      "timeStandard": 0,
+                      "expect": 19, //Jnr1
+                      "description": ""
+                  }
+                  
+                
+                  if(member) {
+                    pointDefaultByPharse =  member.pointOnHour;
+                  }
+                  let totalTask = total;
+                  totalTask += parseInt(pointDefaultByPharse.timeStandard);
+
+                  //Check in default
+                  // let itemPointDefault = pointDefaultByPharse.filter(point => point.code == phsCd);
+                  let standardPoint = 25;
+                  let expectPoint = 25;
+
+                  if(member){
+                    expectPoint = member.pointOnHour.expect;
+                    standardPoint = member.pointOnHour.standard;
+                    item.minPoint = member.minPoint;
+                    item.maxPoint = member.maxPoint;
+                    item.target = member.target;
+                  }
+                  item.standardPoint = standardPoint;
+                  item.expectPoint = expectPoint;
+              
+                
+                  if("PIM_PHS_CDREG" == phsCd){ 
+                    //Check Neu la point default
+                    item.effortHours =  parseInt(pointDefaultByPharse.timeStandard); //12min = 5 point
+                    item.bpAdddpoint =  parseInt(pointDefaultByPharse.standard);
+                    item.point =  parseFloat(pointDefaultByPharse.standard);
+                  
+                  } else {
+                    if("PIM_PHS_CDIMP" == phsCd){ 
+                      let estByMember = 0;
+                      estByMember = (taskSheet && taskSheet.length > 0) ? taskSheet[0].effortDev : 0;
+
+                      item.estHours = estByMember * 60; //Hour
+                      item.effortHours = total; 
+
+                      let pointSuggest = estByMember > 0 ? estByMember : (total*1.0) / (60 * 1.0);
+                      item.point = Math.ceil(parseFloat(pointSuggest) * expectPoint);
+                    } else {
+                      if("PIM_PHS_CDTSD" == phsCd){ 
+                        let estByMember = 0;
+                        estByMember = (taskSheet && taskSheet.length > 0) ? taskSheet[0].effortTest : 0;
+  
+                        item.estHours = estByMember * 60; //Hour
+                        item.effortHours = total; 
+  
+                        let pointSuggest = estByMember > 0 ? estByMember : (total*1.0) / (60 * 1.0);
+                        item.point = Math.ceil(parseFloat(pointSuggest) * expectPoint);
+                      } else {
+                        item.effortHours = total; 
+                        item.point = Math.ceil(parseFloat((total / (60 * 1.0)) * expectPoint));
+                      }
+                      
+                    }
+                  }
+
+
+                  //Tinh theo level task
+
+                  // if(taskLevel.value == undefined) {
+                  //   setTaskLevel(taskLevelList[0]);
+                  // }
+                  if(item.bpAdddpoint > 0){
+                    item.bpAdddpoint = item.bpAdddpoint + (expectPoint * taskLevel.value);
+
+                  }
+                  if(item.point > 0){
+                    item.point = (item.point == undefined ? 0: item.point) + (expectPoint * taskLevel.value);
+
+                  }
+                  tmpResult.push(item);
+
+                }
+
+                //Update finished pharseeffortHours
+                
+              }
+              // tmpResult.pntNo = lsReq.pntNo;
+              let totalPoint = 0;
+              for(let k = 0; k < tmpResult.length; k ++){
+                totalPoint += tmpResult[k].point;
+                // if("PIM_PHS_CDFIN" == tmpResult[k].phsCd){
+                //   tmpResult[k].point = 1000;
+                // }
+              }
             
-            } else {
-              item.effortHours = total; 
-              item.point = parseInt((total / (60 * 1.0)) * expectPoint);
-            }
 
+              //Check total 
+              requirementRP.lstReq = requirementRP.lstReq.filter(item => item.reqId == reqId);
+              
+              const gapPoint = requirementRP.lstReq[0].pntNo - totalPoint; //pntNo
+              console.log("totalPoint", totalPoint);
+              console.log("requirement.lstReq[0]", requirementRP.lstReq[0].pntNo);
 
-            //Tinh theo level task
-            console.log("taskLevel", taskLevel);
-            console.log("taskLevelList", taskLevelList);
-
-            // if(taskLevel.value == undefined) {
-            //   setTaskLevel(taskLevelList[0]);
-            // }
-            if(item.bpAdddpoint > 0){
-              item.bpAdddpoint = item.bpAdddpoint + (expectPoint * taskLevel.value);
-
-            }
-            if(item.point > 0){
-              item.point = (item.point == undefined ? 0: item.point) + (expectPoint * taskLevel.value);
-
-            }
-            tmpResult.push(item);
-
-          }
-
-          //Update finished pharseeffortHours
+              for(let k = 0; k < tmpResult.length; k ++){
+                if("PIM_PHS_CDFIN" == tmpResult[k].phsCd){
+                  tmpResult[k].point = tmpResult[k].point + gapPoint;
+                  // totalPoint += parseInt(FIN_POINT);
+                }
+              }
+              requirementRP.totalPoint = totalPoint;
+              setTaskInfo(requirementRP);
+              setEffortWithMember(tmpResult);
+              closeModal();
           
-        }
-        // tmpResult.pntNo = lsReq.pntNo;
-        let totalPoint = 0;
-        for(let k = 0; k < tmpResult.length; k ++){
-          totalPoint += tmpResult[k].point;
-          // if("PIM_PHS_CDFIN" == tmpResult[k].phsCd){
-          //   tmpResult[k].point = 1000;
-          // }
-        }
-      
+            }) //selectTaskList;
 
-        //Check total 
-        requirement.lstReq = requirement.lstReq.filter(item => item.reqId == reqId);
-        
-        const gapPoint = requirement.lstReq[0].pntNo - totalPoint; //pntNo
-        console.log("totalPoint", totalPoint);
-        console.log("requirement.lstReq[0]", requirement.lstReq[0].pntNo);
+          }).catch((error) => {
+            console.log("error-314", error);
+            closeModal();
+          }) //get-actual-effort-point
 
-        for(let k = 0; k < tmpResult.length; k ++){
-          if("PIM_PHS_CDFIN" == tmpResult[k].phsCd){
-            // const member =  lsMember.find(mem => mem.userId == tmpResult[k].usrId);
-            // let FIN_POINT =  tmpResult[k].point + gapPoint;
-            // if(member && FIN_POINT < member.pointStandard){
-            //   FIN_POINT = member.pointStandard;
-            // }
-            tmpResult[k].point = tmpResult[k].point + gapPoint;
-            // totalPoint += parseInt(FIN_POINT);
-          }
-        }
-        requirement.totalPoint = totalPoint;
-        setTaskInfo(requirement);
-        setEffortWithMember(tmpResult);
-        closeModal();
-
-    })
-
+      });
+    }).then(() => {
+      closeModal();
+    }).catch((error) => {
+      closeModal();
+    });
   }
 
   function sumEffort (lsData, userid, phsCd) {
-    // console.log(lsData);
-    // console.log(userName);/
     let sum = 0;
     for (let i = 0; i < lsData.length; i ++) {
       if(userid == lsData[i].usrId && phsCd == lsData[i].phsCd){
         sum += parseInt(lsData[i].actEfrtMnt);
       }
     }
-    // if("PIM_PHS_CDREG" == phsCd) {
-    //   return 10;
-    // } else if ("PIM_PHS_CDIMP" == phsCd){
-    //   return sum - 10;
-    // }
+
     return sum;
   }
 
@@ -340,16 +362,65 @@ export default function TaskSearchForm() {
               '</div> ';
           break;
       //update start date current phase
+      //update start date current phase
+      case "actual":
+        comment = '<div class="system-comment">' + (cmtVO.addSts ? "Added" : "Removed") + ' time worked:</div>' +
+            '<div style="margin-left: 10px"> <b><i> &nbsp; Phase Name: </i></b>' + cmtVO.phsNm + '</div>' +
+            '<div style="margin-left: 10px"> <b><i> &nbsp; Job Category: </i></b>' + cmtVO.jbNm + '</div>' +
+            '<div style="margin-left: 10px"> <b><i> &nbsp; Time Worked : </i></b>' + cmtVO.wrkTm + '</div>' +
+            '<div style="margin-left: 10px"> <b><i> &nbsp; Date: </i></b>' + cmtVO.dt + '</div>';
+        break;
+    case "updActEffPnt":
+        comment = '<div class="system-comment">' + (cmtVO.addSts ? "Updated" : "Removed") + ' time worked:</div>' +
+            '<div style="margin-left: 10px"> <b><i> &nbsp; Phase Name: </i></b>' + cmtVO.phsNm + '</div>' +
+            '<div style="margin-left: 10px"> <b><i> &nbsp; Job Category: </i></b>' + cmtVO.jbNm + '</div>' +
+            '<div style="margin-left: 10px"> <b><i> &nbsp; Time Worked : </i></b>' + cmtVO.wrkTm + '</div>' +
+            '<div style="margin-left: 10px"> <b><i> &nbsp; Date: </i></b>' + cmtVO.dt + '</div>';
+        break;
      
     }
     return comment;
   } 
 
-  const logWorkFinish = async ( ) => {
+  const logWorkFinish = async () => {
     //https://blueprint.cyberlogitec.com.vn/api/task-details/add-actual-effort-point
     // Req
     // {"usrId":"namnnguyen","wrkDt":"20230621","reqId":"PRQ20230607000000031","pjtId":"PJT20211119000000001","subPjtId":"PJT20211119000000001","cmt":"Done task.","jbId":"JOB20211125000000001","phsCd":"PIM_PHS_CDFIN","phsNm":"Finish","jbNm":"Skill","wrkTm":" 20 Minute","dt":"Jun 21, 2023","addSts":true,"type":"actual","actEfrtMnt":20,"cmtCtnt":"<div class=\"system-comment\">Added time worked:</div><div style=\"margin-left: 10px\"> <b><i> &nbsp; Phase Name: </i></b>Finish</div><div style=\"margin-left: 10px\"> <b><i> &nbsp; Job Category: </i></b>Skill</div><div style=\"margin-left: 10px\"> <b><i> &nbsp; Time Worked : </i></b> 20 Minute</div><div style=\"margin-left: 10px\"> <b><i> &nbsp; Date: </i></b>Jun 21, 2023</div>","pstTpCd":"PST_TP_CDACT"}
-    
+    let w_date_log = moment(new Date()).format("ll");
+    let ro = {
+        "usrId": "namnnguyen",
+        "wrkDt": moment(new Date()).format("YYYYMMDD"),  
+        "reqId": reqDetail.detailReqVO.reqId,
+        "pjtId": reqDetail.detailReqVO.pjtId,
+        "subPjtId": reqDetail.detailReqVO.subPjtId,
+        "cmt": "Done task.",
+        "jbId": "JOB20211125000000001",
+        "phsCd": "PIM_PHS_CDFIN",
+        "phsNm": "Finish",
+        "jbNm":  "Skill",
+        "wrkTm": " 20 Minute",
+        "dt": w_date_log,
+        "addSts": true,
+        "type": "actual",
+        "actEfrtMnt": 20,
+        "cmtCtnt": "",
+        "pstTpCd": "PST_TP_CDACT"
+    }
+    let cnt = buildComment(ro);
+    if(cnt) {
+      ro.cmtCtnt = cnt;
+      console.log("commnt", cnt);
+      let response = axios.post(`${url}/task-details/add-actual-effort-point`, ro).then(async function (response) {
+        const msg =   response.data.saveFlg;//saveFlg: 'SAVE_SUCCEED', pstId: 'PST20230303000001056'}
+
+          alert(msg);
+          if('SAVE_SUCCEED' == msg) {
+            window.location.reload(false);
+
+          }
+      });
+
+    }
     // Response
     // {"msg":"Saved successfully!","saveFlg":"SAVE_SUCCEED","msgTp":"Success","resultVO":{"className":"com.dou.pim.models.ActualEffortPointVO","actEfrtSeqNo":"1274341","usrId":"namnnguyen","phsCd":"PIM_PHS_CDFIN","jbId":"JOB20211125000000001","cmt":"Done task.","wrkDt":"20230621","actEfrtMnt":"20","phsNm":"Finish","usrNm":"Nam Ngoc Nguyen","jbNm":"Skill","mode":0},"pstId":"PST20230622000001586"}
   }
@@ -510,14 +581,14 @@ export default function TaskSearchForm() {
    
   }
 
-  const selectTaskList = async (team) => {
+  const selectTaskList = async (team, req) => {
     if(!team) {
       team = "Team B";
     }
     let taskList = [];
     //Sheet Start
     // Initialize the sheet - doc ID is the long id in the sheets URL
-    const doc = new GoogleSpreadsheet(MGMT_TASK_SPREADSHEET_ID); //script data
+    const doc = await new GoogleSpreadsheet(MGMT_TASK_SPREADSHEET_ID); //script data
     // const doc = new GoogleSpreadsheet('16S2LDwOP3xkkGqXLBb30Pcvvnfui-IPJTXeTOMGCOjk');
 
     
@@ -548,9 +619,14 @@ export default function TaskSearchForm() {
     let estHourDev = 0;
     let estHourTest = 0;
     
-    if(taskInfo){
+    // return new Promise((resolve, reject) => {
+    //   resolve(res.data);
+    // });
+    // return res.data;
+ 
+    if(req && req.lstReq && req.lstReq.length > 0){
       
-      let reqName = taskInfo.lstReq[0].reqTitNm;
+      let reqName = req.lstReq[0].reqTitNm;
 
       var chuoi = reqName;
       var pattern = /\[(.*?)\]/g;
@@ -580,57 +656,63 @@ export default function TaskSearchForm() {
           }
           if(clickupId){
             taskList = [];
-            for(let i = 0; i < sheet.rowCount; i ++) {
-              const sheetClickupId = sheet.getCell(i, 2); // access cells using a zero-based index
-              const sheetStartDate = sheet.getCell(i, 11); // access cells using a zero-based index
-              const sheetEndDate = sheet.getCell(i, 12); // access cells using a zero-based index
-              const sheetSprint = sheet.getCell(i, 23); // access cells using a zero-based index
-              const sheetEffortDev = sheet.getCell(i, 13); // access cells using a zero-based index
-
-
-              if(sheetClickupId.formattedValue == clickupId
-                && sprint == sheetSprint.formattedValue) {
-                    let mem = {
-                        "sprint": sprint,
-                        "effortDev": sheetEffortDev.formattedValue,
-                        "startDate":sheetStartDate.formattedValue,
-                        "endDate": sheetEndDate.formattedValue,
-                        "clickupId":sheetClickupId.formattedValue,
-                        
-                        
-                    }
-                    taskList.push(mem);
+            try {
+              for(let i = 0; i < sheet.rowCount; i ++) {
+                const sheetClickupId = sheet.getCell(i, 2); // access cells using a zero-based index
+                const sheetStartDate = sheet.getCell(i, 11); // access cells using a zero-based index
+                const sheetEndDate = sheet.getCell(i, 12); // access cells using a zero-based index
+                const sheetSprint = sheet.getCell(i, 23); // access cells using a zero-based index
+                const sheetEffortDev = sheet.getCell(i, 13); // access cells using a zero-based index
+                const sheetEffortTest = sheet.getCell(i, 14); // access cells using a zero-based index
+  
+  
+                if(sheetClickupId.formattedValue == clickupId
+                  && sprint == sheetSprint.formattedValue) {
+                      let mem = {
+                          "sprint": sprint,
+                          "effortDev": sheetEffortDev.formattedValue,
+                          "effortTest": sheetEffortTest.formattedValue,
+                          "startDate":sheetStartDate.formattedValue,
+                          "endDate": sheetEndDate.formattedValue,
+                          "clickupId":sheetClickupId.formattedValue,
+                          
+                          
+                      }
+                      taskList.push(mem);
+                }
+                
               }
-              
+            } catch (error) {
+              console.log("sheet-each", error);
             }
+            
           }
         }
       }
       // console.log("arrMember", arrMember);
-      
+      // return taskList;
       return new Promise((resolve, reject) => {
         resolve(taskList);
       });
 
     }
-    
     //Sheet End
    
   }
 
   const checkEstimateTask = async () => {
-    setIsOpen(true);
-    const taskList = await selectTaskList("A");
-    if(taskList && taskList.length > 0){
-      let newTask = {
-        ...taskInfo,
-        sheetTask: taskList[0]
-      };
-
-      setTaskInfo(newTask);
-    }
-    setIsOpen(false);
-    console.log("taskList", taskList);
+    // setIsOpen(true);
+    let memberTaskInfo = {};
+   
+    selectTaskList("A").then(async (item)=>{
+      if(item && item.length > 0){
+       
+        memberTaskInfo = item[0];
+      }
+    });
+    return new Promise((resolve, reject) => {
+      resolve(memberTaskInfo);
+    });
   }
   // modal
   function openModal() {
@@ -639,7 +721,7 @@ export default function TaskSearchForm() {
 
   function afterOpenModal() {
     // references are now sync'd and can be accessed.
-    subtitle.style.color = '#f00';
+    // subtitle.style.color = '#f00';
   }
 
   async function closeModal() {
@@ -649,15 +731,13 @@ export default function TaskSearchForm() {
   
   useEffect(()=>{
     console.log("Request searchRequirement");
-    // handleSubmit();
-    const reqRequest = async () => {
-      return await searchRequirement();
-    };
-    reqRequest();
-
-    setTimeout(() => {
-      setIsOpen(false);
-    }, 5000);
+    searchRequirement().then(() => {
+      closeModal();
+    });
+    // // checkTaskSheet();
+    // setTimeout(() => {
+    //   setIsOpen(false);
+    // }, 5000);
   },[])
 
   return (
@@ -748,7 +828,7 @@ export default function TaskSearchForm() {
               <tr className="bg-gray-200">
                 <th className="px-4 py-2 text-blue-600"
                   onClick={event => checkEstimateTask()}
-                >Estimate: {taskInfo.sheetTask ? taskInfo.sheetTask.effortDev : 0}h (point) 
+                >Estimate: {taskInfoSheet ? taskInfoSheet.effortDev : 0}h (point) 
                 </th>
 
                 <th className="px-4 py-2">Effort Point: { (taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0) ? taskInfo.lstReq[0].pntNo : 0}</th>
@@ -762,7 +842,8 @@ export default function TaskSearchForm() {
               <tr className="bg-gray-200">
                 <th className="px-4 py-2">Member</th>
                 <th className="px-4 py-2">Pharse Name</th>
-                <th className="px-4 py-2 text-right">Hours</th>
+                <th className="px-4 py-2 text-right">Time Worked</th>
+                <th className="px-4 py-2 text-right">EST (H)</th>
                 <th className="px-4 py-2 text-right">Exp P/H</th>
                 <th className="px-4 py-2 text-right">Point</th>
                 <th className="px-4 py-2 text-right">BP Point</th>
@@ -773,10 +854,11 @@ export default function TaskSearchForm() {
             </thead>
             <tbody>
               {effortWithMember.map((result) => (
-                <tr key={result.usrId} className="border-t">
+                <tr key={result.usrId} className={result.effortHours > result.estHours ? "border-t bg-misty" : "border-t"}>
                   <td className="px-4 py-2">{result.usrNm}</td>
                   <td className="px-4 py-2">{result.phsNm}</td>
                   <td className="px-4 py-2 text-right">{formatTime(result.effortHours)}</td>
+                  <td className="px-4 py-2 text-right">{formatTime(result.estHours)}</td>
                   <td className="px-4 py-2 text-right">{result.expectPoint}</td>
                   <td className="px-4 py-2 text-right">{result.point}</td>
                   <td className="px-4 py-2 text-right text-blue-600">{result.point }</td>
