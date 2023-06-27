@@ -5,117 +5,16 @@ import PointSuggest from './PointSuggest';
 import Select, { components } from "react-select";
 import { WEB_INFO } from '../const';
 
-export default function SearchTask() {
+export default function SearchTask(props) {
   const url = WEB_INFO.BLUEPRINT.API;
   const pjtId = WEB_INFO.BLUEPRINT.PROJECTS.NEW_FWD.ID;
 
   let [conditionSearch, setConditionSearch] = useState("");
+  let [clickupID, setClickupID] = useState("");
+
   let [seqNo, setSeqNo] = useState("");
   let [lstReq, setLstReq] = useState([]);
-  // async function searchRequirement() {
-  //   if (!pageChanged) {
-  //     resetPaging();
-  //   }
-  //   let reqNm;
-  //   let seqNo;
-  //   const advFlg = $$("advSearchToggle").getValue();
-  
-  //   const pjtId = $$("projectCate").getSelectedItem().pjtId;
-  //   if (!pjtId) return;
-  
-  //   let dueFmDt = "";
-  //   let dueToDt = "";
-  //   let rgstFmDt = "";
-  //   let rgstToDt = "";
-  //   let finFmDt = "";
-  //   let finToDt = "";
-  
-  //   const dueFm = $$("dueFmDt").getValue();
-  //   const dueTo = $$("dueToDt").getValue();
-  //   if (moment(dueFm).isValid())
-  //     dueFmDt = moment(dueFm).format(PARAM_DATE_FORMAT);
-  //   if (moment(dueTo).isValid())
-  //     dueToDt = moment(dueTo).format(PARAM_DATE_FORMAT);
-  
-  //   const rgstFm = $$("rgstFmDt").getValue();
-  //   const rgstTo = $$("rgstToDt").getValue();
-  //   if (moment(rgstFm).isValid())
-  //     rgstFmDt = moment(rgstFm).format(PARAM_DATE_FORMAT);
-  //   if (moment(rgstTo).isValid())
-  //     rgstToDt = moment(rgstTo).format(PARAM_DATE_FORMAT);
-  
-  //   const finFm = $$("finFmDt").getValue();
-  //   const finTo = $$("finToDt").getValue();
-  //   if (moment(finFm).isValid())
-  //     finFmDt = moment(finFm).format(PARAM_DATE_FORMAT);
-  //   if (moment(finTo).isValid())
-  //     finToDt = moment(finTo).format(PARAM_DATE_FORMAT);
-  
-  //   //CHECK INPUT IS SEQ OR TITLE
-  //   if ($$("reqTitNm").getValue().length > 0) {
-  //     let arrReqNm = $$("reqTitNm").getValue().trim().split(" ");
-  //     if (arrReqNm.length > 0) {
-  //       if (arrReqNm[0].substring(0, 1) !== "#") {
-  //         //check format [#...]
-  //         reqNm = $$("reqTitNm").getValue();
-  //       } else if (arrReqNm[0].substring(0, 1) === "#") {
-  //         //check format #...
-  //         if (
-  //           !isNaN(Number(arrReqNm[0].substring(1, arrReqNm[0].length))) &&
-  //           arrReqNm[0].substring(1, arrReqNm[0].length) !== "" &&
-  //           arrReqNm.length === 1
-  //         )
-  //           seqNo = arrReqNm[0].substring(1, arrReqNm[0].length);
-  //         else reqNm = $$("reqTitNm").getValue();
-  //       } else reqNm = $$("reqTitNm").getValue();
-  //     }
-  //   }
-  
-  //   let ro = {
-  //     pjtId: pjtId,
-  //     seqNo: seqNo,
-  //     reqNm: reqNm,
-  //     advFlg: advFlg,
-  //     reqStsCd: $$("stsCbb")
-  //       .getValue()
-  //       .split(",")
-  //       .filter(function (item) {
-  //         return item;
-  //       }),
-  //     jbTpCd: $$("jobTypeCbb").getValue(),
-  //     itrtnId: $$("iterCbb").getValue(),
-  //     beginIdx: beginIdx,
-  //     endIdx: endIdx,
-  //     picId: $$("picCbb").getValue(),
-  //   };
-  
-  //   if (advFlg === "Y") {
-  //     ro = {
-  //       ...ro,
-  //       creUsrId: $$("requestorCbb").getValue() || "",
-  //       assiUsrId: $$("asgneeCbb").getValue() || "",
-  //       stDt: dueFmDt,
-  //       endDt: dueToDt,
-  //       reqPhsCd: $$("phsCbb").getValue() || "",
-  //       regstStDt: rgstFmDt,
-  //       regstEndDt: rgstToDt,
-  //       finStDt: finFmDt,
-  //       finEndDt: finToDt,
-  //       imptCd: $$("imptCbb").getValue() || "",
-  //       rltIssCd: $$("rltCbb").getValue() || "",
-  //     };
-  //   }
-  
-  //   if (isNotEmpty(chartPhsCd))
-  //     ro = {
-  //       ...ro,
-  //       chartPhsCd: chartPhsCd,
-  //     };
-  
-  //   roExport={
-  //     ...ro,
-  //   }
-  
+ 
   //   const response = await axios.post(requestURL + "searchRequirement", ro);
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
@@ -123,6 +22,36 @@ export default function SearchTask() {
     }
   }
 
+  const handleKeyDownClickup = (event) => {
+    if (event.key === 'Enter') {
+      clickupGetTask();
+    }
+  }
+
+  const clickupGetTask = async () => {
+    var config = {
+      method: 'get',
+      url: 'https://api.clickup.com/api/v2/task/865byff8t',
+      mode: 'no-cors',
+      withCredentials: true,
+      credentials: 'same-origin',
+      headers: { 
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': '*',
+        'Access-Control-Allow-Credentials': 'true',
+        'Authorization': 'pk_32193054_YQNFO05VHHM9ABEJUTOE8YUPS7RII2JN'
+      }
+    };
+    
+    axios(config)
+    .then(function (response) {
+      console.log(JSON.stringify(response.data));
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+    
+  }
   const searchRequirement = async () => {
    
     let seqNo;
@@ -191,6 +120,16 @@ export default function SearchTask() {
             defaultValue={conditionSearch}
             onChange={event => setConditionSearch(event.target.value) }
             onKeyDown={handleKeyDown}
+            className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-full"
+          />
+        </div>
+        <div>
+          <input
+            type="text"
+            id="clickupID"
+            defaultValue={clickupID}
+            onChange={event => setClickupID(event.target.value) }
+            onKeyDown={handleKeyDownClickup}
             className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-full"
           />
         </div>

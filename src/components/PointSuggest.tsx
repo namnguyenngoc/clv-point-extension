@@ -389,7 +389,7 @@ export default function PointSuggest(props) {
                 <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg" disabled={props.total == 0}>
                   Suggest
                 </button>
-                <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg ml-4" disabled={totalPoint == 0}  onClick={saveBP}>
+                <button type="submit" className="bg-green text-white py-2 px-4 rounded-lg ml-4" disabled={totalPoint == 0}  onClick={saveBP}>
                   Save Point Task
                 </button>
               </th>

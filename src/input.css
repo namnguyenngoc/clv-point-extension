@@ -83,6 +83,10 @@ table.custom-scroll {
   background-color: lightgreen;
 }
 
+.bg-green {
+  background: green !important;
+}
+
 .main-layout {
   /* width: 80%;
   box-shadow: rgb(0 0 0 / 62%) 0px 0px 5px;
@@ -155,6 +159,7 @@ div.ReactModalPortal .ReactModal__Overlay.ReactModal__Overlay--after-open {
 div.ReactModalPortal .ReactModal__Content.ReactModal__Content--after-open {
   background: transparent !important;
   border: none !important;
+  overflow: hidden !important;
 }
 
 #side-bar-extension-root .overflow-hidden.main-body {

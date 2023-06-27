@@ -8,6 +8,8 @@ import ACC_SHEET_API from '../credentials.json';
 import ScaleLoader from "react-spinners/ScaleLoader";
 import Modal from 'react-modal';
 import moment from 'moment';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const InputTrongSoOption = ({
   getStyles,
@@ -87,7 +89,8 @@ const customStyles = {
 export default function TaskSearchForm() {
   let [reqId, setReqId] = useState("");
   let [pointOnHour, setPointOnHour] = useState(25); //Point senior
-
+  let [sprintNumber, setSprintNumber] = useState("");
+  let [clickID, setClickID] = useState("");
   let [effortWithMember, setEffortWithMember] = useState([]);
   let [taskInfo, setTaskInfo] = useState({});
   let [taskInfoSheet, setTaskInfoSheet] = useState({});
@@ -112,7 +115,7 @@ export default function TaskSearchForm() {
 
 
   //Team B Manager Sheet
-  const MGMT_TASK_SHEET_ID = "TASK_EXTENSIONS";
+  const MGMT_TASK_SHEET_ID = "NEW_FWD_TEAMB_TASKS";
   const MGMT_TASK_RANGE_MEMBER_SHEET = 'A1:AO';
   const MGMT_TASK_SPREADSHEET_ID = "1jsBbrJZ8AYuNTRiBMLfcngHi0f6vCF1XocbvvpJDBAM";
   let [docTitle, setDocTitle] = useState();
@@ -121,7 +124,9 @@ export default function TaskSearchForm() {
   let subtitle;
   let [loading, setLoading] = useState(false);
   let [color, setColor] = useState("#0E71CC");
-
+  
+  const [logWorkDate, setLogWorkDate] = useState(new Date());
+  
   const onChangeLevel = (option: any) => {
     setTaskLevel(option);
   }
@@ -146,7 +151,7 @@ export default function TaskSearchForm() {
     const requirementDetail = await  axios.get(`${url}/searchRequirementDetails?reqId=${reqId}`)
     .then(async(res) => {
       setReqDetail(res.data);
-      // selectMemberList();
+      // selectMember_TaskList();
       let reqDetail = res.data;
       const data = {
         "pjtId": reqDetail.detailReqVO.pjtId,
@@ -171,10 +176,14 @@ export default function TaskSearchForm() {
         const detail = await axios.get(`${url}/task-details/get-actual-effort-point?reqId=${reqId}`)
           .then(async (res) => {
             let arrReq = [];
-            let lsMember = await selectMemberList();
+            // let result = await selectMember_TaskList(requirementRP);
 
-            await selectTaskList("A", requirementRP).then(async (result) => {
-              let taskSheet = result;
+            // await selectTaskList("A", requirementRP).then(async (result) => {
+            await selectMember_TaskList(requirementRP).then(async (result) => {
+              let taskSheet = result.taskList;
+              let lsMember = result.arrMember;
+      //         arrMember: [],
+      // taskList: []
               // let taskGoogleSheet = await selectTaskList("A");
               // let newTask: any;
               // if(taskInfo && taskGoogleSheet.length > 0){
@@ -183,7 +192,7 @@ export default function TaskSearchForm() {
               //   };
           
               // }
-              // await Promise.resolve(selectMemberList);
+              // await Promise.resolve(selectMember_TaskList);
               let lsReq = res.data;
               let tmpResult = new Array();
               if(lsReq.lstActEfrtPnt != undefined && lsReq.lstActEfrtPnt != null && lsReq.lstActEfrtPnt.length > 0) {
@@ -343,9 +352,14 @@ export default function TaskSearchForm() {
 
   const handleSubmit = async (event) => {
     openModal();
-    event.preventDefault();
-    //https://blueprint.cyberlogitec.com.vn/api/getUserInfoDetails
-    await searchRequirement();
+    event.preventDefault();let isCheckEst = true;
+    if (confirm("Bạn có muốn check estimate task không?") == true) {
+      //https://blueprint.cyberlogitec.com.vn/api/getUserInfoDetails
+      await searchRequirement();
+    } else {
+      isCheckEst = false;
+    }
+    
     await closeModal();
 
   };
@@ -386,10 +400,10 @@ export default function TaskSearchForm() {
     //https://blueprint.cyberlogitec.com.vn/api/task-details/add-actual-effort-point
     // Req
     // {"usrId":"namnnguyen","wrkDt":"20230621","reqId":"PRQ20230607000000031","pjtId":"PJT20211119000000001","subPjtId":"PJT20211119000000001","cmt":"Done task.","jbId":"JOB20211125000000001","phsCd":"PIM_PHS_CDFIN","phsNm":"Finish","jbNm":"Skill","wrkTm":" 20 Minute","dt":"Jun 21, 2023","addSts":true,"type":"actual","actEfrtMnt":20,"cmtCtnt":"<div class=\"system-comment\">Added time worked:</div><div style=\"margin-left: 10px\"> <b><i> &nbsp; Phase Name: </i></b>Finish</div><div style=\"margin-left: 10px\"> <b><i> &nbsp; Job Category: </i></b>Skill</div><div style=\"margin-left: 10px\"> <b><i> &nbsp; Time Worked : </i></b> 20 Minute</div><div style=\"margin-left: 10px\"> <b><i> &nbsp; Date: </i></b>Jun 21, 2023</div>","pstTpCd":"PST_TP_CDACT"}
-    let w_date_log = moment(new Date()).format("ll");
+    let w_date_log = moment(logWorkDate).format("ll");
     let ro = {
         "usrId": "namnnguyen",
-        "wrkDt": moment(new Date()).format("YYYYMMDD"),  
+        "wrkDt": moment(logWorkDate).format("YYYYMMDD"),  
         "reqId": reqDetail.detailReqVO.reqId,
         "pjtId": reqDetail.detailReqVO.pjtId,
         "subPjtId": reqDetail.detailReqVO.subPjtId,
@@ -494,7 +508,15 @@ export default function TaskSearchForm() {
       alert(cmtCtnt)
     }
   }
-  const selectMemberList = async () => {
+  const selectMember_TaskList = async (requirementRP) => {
+    var timerStart = Date.now();
+   
+    console.log("Time until DOMready: ", Date.now()-timerStart);
+    let result = {
+      arrMember: [],
+      taskList: []
+    };
+
     let arrMember = [];
     //Sheet Start
     // Initialize the sheet - doc ID is the long id in the sheets URL
@@ -514,78 +536,225 @@ export default function TaskSearchForm() {
     console.log("LOAD", doc.title);
     setDocTitle(doc.title);
 
-    const sheet = doc.sheetsByTitle[SHEET_ID]; // or use doc.sheetsById[id] or doc.sheetsByTitle[title]
-    console.log(sheet.title);
-    console.log(sheet.rowCount);
+    const Member_List = doc.sheetsByTitle[SHEET_ID]; // or use doc.sheetsById[id] or doc.sheetsByTitle[title]
+    const NEW_FWD_TEAMB_TASKS = doc.sheetsByTitle[MGMT_TASK_SHEET_ID]; // or use doc.sheetsById[id] or doc.sheetsByTitle[title]
+
+    console.log(Member_List.title);
+    console.log(Member_List.rowCount);
     const range = RANGE_MEMBER_SHEET; //'A1:AB50'
-    await sheet.loadCells(range); // loads range of cells into local cache - DOES NOT RETURN THE CELLS
-    
+    await Member_List.loadCells(range); // loads range of cells into local cache - DOES NOT RETURN THE CELLS
+
+    await NEW_FWD_TEAMB_TASKS.loadCells(MGMT_TASK_RANGE_MEMBER_SHEET); // loads range of cells into local cache - DOES NOT RETURN THE CELLS
+
     for(let i = 0; i < 50; i ++) {
-      const empCode = sheet.getCell(i, 0); // access cells using a zero-based index
-      const userId = sheet.getCell(i, 1); // access cells using a zero-based index
-      const fullName = sheet.getCell(i, 2); // access cells using a zero-based index
-      const leaveTeam = sheet.getCell(i, 26); // access cells using a zero-based index = sheet.getCell(i, 2); // access cells using a zero-based index
+      const empCode = Member_List.getCell(i, 0); // access cells using a zero-based index
+      const userId = Member_List.getCell(i, 1); // access cells using a zero-based index
+      const fullName = Member_List.getCell(i, 2); // access cells using a zero-based index
+      const leaveTeam = Member_List.getCell(i, 26); // access cells using a zero-based index = sheet.getCell(i, 2); // access cells using a zero-based index
       // console.log("leaveTeam.formattedValue", leaveTeam.formattedValue);
       if(empCode.formattedValue != "" 
         && userId.formattedValue != "" 
         && fullName.formattedValue != ""
         && leaveTeam.formattedValue == "N") {
             let mem = {
-                "empCode":        sheet.getCell(i, 0).formattedValue,
-                "userId":         sheet.getCell(i, 1).formattedValue,
-                "fullName":       sheet.getCell(i, 2).formattedValue,
-                "currentLevel":   sheet.getCell(i, 3).formattedValue,
-                "lvlCode":        sheet.getCell(i, 4).formattedValue,
-                "levelRating":    sheet.getCell(i, 5).formattedValue,
-                "targetLevel":    sheet.getCell(i, 6).formattedValue,
-                "tagartRating":   sheet.getCell(i, 7).formattedValue,
+                "empCode":        Member_List.getCell(i, 0).formattedValue,
+                "userId":         Member_List.getCell(i, 1).formattedValue,
+                "fullName":       Member_List.getCell(i, 2).formattedValue,
+                "currentLevel":   Member_List.getCell(i, 3).formattedValue,
+                "lvlCode":        Member_List.getCell(i, 4).formattedValue,
+                "levelRating":    Member_List.getCell(i, 5).formattedValue,
+                "targetLevel":    Member_List.getCell(i, 6).formattedValue,
+                "tagartRating":   Member_List.getCell(i, 7).formattedValue,
                 "pointOnHour": {
-                  "standard":   sheet.getCell(i, 38).formattedValue,
-                  "timeStandard":   sheet.getCell(i, 39).formattedValue,
-                  "expect":     sheet.getCell(i, 9).formattedValue,
-                  "description": sheet.getCell(i, 10).formattedValue
+                  "standard":   Member_List.getCell(i, 38).formattedValue,
+                  "timeStandard":   Member_List.getCell(i, 39).formattedValue,
+                  "expect":     Member_List.getCell(i, 9).formattedValue,
+                  "description": Member_List.getCell(i, 10).formattedValue
                 },
-                "role":           sheet.getCell(i, 11).formattedValue.split(","),
-                "workload":       sheet.getCell(i, 12).formattedValue,
-                "pointStandard":  sheet.getCell(i, 13).formattedValue, //FINISHE / RECEIVED
-                "teamLocal":      sheet.getCell(i, 14).formattedValue.split(","),
-                "dedicated":      sheet.getCell(i, 15).formattedValue,
-                "blueprint_id":   sheet.getCell(i, 16).formattedValue,
-                "blueprint_nm":   sheet.getCell(i, 17).formattedValue,
-                "clickup_id":     sheet.getCell(i, 18).formattedValue,
-                "clickup_nm":     sheet.getCell(i, 19).formattedValue,
-                "effectDateFrom": sheet.getCell(i, 20).formattedValue,
-                "effectDateTo":   sheet.getCell(i, 21).formattedValue,
-                "preReviewDate":  sheet.getCell(i, 22).formattedValue,
-                "nextReviewDate": sheet.getCell(i, 23).formattedValue,
-                "phone":          sheet.getCell(i, 24).formattedValue,
-                "clvEmail":       sheet.getCell(i, 25).formattedValue,
-                "leaveTeam":      sheet.getCell(i, 26).formattedValue,
-                "leaveCompany":   sheet.getCell(i, 27).formattedValue,
-                "maxLevelTaskGap":sheet.getCell(i, 32).formattedValue,
-                "minPoint"        :sheet.getCell(i, 33).formattedValue,
-                "maxPoint"        :sheet.getCell(i, 34).formattedValue,
-                "target"        :sheet.getCell(i, 36).formattedValue,
+                "role":           Member_List.getCell(i, 11).formattedValue.split(","),
+                "workload":       Member_List.getCell(i, 12).formattedValue,
+                "pointStandard":  Member_List.getCell(i, 13).formattedValue, //FINISHE / RECEIVED
+                "teamLocal":      Member_List.getCell(i, 14).formattedValue.split(","),
+                "dedicated":      Member_List.getCell(i, 15).formattedValue,
+                "blueprint_id":   Member_List.getCell(i, 16).formattedValue,
+                "blueprint_nm":   Member_List.getCell(i, 17).formattedValue,
+                "clickup_id":     Member_List.getCell(i, 18).formattedValue,
+                "clickup_nm":     Member_List.getCell(i, 19).formattedValue,
+                "effectDateFrom": Member_List.getCell(i, 20).formattedValue,
+                "effectDateTo":   Member_List.getCell(i, 21).formattedValue,
+                "preReviewDate":  Member_List.getCell(i, 22).formattedValue,
+                "nextReviewDate": Member_List.getCell(i, 23).formattedValue,
+                "phone":          Member_List.getCell(i, 24).formattedValue,
+                "clvEmail":       Member_List.getCell(i, 25).formattedValue,
+                "leaveTeam":      Member_List.getCell(i, 26).formattedValue,
+                "leaveCompany":   Member_List.getCell(i, 27).formattedValue,
+                "maxLevelTaskGap":Member_List.getCell(i, 32).formattedValue,
+                "minPoint"        :Member_List.getCell(i, 33).formattedValue,
+                "maxPoint"        :Member_List.getCell(i, 34).formattedValue,
+                "target"        :Member_List.getCell(i, 36).formattedValue,
             }
             arrMember.push(mem);
       }
       
     }
-    // console.log("arrMember", arrMember);
-    return new Promise((resolve, reject) => {
+    let memberPromise = new Promise((resolve, reject) => {
       resolve(arrMember);
     });
-      
+
+    let taskList:any = await googleSheetProcessTask(NEW_FWD_TEAMB_TASKS, requirementRP);
+    
+    return await Promise.all([memberPromise, taskList]).then((result) => {
+        let data = {
+          arrMember: result[0],
+          taskList: result[1]
+        }
+        // resolve(result);
+        console.log(result);
+        console.log("Time until everything loaded: ", Date.now()-timerStart);
+        return data;
+    });
+
+    // console.log("arrMember", arrMember);
+    // return new Promise((resolve, reject) => {
+    //   result = {
+    //     arrMember: arrMember,
+    //     taskList: taskList
+    //   }
+    //   resolve(result);
+    //   console.log("Time until everything loaded: ", Date.now()-timerStart);
+    // });
+    
       
     //Sheet End
    
   }
 
+  const googleSheetProcessTask = async (NEW_FWD_TEAMB_TASKS, req) => {
+    let taskList = [];
+    //Get Task clickup
+    // const sheet = doc.sheetsByTitle[MGMT_TASK_SHEET_ID]; // or use doc.sheetsById[id] or doc.sheetsByTitle[title]
+    // console.log(sheet.title);
+    // console.log(sheet.rowCount);
+    // const range = MGMT_TASK_RANGE_MEMBER_SHEET; //'A1:AB50'
+    // await sheet.loadCells(range); // loads range of cells into local cache - DOES NOT RETURN THE CELLS
+    let sheet = NEW_FWD_TEAMB_TASKS;
+    let clickupId = "";
+    let startDate = "";
+    let endDate = "";
+    let estHourDev = 0;
+    let estHourTest = 0;
+    if(req && req.lstReq && req.lstReq.length > 0){
+      
+      let reqName = req.lstReq[0].reqTitNm;
+
+      var chuoi = reqName;
+      var pattern = /\[(.*?)\]/g;
+      var ketQua = chuoi.match(pattern);
+      let newArr:any = [];
+      ketQua.forEach((item) => {
+        let str:any = item.replace(/[\[\]']+/g,'');
+        newArr.push(str);
+      });
+      if (ketQua) {
+        console.log("newArr", ketQua); // ["New US FWD", "Thuan Lai", "Team B", "DEV-TEST:5P-2P", "865cg6601", "Sprint 27"]
+      } else {
+        console.log("Không tìm thấy chuỗi nằm trong dấu [ ] trong đoạn văn bản.");
+      }
+      //Find clickup ID
+      let idx = 4;
+      let clickupIDByLength:any = "";
+      newArr.forEach((item) => {
+        if(item.replace(/ /g, "").length == 9) {
+          clickupIDByLength = item.replace(/ /g, "");
+          return;
+        }
+      });
+
+      if(reqName) {
+        if(ketQua && ketQua.length > 4) {
+          let id = newArr[4].replace(/ /g, "");
+          if(id.includes("865")) {
+            clickupId = id;
+
+          } else {
+            if(clickupIDByLength.includes("865")) {
+              clickupId = clickupIDByLength;
+            } else {
+              alert("KHÔNG TÌM DC CLICKUP ID: ", newArr.join("_"));
+            }
+          }
+          let sprint:any;
+          // for(let i = 0; i < newArr.length; i ++) {
+          //   if(newArr[i].contains)
+          // }
+          
+          let findSprint = newArr.filter(e => e.includes("Sprint"));
+         
+          if(findSprint && findSprint.length > 0) {
+            let arr = findSprint[0].split(" ");
+            if(arr.length > 1) {
+              sprint = arr[1];
+
+            } else {
+              sprint = findSprint[0].replace(/[^0-9]+/g, '');
+            }
+          }
+          setSprintNumber(sprint);
+          setClickID(clickupId);
+          console.log("Sprint", findSprint);
+          if(clickupId){
+            taskList = [];
+            try {
+              for(let i = 0; i < sheet.rowCount; i ++) {
+                const sheetClickupId = sheet.getCell(i, 2); // access cells using a zero-based index
+                const sheetStartDate = sheet.getCell(i, 11); // access cells using a zero-based index
+                const sheetEndDate = sheet.getCell(i, 12); // access cells using a zero-based index
+                const sheetSprint = sheet.getCell(i, 23); // access cells using a zero-based index
+                const sheetEffortDev = sheet.getCell(i, 13); // access cells using a zero-based index
+                const sheetEffortTest = sheet.getCell(i, 14); // access cells using a zero-based index
+  
+  
+                if(sheetClickupId.formattedValue == clickupId
+                  && sprint == sheetSprint.formattedValue) {
+                      let mem = {
+                          "sprint": sprint,
+                          "effortDev": sheetEffortDev.formattedValue,
+                          "effortTest": sheetEffortTest.formattedValue,
+                          "startDate":sheetStartDate.formattedValue,
+                          "endDate": sheetEndDate.formattedValue,
+                          "clickupId":sheetClickupId.formattedValue,
+                          
+                          
+                      }
+                      taskList.push(mem);
+                }
+                
+              }
+            } catch (error) {
+              console.log("sheet-each", error);
+            }
+            
+          }
+        }
+      }
+      // console.log("arrMember", arrMember);
+      // return taskList;
+      return new Promise((resolve, reject) => {
+        resolve(taskList);
+        console.log("Task End Time until everything loaded: ", Date.now()-timerStart);
+      });
+
+    }
+
+  }
   const selectTaskList = async (team, req) => {
+    var timerStart = Date.now();
+    console.log("TASK - Time until DOMready: ", Date.now()-timerStart);
     if(!team) {
       team = "Team B";
     }
     let taskList = [];
+   
     //Sheet Start
     // Initialize the sheet - doc ID is the long id in the sheets URL
     const doc = await new GoogleSpreadsheet(MGMT_TASK_SPREADSHEET_ID); //script data
@@ -693,6 +862,7 @@ export default function TaskSearchForm() {
       // return taskList;
       return new Promise((resolve, reject) => {
         resolve(taskList);
+        console.log("Task End Time until everything loaded: ", Date.now()-timerStart);
       });
 
     }
@@ -728,12 +898,25 @@ export default function TaskSearchForm() {
     console.log("closeModal");
     setIsOpen(false);
   }
+
+  const onChangeDate = async (date: any) => {
+    setLogWorkDate(date);
+  }
   
   useEffect(()=>{
     console.log("Request searchRequirement");
-    searchRequirement().then(() => {
-      closeModal();
-    });
+    let isCheckEst = true;
+    if (confirm("Bạn có muốn check estimate task không?") == true) {
+      
+    } else {
+      isCheckEst = false;
+    }
+
+    if(isCheckEst){
+      searchRequirement().then(() => {
+        closeModal();
+      });
+    }
     // // checkTaskSheet();
     // setTimeout(() => {
     //   setIsOpen(false);
@@ -748,7 +931,7 @@ export default function TaskSearchForm() {
           <table className="w-full border border-gray-500">
             <thead>
               <tr className="bg-gray-200">
-                <th className="px-4 py-2 text-right">
+                <th className="px-2 py-2 text-right">
                   <input
                     type="text"
                     id="reqId"
@@ -756,7 +939,23 @@ export default function TaskSearchForm() {
                     className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg  w-full"
                   />
                 </th>
-                <th className="px-4 py-2 text-right">
+                <th className="px-2 py-2 text-right">
+                  <input
+                    type="text"
+                    id="clickID"
+                    value={clickID}
+                    className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-100"
+                  />
+                </th>
+                <th className="px-2 py-2 text-right">
+                  <input
+                    type="text"
+                    id="sprintNumber"
+                    value={sprintNumber}
+                    className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-100"
+                  />
+                </th>
+                <th className="px-2 py-2 text-right">
                   <Select
                     defaultValue={defaultTrongSo}
                     closeMenuOnSelect={false}
@@ -773,16 +972,23 @@ export default function TaskSearchForm() {
                     }}
                   />
                 </th>
+                <th className="px-2 py-2 text-right">
+                  <div className="grid grid-flow-col text-center">
+                    <DatePicker selected={logWorkDate} onChange={(date) => onChangeDate(date)} className="w-150"/>
+                    <button type="button" className="bg-green text-white py-2 px-2 rounded-lg" 
+                      onClick={event => logWorkFinish()}>
+                      (+)Log Work FN
+                    </button>
+                  </div>
+                  
+                </th>
                 
                 <th className="px-4 py-2 text-right">
-                  <button type="button" className="bg-blue-500 text-white py-2 px-4 rounded-lg mr-4" 
-                    onClick={event => logWorkFinish()}>
-                    (+)Log Work FN
-                  </button>
+                  
                   <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg">
                     Calc Point
                   </button>
-                  <button type="button" className="bg-blue-500 text-white py-2 px-4 rounded-lg ml-4" 
+                  <button type="button" className="bg-green text-white py-2 px-4 rounded-lg ml-4" 
                     onClick={cfmEditPoint}>
                     Save Point Phase
                   </button>
