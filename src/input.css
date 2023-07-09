@@ -135,10 +135,12 @@ table.custom-scroll {
   border: 1px solid #dcdcdc;
  
  }
- tr.bg-misty {
+ tr.bg-misty, td.bg-misty {
   background-color: #FFE4E1;
  }
-
+ tr.bg-misty-2, td.bg-misty-2 {
+  background-color: #7FFFD4;
+ }
  .mr-4 {
   margin-right: 4px;
  }
@@ -164,4 +166,5 @@ div.ReactModalPortal .ReactModal__Content.ReactModal__Content--after-open {
 
 #side-bar-extension-root .overflow-hidden.main-body {
   z-index: 9998;
+  top: 170px
 }

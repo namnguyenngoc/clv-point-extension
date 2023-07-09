@@ -60,7 +60,7 @@ const InputMemberOption = ({
 
 export default function TaskEffortByUser(props) {
   const SHEET_ID = "Member_List";
-  const RANGE_MEMBER_SHEET = 'A1:AT50';
+  const RANGE_MEMBER_SHEET = 'A1:AT';
   const SPREADSHEET_ID = "10WPahmoB6Im1PyCdUZ_uda3fYijC8jKtHnRBasnTK3Y";
   let [docTitle, setDocTitle] = useState();
 
@@ -169,7 +169,7 @@ export default function TaskEffortByUser(props) {
     const range = RANGE_MEMBER_SHEET; //'A1:AB50'
     await sheet.loadCells(range); // loads range of cells into local cache - DOES NOT RETURN THE CELLS
     
-    for(let i = 0; i < 50; i ++) {
+    for(let i = 0; i < 18; i ++) {
       const empCode = sheet.getCell(i, 0); // access cells using a zero-based index
       const userId = sheet.getCell(i, 1); // access cells using a zero-based index
       const fullName = sheet.getCell(i, 2); // access cells using a zero-based index

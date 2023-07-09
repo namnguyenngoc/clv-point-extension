@@ -10,6 +10,8 @@ import Modal from 'react-modal';
 import moment from 'moment';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { WEB_INFO } from '../const';
+
 
 const InputTrongSoOption = ({
   getStyles,
@@ -95,9 +97,15 @@ export default function TaskSearchForm() {
   let [taskInfo, setTaskInfo] = useState({});
   let [taskInfoSheet, setTaskInfoSheet] = useState({});
   let [reqDetail, setReqDetail] = useState({});
+  let [memberTaskList, setMemberTaskList] = useState({});
   
   let [suggetList, setSuggetList] = useState([]);
   let [comment, setComment] = useState("");
+  let [config, setConfig] = useState({
+    isLoadGoogleSheet: true,
+    WORKING_API: WEB_INFO.WORKING_API,
+    TASK_MEMBER_API: WEB_INFO.TASK_MEMBER_API
+  });
 
   const prjId = "PJT20211119000000001";
 
@@ -126,7 +134,9 @@ export default function TaskSearchForm() {
   let [color, setColor] = useState("#0E71CC");
   
   const [logWorkDate, setLogWorkDate] = useState(new Date());
-  
+  let [clickTaskInfo, setClickTaskInfo] = useState(null);
+  let [isOpenConfirm, setIsOpenConfirm] = useState(false);
+
   const onChangeLevel = (option: any) => {
     setTaskLevel(option);
   }
@@ -165,7 +175,7 @@ export default function TaskSearchForm() {
           "itrtnId": "_ALL_",
           "beginIdx": 0,
           "endIdx": 200,
-          "picId": "_ALL_",
+          // "picId": "_ALL_",
           "isLoadLast": false
       };
       let lsPharseMember = reqDetail.lstSkdUsr;
@@ -180,10 +190,11 @@ export default function TaskSearchForm() {
 
             // await selectTaskList("A", requirementRP).then(async (result) => {
             await selectMember_TaskList(requirementRP).then(async (result) => {
+              console.log("selectMember_TaskList");
               let taskSheet = result.taskList;
               let lsMember = result.arrMember;
-      //         arrMember: [],
-      // taskList: []
+              //         arrMember: [],
+              // taskList: []
               // let taskGoogleSheet = await selectTaskList("A");
               // let newTask: any;
               // if(taskInfo && taskGoogleSheet.length > 0){
@@ -201,10 +212,10 @@ export default function TaskSearchForm() {
                 let currentTotalPoint = 0;
                 for(let idx = 0; idx < lsPharseMember.length; idx ++){
                   let item = lsPharseMember[idx];
-                  const userid = lsPharseMember[idx].usrId;
+                  const userId = lsPharseMember[idx].usrId;
                   const phsCd =  lsPharseMember[idx].phsCd;
-                  const member =  lsMember.find(mem => mem.userId == userid);
-                  const total = sumEffort(lsReq.lstActEfrtPnt, userid, phsCd);
+                  const member =  lsMember.find(mem => mem.userId == userId);
+                  const total = sumEffort(lsReq.lstActEfrtPnt, userId, phsCd);
                   let pointDefaultByPharse = {
                       "standard": 25,
                       "timeStandard": 0,
@@ -223,7 +234,8 @@ export default function TaskSearchForm() {
                   // let itemPointDefault = pointDefaultByPharse.filter(point => point.code == phsCd);
                   let standardPoint = 25;
                   let expectPoint = 25;
-
+                  let isDevelopInSprint = false;
+                  let isTestInSprint = false;
                   if(member){
                     expectPoint = member.pointOnHour.expect;
                     standardPoint = member.pointOnHour.standard;
@@ -231,36 +243,63 @@ export default function TaskSearchForm() {
                     item.maxPoint = member.maxPoint;
                     item.target = member.target;
                   }
+
+                  if(taskSheet && taskSheet.length > 0) { //Check status develop/dev in the sprint
+                    isDevelopInSprint = (taskSheet[0].pic_dev && taskSheet[0].usp) ? true : false;
+                    isTestInSprint = (taskSheet[0].pic_test && taskSheet[0].usp_test) ? true : false;
+                    
+                  }
+                  
                   item.standardPoint = standardPoint;
                   item.expectPoint = expectPoint;
               
-                
+                  console.log("ITEM_MEMBER", item);
+                  console.log("taskSheet", taskSheet);
+                  console.log("isDevelopInSprint", isDevelopInSprint);
+                  console.log("isTestInSprint", isTestInSprint);
+
                   if("PIM_PHS_CDREG" == phsCd){ 
                     //Check Neu la point default
                     item.effortHours =  parseInt(pointDefaultByPharse.timeStandard); //12min = 5 point
-                    item.bpAdddpoint =  parseInt(pointDefaultByPharse.standard);
-                    item.point =  parseFloat(pointDefaultByPharse.standard);
+                    item.bpAdddpoint =  parseInt(pointDefaultByPharse.timeStandard);
+                    item.point =  parseInt(pointDefaultByPharse.timeStandard);
+                    // parseFloat(pointDefaultByPharse.standard);
                   
                   } else {
                     if("PIM_PHS_CDIMP" == phsCd){ 
                       let estByMember = 0;
-                      estByMember = (taskSheet && taskSheet.length > 0) ? taskSheet[0].effortDev : 0;
-
+                      estByMember = (taskSheet && taskSheet.length > 0) ? taskSheet[0].effortdev : 0;
                       item.estHours = estByMember * 60; //Hour
-                      item.effortHours = total; 
 
-                      let pointSuggest = estByMember > 0 ? estByMember : (total*1.0) / (60 * 1.0);
-                      item.point = Math.ceil(parseFloat(pointSuggest) * expectPoint);
+                      //Nêu task nhận trong sprint thì sẽ lấy thời gian EST tính effort point, ngược lại lấy thời gian log work tính effort point.
+                      if(isDevelopInSprint) { //Task nhan develop trong sprint
+                        item.effortHours = total; 
+                        let pointSuggest = estByMember > 0 ? estByMember : (total*1.0) / (60 * 1.0);
+                        item.point = Math.ceil(parseFloat(pointSuggest) * expectPoint);
+                        
+                      } else {
+                        item.effortHours = total; 
+                        item.point = parseInt((total / (60 * 1.0)) * expectPoint);
+
+                      }
                     } else {
                       if("PIM_PHS_CDTSD" == phsCd){ 
                         let estByMember = 0;
-                        estByMember = (taskSheet && taskSheet.length > 0) ? taskSheet[0].effortTest : 0;
+                        estByMember = (taskSheet && taskSheet.length > 0) ? taskSheet[0].efforttest : 0;
   
                         item.estHours = estByMember * 60; //Hour
-                        item.effortHours = total; 
-  
-                        let pointSuggest = estByMember > 0 ? estByMember : (total*1.0) / (60 * 1.0);
-                        item.point = Math.ceil(parseFloat(pointSuggest) * expectPoint);
+
+                        //Nêu task nhận trong sprint thì sẽ lấy thời gian EST tính effort point, ngược lại lấy thời gian log work tính effort point.
+                        if(isTestInSprint) { //Task nhan develop trong sprint
+                          item.effortHours = total; 
+                          let pointSuggest = estByMember > 0 ? estByMember : (total*1.0) / (60 * 1.0);
+                          item.point = Math.ceil(parseFloat(pointSuggest) * expectPoint);
+
+                        } else {
+                          item.effortHours = total; 
+                          item.point = parseInt((total / (60 * 1.0)) * expectPoint);
+                        }
+                        
                       } else {
                         item.effortHours = total; 
                         item.point = Math.ceil(parseFloat((total / (60 * 1.0)) * expectPoint));
@@ -268,10 +307,7 @@ export default function TaskSearchForm() {
                       
                     }
                   }
-
-
                   //Tinh theo level task
-
                   // if(taskLevel.value == undefined) {
                   //   setTaskLevel(taskLevelList[0]);
                   // }
@@ -304,8 +340,8 @@ export default function TaskSearchForm() {
               requirementRP.lstReq = requirementRP.lstReq.filter(item => item.reqId == reqId);
               
               const gapPoint = requirementRP.lstReq[0].pntNo - totalPoint; //pntNo
-              console.log("totalPoint", totalPoint);
-              console.log("requirement.lstReq[0]", requirementRP.lstReq[0].pntNo);
+              // console.log("totalPoint", totalPoint);
+              // console.log("requirement.lstReq[0]", requirementRP.lstReq[0].pntNo);
 
               for(let k = 0; k < tmpResult.length; k ++){
                 if("PIM_PHS_CDFIN" == tmpResult[k].phsCd){
@@ -316,27 +352,30 @@ export default function TaskSearchForm() {
               requirementRP.totalPoint = totalPoint;
               setTaskInfo(requirementRP);
               setEffortWithMember(tmpResult);
+              setMemberTaskList(result);
+              await clickupGetTask();
               closeModal();
           
             }) //selectTaskList;
 
           }).catch((error) => {
             console.log("error-314", error);
+            alert(`ERROR: ${error.msg}`);
             closeModal();
           }) //get-actual-effort-point
 
       });
-    }).then(() => {
+    }).then(async () => {
       closeModal();
     }).catch((error) => {
       closeModal();
     });
   }
 
-  function sumEffort (lsData, userid, phsCd) {
+  function sumEffort (lsData, userId, phsCd) {
     let sum = 0;
     for (let i = 0; i < lsData.length; i ++) {
-      if(userid == lsData[i].usrId && phsCd == lsData[i].phsCd){
+      if(userId == lsData[i].usrId && phsCd == lsData[i].phsCd){
         sum += parseInt(lsData[i].actEfrtMnt);
       }
     }
@@ -350,16 +389,31 @@ export default function TaskSearchForm() {
     return `${hour}h ${min}m`;
   }
 
+  const formatNumber = (value: any, tofix: any, isInt: boolean) => {
+    if (!value)
+      return ''
+
+    const val = (value / 1).toFixed(tofix).replace(',', '.')
+    if (!val)
+      return ''
+
+    return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  }
+
   const handleSubmit = async (event) => {
     openModal();
-    event.preventDefault();let isCheckEst = true;
-    if (confirm("Bạn có muốn check estimate task không?") == true) {
-      //https://blueprint.cyberlogitec.com.vn/api/getUserInfoDetails
-      await searchRequirement();
+    event.preventDefault();
+    let isCheckEst = true;
+    if(isOpenConfirm) {
+      if (confirm("Bạn có muốn check estimate task không?") == true) {
+        //https://blueprint.cyberlogitec.com.vn/api/getUserInfoDetails
+        await searchRequirement();
+      } else {
+        isCheckEst = false;
+      }
     } else {
-      isCheckEst = false;
+      await searchRequirement();
     }
-    
     await closeModal();
 
   };
@@ -508,125 +562,246 @@ export default function TaskSearchForm() {
       alert(cmtCtnt)
     }
   }
-  const selectMember_TaskList = async (requirementRP) => {
-    var timerStart = Date.now();
-   
-    console.log("Time until DOMready: ", Date.now()-timerStart);
-    let result = {
-      arrMember: [],
-      taskList: []
-    };
 
-    let arrMember = [];
-    //Sheet Start
-    // Initialize the sheet - doc ID is the long id in the sheets URL
-    const doc = new GoogleSpreadsheet(SPREADSHEET_ID); //script data
-    // const doc = new GoogleSpreadsheet('16S2LDwOP3xkkGqXLBb30Pcvvnfui-IPJTXeTOMGCOjk');
+  const reqClickupIinfoSplit = (req) => {
+    let clickupId = "";
+    let sprint:any;
+    if(req && req.lstReq && req.lstReq.length > 0){
+      
+      let reqName = req.lstReq[0].reqTitNm;
 
-    
-    
-    // Initialize Auth - see https://theoephraim.github.io/node-google-spreadsheet/#/getting-started/authentication
-    await doc.useServiceAccountAuth({
-      // env var values are copied from service account credentials generated by google
-      // see "Authentication" section in docs for more info
-      client_email:  ACC_SHEET_API.client_id,
-      private_key: ACC_SHEET_API.private_key,
-    });
-    await doc.loadInfo(); // loads document properties and worksheets
-    console.log("LOAD", doc.title);
-    setDocTitle(doc.title);
+      var chuoi = reqName;
+      var pattern = /\[(.*?)\]/g;
+      var ketQua = chuoi.match(pattern);
+      let newArr:any = [];
+      ketQua.forEach((item) => {
+        let str:any = item.replace(/[\[\]']+/g,'');
+        newArr.push(str);
+      });
+      if (ketQua) {
+        console.log("newArr", ketQua); // ["New US FWD", "Thuan Lai", "Team B", "DEV-TEST:5P-2P", "865cg6601", "Sprint 27"]
+      } else {
+        console.log("Không tìm thấy chuỗi nằm trong dấu [ ] trong đoạn văn bản.");
+      }
+      //Find clickup ID
+      let clickupIDByLength:any = "";
+      newArr.forEach((item) => {
+        if(item.replace(/ /g, "").length == 9) {
+          clickupIDByLength = item.replace(/ /g, "");
+          return;
+        }
+      });
 
-    const Member_List = doc.sheetsByTitle[SHEET_ID]; // or use doc.sheetsById[id] or doc.sheetsByTitle[title]
-    const NEW_FWD_TEAMB_TASKS = doc.sheetsByTitle[MGMT_TASK_SHEET_ID]; // or use doc.sheetsById[id] or doc.sheetsByTitle[title]
+      if(reqName) {
+        if(ketQua && ketQua.length > 4) {
+          let id = newArr[4].replace(/ /g, "");
+          if(id.includes("865")) {
+            clickupId = id;
 
-    console.log(Member_List.title);
-    console.log(Member_List.rowCount);
-    const range = RANGE_MEMBER_SHEET; //'A1:AB50'
-    await Member_List.loadCells(range); // loads range of cells into local cache - DOES NOT RETURN THE CELLS
-
-    await NEW_FWD_TEAMB_TASKS.loadCells(MGMT_TASK_RANGE_MEMBER_SHEET); // loads range of cells into local cache - DOES NOT RETURN THE CELLS
-
-    for(let i = 0; i < 50; i ++) {
-      const empCode = Member_List.getCell(i, 0); // access cells using a zero-based index
-      const userId = Member_List.getCell(i, 1); // access cells using a zero-based index
-      const fullName = Member_List.getCell(i, 2); // access cells using a zero-based index
-      const leaveTeam = Member_List.getCell(i, 26); // access cells using a zero-based index = sheet.getCell(i, 2); // access cells using a zero-based index
-      // console.log("leaveTeam.formattedValue", leaveTeam.formattedValue);
-      if(empCode.formattedValue != "" 
-        && userId.formattedValue != "" 
-        && fullName.formattedValue != ""
-        && leaveTeam.formattedValue == "N") {
-            let mem = {
-                "empCode":        Member_List.getCell(i, 0).formattedValue,
-                "userId":         Member_List.getCell(i, 1).formattedValue,
-                "fullName":       Member_List.getCell(i, 2).formattedValue,
-                "currentLevel":   Member_List.getCell(i, 3).formattedValue,
-                "lvlCode":        Member_List.getCell(i, 4).formattedValue,
-                "levelRating":    Member_List.getCell(i, 5).formattedValue,
-                "targetLevel":    Member_List.getCell(i, 6).formattedValue,
-                "tagartRating":   Member_List.getCell(i, 7).formattedValue,
-                "pointOnHour": {
-                  "standard":   Member_List.getCell(i, 38).formattedValue,
-                  "timeStandard":   Member_List.getCell(i, 39).formattedValue,
-                  "expect":     Member_List.getCell(i, 9).formattedValue,
-                  "description": Member_List.getCell(i, 10).formattedValue
-                },
-                "role":           Member_List.getCell(i, 11).formattedValue.split(","),
-                "workload":       Member_List.getCell(i, 12).formattedValue,
-                "pointStandard":  Member_List.getCell(i, 13).formattedValue, //FINISHE / RECEIVED
-                "teamLocal":      Member_List.getCell(i, 14).formattedValue.split(","),
-                "dedicated":      Member_List.getCell(i, 15).formattedValue,
-                "blueprint_id":   Member_List.getCell(i, 16).formattedValue,
-                "blueprint_nm":   Member_List.getCell(i, 17).formattedValue,
-                "clickup_id":     Member_List.getCell(i, 18).formattedValue,
-                "clickup_nm":     Member_List.getCell(i, 19).formattedValue,
-                "effectDateFrom": Member_List.getCell(i, 20).formattedValue,
-                "effectDateTo":   Member_List.getCell(i, 21).formattedValue,
-                "preReviewDate":  Member_List.getCell(i, 22).formattedValue,
-                "nextReviewDate": Member_List.getCell(i, 23).formattedValue,
-                "phone":          Member_List.getCell(i, 24).formattedValue,
-                "clvEmail":       Member_List.getCell(i, 25).formattedValue,
-                "leaveTeam":      Member_List.getCell(i, 26).formattedValue,
-                "leaveCompany":   Member_List.getCell(i, 27).formattedValue,
-                "maxLevelTaskGap":Member_List.getCell(i, 32).formattedValue,
-                "minPoint"        :Member_List.getCell(i, 33).formattedValue,
-                "maxPoint"        :Member_List.getCell(i, 34).formattedValue,
-                "target"        :Member_List.getCell(i, 36).formattedValue,
+          } else {
+            if(clickupIDByLength.includes("865")) {
+              clickupId = clickupIDByLength;
+            } else {
+              alert("KHÔNG TÌM DC CLICKUP ID: ", newArr.join("_"));
             }
-            arrMember.push(mem);
+          }
+          
+          // for(let i = 0; i < newArr.length; i ++) {
+          //   if(newArr[i].contains)
+          // }
+          
+          let findSprint = newArr.filter(e => e.includes("Sprint"));
+         
+          if(findSprint && findSprint.length > 0) {
+            let arr = findSprint[0].split(" ");
+            if(arr.length > 1) {
+              sprint = arr[1];
+
+            } else {
+              sprint = findSprint[0].replace(/[^0-9]+/g, '');
+            }
+          }
+          setSprintNumber(sprint);
+          setClickID(clickupId);
+         
+        }
       }
       
+      return {
+        clickupId: clickupId,
+        sprint: sprint
+      }
     }
-    let memberPromise = new Promise((resolve, reject) => {
-      resolve(arrMember);
-    });
-
-    let taskList:any = await googleSheetProcessTask(NEW_FWD_TEAMB_TASKS, requirementRP);
-    
-    return await Promise.all([memberPromise, taskList]).then((result) => {
-        let data = {
-          arrMember: result[0],
-          taskList: result[1]
-        }
-        // resolve(result);
-        console.log(result);
-        console.log("Time until everything loaded: ", Date.now()-timerStart);
+  }
+  const selectMember_TaskList = async (requirementRP) => {
+    if(1 == 1) {
+      //Call API
+      let memberResponse = await axios.get(`${config.TASK_MEMBER_API}/memberList`)
+      .then(async function (response) {
+        let data =  response.data.data;
+        
         return data;
-    });
 
-    // console.log("arrMember", arrMember);
-    // return new Promise((resolve, reject) => {
-    //   result = {
-    //     arrMember: arrMember,
-    //     taskList: taskList
-    //   }
-    //   resolve(result);
-    //   console.log("Time until everything loaded: ", Date.now()-timerStart);
-    // });
+      });
+
     
+      let param = reqClickupIinfoSplit(requirementRP);
+      let arrPms = [];
+      let taskList: any;
+      let memberPromise: any;
+      if(param && param.clickupId) {
+        let taskListResponse = await axios.get(`${config.TASK_MEMBER_API}/taskList/${param?.clickupId}/${param?.sprint}`)
+        .then(async function (response) {
+          const data =  response.data.data;
+          return data;
+
+        });
+        
+        taskList = await new Promise((resolve, reject) => {
+          resolve(taskListResponse);
+        });
       
-    //Sheet End
-   
+      }
+
+      memberPromise = await new Promise((resolve, reject) => {
+        resolve(memberResponse);
+      });
+
+      return await Promise.all([taskList, memberPromise]).then((result) => {
+        let arrMems = [];
+        let arrMemResponse:any = result[1];
+
+        
+
+          let data = {
+            arrMember: arrMemResponse,
+            taskList: result[0]
+          }
+          // resolve(result);
+          console.log("data", data);
+          return data;
+      });
+
+
+    } else { //sheet
+      var timerStart = Date.now();
+    
+      console.log("Time until DOMready: ", Date.now()-timerStart);
+      let result = {
+        arrMember: [],
+        taskList: []
+      };
+
+      let arrMember = [];
+      //Sheet Start
+      // Initialize the sheet - doc ID is the long id in the sheets URL
+      const doc = new GoogleSpreadsheet(SPREADSHEET_ID); //script data
+      // const doc = new GoogleSpreadsheet('16S2LDwOP3xkkGqXLBb30Pcvvnfui-IPJTXeTOMGCOjk');
+
+      
+      
+      // Initialize Auth - see https://theoephraim.github.io/node-google-spreadsheet/#/getting-started/authentication
+      await doc.useServiceAccountAuth({
+        // env var values are copied from service account credentials generated by google
+        // see "Authentication" section in docs for more info
+        client_email:  ACC_SHEET_API.client_id,
+        private_key: ACC_SHEET_API.private_key,
+      });
+      await doc.loadInfo(); // loads document properties and worksheets
+      console.log("LOAD", doc.title);
+      setDocTitle(doc.title);
+
+      const Member_List = doc.sheetsByTitle[SHEET_ID]; // or use doc.sheetsById[id] or doc.sheetsByTitle[title]
+      const NEW_FWD_TEAMB_TASKS = doc.sheetsByTitle[MGMT_TASK_SHEET_ID]; // or use doc.sheetsById[id] or doc.sheetsByTitle[title]
+
+      console.log(Member_List.title);
+      console.log(Member_List.rowCount);
+      const range = RANGE_MEMBER_SHEET; //'A1:AB50'
+      await Member_List.loadCells(range); // loads range of cells into local cache - DOES NOT RETURN THE CELLS
+
+      await NEW_FWD_TEAMB_TASKS.loadCells(MGMT_TASK_RANGE_MEMBER_SHEET); // loads range of cells into local cache - DOES NOT RETURN THE CELLS
+
+      for(let i = 0; i < 50; i ++) {
+        const empCode = Member_List.getCell(i, 0); // access cells using a zero-based index
+        const userId = Member_List.getCell(i, 1); // access cells using a zero-based index
+        const fullName = Member_List.getCell(i, 2); // access cells using a zero-based index
+        const leaveTeam = Member_List.getCell(i, 26); // access cells using a zero-based index = sheet.getCell(i, 2); // access cells using a zero-based index
+        // console.log("leaveTeam.formattedValue", leaveTeam.formattedValue);
+        if(empCode.formattedValue != "" 
+          && userId.formattedValue != "" 
+          && fullName.formattedValue != ""
+          && leaveTeam.formattedValue == "N") {
+              let mem = {
+                  "empCode":        Member_List.getCell(i, 0).formattedValue,
+                  "userId":         Member_List.getCell(i, 1).formattedValue,
+                  "fullName":       Member_List.getCell(i, 2).formattedValue,
+                  "currentLevel":   Member_List.getCell(i, 3).formattedValue,
+                  "lvlCode":        Member_List.getCell(i, 4).formattedValue,
+                  "levelRating":    Member_List.getCell(i, 5).formattedValue,
+                  "targetLevel":    Member_List.getCell(i, 6).formattedValue,
+                  "tagartRating":   Member_List.getCell(i, 7).formattedValue,
+                  "pointOnHour": {
+                    "standard":   Member_List.getCell(i, 38).formattedValue,
+                    "timeStandard":   Member_List.getCell(i, 39).formattedValue,
+                    "expect":     Member_List.getCell(i, 9).formattedValue,
+                    "description": Member_List.getCell(i, 10).formattedValue
+                  },
+                  "role":           Member_List.getCell(i, 11).formattedValue.split(","),
+                  "workload":       Member_List.getCell(i, 12).formattedValue,
+                  "pointStandard":  Member_List.getCell(i, 13).formattedValue, //FINISHE / RECEIVED
+                  "teamLocal":      Member_List.getCell(i, 14).formattedValue.split(","),
+                  "dedicated":      Member_List.getCell(i, 15).formattedValue,
+                  "blueprint_id":   Member_List.getCell(i, 16).formattedValue,
+                  "blueprint_nm":   Member_List.getCell(i, 17).formattedValue,
+                  "clickup_id":     Member_List.getCell(i, 18).formattedValue,
+                  "clickup_nm":     Member_List.getCell(i, 19).formattedValue,
+                  "effectDateFrom": Member_List.getCell(i, 20).formattedValue,
+                  "effectDateTo":   Member_List.getCell(i, 21).formattedValue,
+                  "preReviewDate":  Member_List.getCell(i, 22).formattedValue,
+                  "nextReviewDate": Member_List.getCell(i, 23).formattedValue,
+                  "phone":          Member_List.getCell(i, 24).formattedValue,
+                  "clvEmail":       Member_List.getCell(i, 25).formattedValue,
+                  "leaveTeam":      Member_List.getCell(i, 26).formattedValue,
+                  "leaveCompany":   Member_List.getCell(i, 27).formattedValue,
+                  "maxLevelTaskGap":Member_List.getCell(i, 32).formattedValue,
+                  "minPoint"        :Member_List.getCell(i, 33).formattedValue,
+                  "maxPoint"        :Member_List.getCell(i, 34).formattedValue,
+                  "target"        :Member_List.getCell(i, 36).formattedValue,
+              }
+              arrMember.push(mem);
+        }
+        
+      }
+      let memberPromise = new Promise((resolve, reject) => {
+        resolve(arrMember);
+      });
+
+      let taskList:any = await googleSheetProcessTask(NEW_FWD_TEAMB_TASKS, requirementRP);
+      
+      return await Promise.all([memberPromise, taskList]).then((result) => {
+          let data = {
+            arrMember: result[0],
+            taskList: result[1]
+          }
+          // resolve(result);
+          console.log(result);
+          console.log("Time until everything loaded: ", Date.now()-timerStart);
+          return data;
+      });
+
+      // console.log("arrMember", arrMember);
+      // return new Promise((resolve, reject) => {
+      //   result = {
+      //     arrMember: arrMember,
+      //     taskList: taskList
+      //   }
+      //   resolve(result);
+      //   console.log("Time until everything loaded: ", Date.now()-timerStart);
+      // });
+      
+        
+      //Sheet End
+    }
   }
 
   const googleSheetProcessTask = async (NEW_FWD_TEAMB_TASKS, req) => {
@@ -639,8 +814,8 @@ export default function TaskSearchForm() {
     // await sheet.loadCells(range); // loads range of cells into local cache - DOES NOT RETURN THE CELLS
     let sheet = NEW_FWD_TEAMB_TASKS;
     let clickupId = "";
-    let startDate = "";
-    let endDate = "";
+    let startdate = "";
+    let enddate = "";
     let estHourDev = 0;
     let estHourTest = 0;
     if(req && req.lstReq && req.lstReq.length > 0){
@@ -718,10 +893,10 @@ export default function TaskSearchForm() {
                   && sprint == sheetSprint.formattedValue) {
                       let mem = {
                           "sprint": sprint,
-                          "effortDev": sheetEffortDev.formattedValue,
-                          "effortTest": sheetEffortTest.formattedValue,
-                          "startDate":sheetStartDate.formattedValue,
-                          "endDate": sheetEndDate.formattedValue,
+                          "effortdev": sheetEffortDev.formattedValue,
+                          "efforttest": sheetEffortTest.formattedValue,
+                          "startdate":sheetStartDate.formattedValue,
+                          "enddate": sheetEndDate.formattedValue,
                           "clickupId":sheetClickupId.formattedValue,
                           
                           
@@ -783,8 +958,8 @@ export default function TaskSearchForm() {
 
     //Get Task clickup
     let clickupId = "";
-    let startDate = "";
-    let endDate = "";
+    let startdate = "";
+    let enddate = "";
     let estHourDev = 0;
     let estHourTest = 0;
     
@@ -834,16 +1009,25 @@ export default function TaskSearchForm() {
                 const sheetEffortDev = sheet.getCell(i, 13); // access cells using a zero-based index
                 const sheetEffortTest = sheet.getCell(i, 14); // access cells using a zero-based index
   
-  
+                let mem = {
+                  "sprint": sprint,
+                  "effortdev": 0,
+                  "efforttest": 0,
+                  "startdate": "",
+                  "enddate": "",
+                  "clickupId": clickupId
+                  
+                  
+              }
                 if(sheetClickupId.formattedValue == clickupId
                   && sprint == sheetSprint.formattedValue) {
-                      let mem = {
-                          "sprint": sprint,
-                          "effortDev": sheetEffortDev.formattedValue,
-                          "effortTest": sheetEffortTest.formattedValue,
-                          "startDate":sheetStartDate.formattedValue,
-                          "endDate": sheetEndDate.formattedValue,
-                          "clickupId":sheetClickupId.formattedValue,
+                      mem = {
+                        "sprint": sprint,
+                        "effortdev": sheetEffortDev.formattedValue,
+                        "efforttest": sheetEffortTest.formattedValue,
+                        "startdate":sheetStartDate.formattedValue,
+                        "enddate": sheetEndDate.formattedValue,
+                        "clickupId":sheetClickupId.formattedValue,
                           
                           
                       }
@@ -870,6 +1054,14 @@ export default function TaskSearchForm() {
    
   }
 
+  const openClickUp = (item) => {
+    if(item && item.id) {
+      const url = `https://app.clickup.com/t/${item.id}`;
+      window.open(url, "_blank"); //to open new page
+
+    }
+    console.log("item-", item);
+  }
   const checkEstimateTask = async () => {
     // setIsOpen(true);
     let memberTaskInfo = {};
@@ -903,17 +1095,50 @@ export default function TaskSearchForm() {
     setLogWorkDate(date);
   }
   
+  const handleKeyDownClickup = (event) => {
+    clickupGetTask();
+  }
+
+  const clickupGetTask = async () => {
+    if(clickID){
+      
+      let response = await axios.get(`${config.WORKING_API}/clickup/getTask/${clickID}`)
+      .then(async function (response) {
+        const data =  response.data
+        console.log("Data", data);
+        setClickTaskInfo(data.data);
+      });
+    }
+  }
+
   useEffect(()=>{
     console.log("Request searchRequirement");
-    let isCheckEst = true;
-    if (confirm("Bạn có muốn check estimate task không?") == true) {
-      
-    } else {
-      isCheckEst = false;
-    }
+    // let apiObject = {
+    //   WORKING_API: WEB_INFO.WORKING_API,
+    // }
+    // setApi(apiObject);
 
-    if(isCheckEst){
+    let isCheckEst = true;
+    if(isOpenConfirm) {
+      if (confirm("Bạn có muốn check estimate task không?") == true) {
+        
+      } else {
+        isCheckEst = false;
+      }
+
+      if(isCheckEst){
+        searchRequirement().then(() => {
+          
+          
+        }).then(() => {
+          closeModal();
+        });
+      }
+    } else {
       searchRequirement().then(() => {
+          
+          
+      }).then(() => {
         closeModal();
       });
     }
@@ -926,8 +1151,11 @@ export default function TaskSearchForm() {
   return (
     <div className="grid grid-flow-row sweet-loading">
       <form className="grid grid-flow-row gap-2" 
-            onSubmit={handleSubmit}>
-        <div className="grid grid-flow-col gap-1">
+            onSubmit={handleSubmit }>
+        <div className="grid grid-flow-row gap-1">
+          <div className="grid grid-flow-col gap-1">
+
+          </div>
           <table className="w-full border border-gray-500">
             <thead>
               <tr className="bg-gray-200">
@@ -944,8 +1172,18 @@ export default function TaskSearchForm() {
                     type="text"
                     id="clickID"
                     value={clickID}
+                    style={{
+                      backgroundColor: clickTaskInfo ? clickTaskInfo.status.color : "#FFFFFF"
+                    }}
+                    onClick={handleKeyDownClickup}
                     className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-100"
                   />
+                  <label>
+                      <div onClick={evnet=>openClickUp(clickTaskInfo)}>
+                        { clickTaskInfo ? clickTaskInfo.status.status : "" }
+
+                      </div>
+                  </label>
                 </th>
                 <th className="px-2 py-2 text-right">
                   <input
@@ -1033,13 +1271,22 @@ export default function TaskSearchForm() {
             <thead>
               <tr className="bg-gray-200">
                 <th className="px-4 py-2 text-blue-600"
-                  onClick={event => checkEstimateTask()}
-                >Estimate: {taskInfoSheet ? taskInfoSheet.effortDev : 0}h (point) 
+                  onClick={event => searchRequirement()}
+                >Estimate: {(memberTaskList && memberTaskList.taskList && memberTaskList.length > 0) ? memberTaskList.taskList[0].effortdev : 0}h (point) 
                 </th>
 
                 <th className="px-4 py-2">Effort Point: { (taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0) ? taskInfo.lstReq[0].pntNo : 0}</th>
                 <th className="px-4 py-2 text-blue-600">Actual Point: {taskInfo.totalPoint}</th>
-                <th className="px-4 py-2 c">Gap: {taskInfo.totalPoint - ((taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0) ? taskInfo.lstReq[0].pntNo : 0)}</th>
+                <th className="px-4 py-2 text-right">
+                  Gap: {taskInfo.totalPoint - ((taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0) ? taskInfo.lstReq[0].pntNo : 0)}
+                  <label className="ml-4 ">
+                    <input type="checkbox"
+                      defaultChecked={isOpenConfirm}
+                      onChange={() => setIsOpenConfirm(!isOpenConfirm)}
+                    />
+                      Confirm Loading...
+                  </label>
+                </th>
               </tr>
             </thead>
           </table>
@@ -1060,7 +1307,7 @@ export default function TaskSearchForm() {
             </thead>
             <tbody>
               {effortWithMember.map((result) => (
-                <tr key={result.usrId} className={result.effortHours > result.estHours ? "border-t bg-misty" : "border-t"}>
+                <tr key={result.usrId} className={result.effortHours > result.estHours ? "border-t bg-misty" : (result.effortHours < result.estHours ? "border-t bg-misty-2" : "border-t")}>
                   <td className="px-4 py-2">{result.usrNm}</td>
                   <td className="px-4 py-2">{result.phsNm}</td>
                   <td className="px-4 py-2 text-right">{formatTime(result.effortHours)}</td>
@@ -1068,8 +1315,8 @@ export default function TaskSearchForm() {
                   <td className="px-4 py-2 text-right">{result.expectPoint}</td>
                   <td className="px-4 py-2 text-right">{result.point}</td>
                   <td className="px-4 py-2 text-right text-blue-600">{result.point }</td>
-                  <td className="px-4 py-2 text-right bg-light-green">{result.minPoint}</td>
-                  <td className="px-4 py-2 text-right bg-light-green">{result.maxPoint}</td>
+                  <td className="px-4 py-2 text-right bg-light-green">{formatNumber(result.minPoint, 0)}</td>
+                  <td className="px-4 py-2 text-right bg-light-green">{formatNumber(result.maxPoint, 0)}</td>
                   <td className="px-4 py-2 text-right bg-light-green">{result.target}</td>
                 </tr>
               ))}

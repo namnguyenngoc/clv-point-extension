@@ -11,10 +11,11 @@ export default function SearchTask(props) {
 
   let [conditionSearch, setConditionSearch] = useState("");
   let [clickupID, setClickupID] = useState("");
+  let [clickTaskInfo, setClickTaskInfo] = useState(null);
 
   let [seqNo, setSeqNo] = useState("");
   let [lstReq, setLstReq] = useState([]);
- 
+
   //   const response = await axios.post(requestURL + "searchRequirement", ro);
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
@@ -29,28 +30,39 @@ export default function SearchTask(props) {
   }
 
   const clickupGetTask = async () => {
-    var config = {
-      method: 'get',
-      url: 'https://api.clickup.com/api/v2/task/865byff8t',
-      mode: 'no-cors',
-      withCredentials: true,
-      credentials: 'same-origin',
-      headers: { 
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': '*',
-        'Access-Control-Allow-Credentials': 'true',
-        'Authorization': 'pk_32193054_YQNFO05VHHM9ABEJUTOE8YUPS7RII2JN'
-      }
-    };
+    if(clickupID){
+      let response = axios.get(`${WEB_INFO.WORKING_API}/clickup/getTask/${clickupID}`)
+      .then(async function (response) {
+        const data =  response.data
+        console.log("Data", data);
+        setClickTaskInfo(data.data);
+      });
+    }
     
-    axios(config)
-    .then(function (response) {
-      console.log(JSON.stringify(response.data));
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-    
+  }
+
+  const mergeTaskList = async () => {
+    if (confirm("Bạn có muốn merge task google sheet không, có thể phải chờ lâu?") == true) {
+      let response = axios.get(`${WEB_INFO.TASK_MEMBER_API}/mergeTaskList`)
+      .then(async function (response) {
+        alert("merge done");
+      });
+      
+    }
+
+   
+  }
+
+  const syncMember = async () => {
+    if (confirm("Bạn có muốn sync member không, có thể phải chờ lâu?") == true) {
+      let response = axios.get(`${WEB_INFO.TASK_MEMBER_API}/syncMemberSheet`)
+      .then(async function (response) {
+        alert("syncMember done");
+      });
+      
+    }
+
+   
   }
   const searchRequirement = async () => {
    
@@ -123,13 +135,22 @@ export default function SearchTask(props) {
             className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-full"
           />
         </div>
-        <div>
+        <div className="grid grid-flow-col gap-1">
           <input
             type="text"
             id="clickupID"
             defaultValue={clickupID}
             onChange={event => setClickupID(event.target.value) }
             onKeyDown={handleKeyDownClickup}
+            className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-full"
+          />
+          <input
+            type="text"
+            id="clickupStatus"
+            value={clickTaskInfo ? clickTaskInfo.status.status : ""}
+            style={{
+              backgroundColor: clickTaskInfo ? clickTaskInfo.status.color : "#FFFFFF"
+            }}
             className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-full"
           />
         </div>
@@ -141,6 +162,21 @@ export default function SearchTask(props) {
           >
             Search
           </button>
+          <button 
+            type="button" 
+            className="bg-green text-white py-2 px-4 rounded-lg ml-4"
+            onClick={syncMember}
+          >
+            Sync Member
+          </button>
+          <button 
+            type="button" 
+            className="bg-green text-white py-2 px-4 rounded-lg ml-4"
+            onClick={mergeTaskList}
+          >
+            Sync Task
+          </button>
+         
         </div>
       </div>
       <div className="table-container-search pt-2">

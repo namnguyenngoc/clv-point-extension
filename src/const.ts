@@ -27,7 +27,7 @@ export const URLS = [
 ] as const;
 
 export const APP_EXTEND_WIDTH = 1250;
-export const APP_EXTEND_HEIGHT = 805;
+export const APP_EXTEND_HEIGHT = 750;
 export const APP_COLLAPSE_WIDTH = 55;
 export const APP_COLLAPSE_HEIGHT = 55;
 
@@ -41,5 +41,7 @@ export const WEB_INFO = {
       }
     }
    
-  }
+  },
+  WORKING_API: "http://localhost:81/workingapi/api",
+  TASK_MEMBER_API: "http://localhost:81/fapi/working"
 }
