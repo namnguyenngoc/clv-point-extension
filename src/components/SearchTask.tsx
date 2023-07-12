@@ -121,7 +121,12 @@ export default function SearchTask(props) {
     const url = `https://blueprint.cyberlogitec.com.vn/UI_PIM_001_1/${newReqId}`;
     window.open(url, "_blank"); //to open new page
   }
+  const punchInOut = (newReqId) => {
+    const url = `https://blueprint.cyberlogitec.com.vn/UI_TAT_028`;
+    window.open(url, "_blank"); //to open new page
+  }
 
+  
   return (
     <div className="grid grid-flow-row">
       <div className="grid grid-flow-col gap-2">
@@ -175,6 +180,14 @@ export default function SearchTask(props) {
             onClick={mergeTaskList}
           >
             Sync Task
+          </button>
+
+          <button 
+            type="button" 
+            className="bg-green text-white py-2 px-4 rounded-lg ml-4"
+            onClick={punchInOut}
+          >
+            PUNCH
           </button>
          
         </div>

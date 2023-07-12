@@ -273,10 +273,14 @@ export default function TaskSearchForm() {
 
                       //Nêu task nhận trong sprint thì sẽ lấy thời gian EST tính effort point, ngược lại lấy thời gian log work tính effort point.
                       if(isDevelopInSprint) { //Task nhan develop trong sprint
-                        item.effortHours = total; 
-                        let pointSuggest = estByMember > 0 ? estByMember : (total*1.0) / (60 * 1.0);
-                        item.point = Math.ceil(parseFloat(pointSuggest) * expectPoint);
-                        
+                          if(total > 0){
+                            item.effortHours = total; 
+                            let pointSuggest = estByMember > 0 ? estByMember : (total*1.0) / (60 * 1.0);
+                            item.point = Math.ceil(parseFloat(pointSuggest) * expectPoint);
+                          } else {
+                            item.effortHours = 0; 
+                            item.point = 0;
+                          }
                       } else {
                         item.effortHours = total; 
                         item.point = parseInt((total / (60 * 1.0)) * expectPoint);
@@ -291,9 +295,14 @@ export default function TaskSearchForm() {
 
                         //Nêu task nhận trong sprint thì sẽ lấy thời gian EST tính effort point, ngược lại lấy thời gian log work tính effort point.
                         if(isTestInSprint) { //Task nhan develop trong sprint
-                          item.effortHours = total; 
-                          let pointSuggest = estByMember > 0 ? estByMember : (total*1.0) / (60 * 1.0);
-                          item.point = Math.ceil(parseFloat(pointSuggest) * expectPoint);
+                          if(total > 0){
+                            item.effortHours = total; 
+                            let pointSuggest = estByMember > 0 ? estByMember : (total*1.0) / (60 * 1.0);
+                            item.point = Math.ceil(parseFloat(pointSuggest) * expectPoint);
+                          } else {
+                            item.effortHours = 0; 
+                            item.point = 0;
+                          }
 
                         } else {
                           item.effortHours = total; 
@@ -1300,6 +1309,7 @@ export default function TaskSearchForm() {
                 <th className="px-4 py-2 text-right">Exp P/H</th>
                 <th className="px-4 py-2 text-right">Point</th>
                 <th className="px-4 py-2 text-right">BP Point</th>
+                <th className="px-4 py-2 text-right">Estimate</th>
                 <th className="px-4 py-2 text-right">Min</th>
                 <th className="px-4 py-2 text-right">Max</th>
                 <th className="px-4 py-2 text-right">Target</th>
@@ -1315,6 +1325,15 @@ export default function TaskSearchForm() {
                   <td className="px-4 py-2 text-right">{result.expectPoint}</td>
                   <td className="px-4 py-2 text-right">{result.point}</td>
                   <td className="px-4 py-2 text-right text-blue-600">{result.point }</td>
+                  <td className="px-4 py-2 text-right text-blue-600">
+                    <label className="ml-4 ">
+                      <input type="checkbox"
+                        defaultChecked={isOpenConfirm}
+                        onChange={() => setIsOpenConfirm(!isOpenConfirm)}
+                      />
+                    </label>
+                  
+                  </td>
                   <td className="px-4 py-2 text-right bg-light-green">{formatNumber(result.minPoint, 0)}</td>
                   <td className="px-4 py-2 text-right bg-light-green">{formatNumber(result.maxPoint, 0)}</td>
                   <td className="px-4 py-2 text-right bg-light-green">{result.target}</td>
