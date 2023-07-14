@@ -63,6 +63,8 @@ export default function TaskEffortByUser(props) {
   const RANGE_MEMBER_SHEET = 'A1:AT';
   const SPREADSHEET_ID = "10WPahmoB6Im1PyCdUZ_uda3fYijC8jKtHnRBasnTK3Y";
   let [docTitle, setDocTitle] = useState();
+  // let [lstUserInTeam, setLstUserInTeam] = useState([]);
+
 
   const url = 'https://blueprint.cyberlogitec.com.vn/api';
   const DT_FM = 'YYYYMMDD';
@@ -90,6 +92,38 @@ export default function TaskEffortByUser(props) {
   const [effortList, setEffortList] = useState([]);
   const [workday, setWorkday] = useState(0);
   const [monthDay, setMonthDay] = useState(0);
+
+  // https://blueprint.cyberlogitec.com.vn/api/uiPim026/searchUserInTeam
+  async function searchUserInTeam() {
+    let ro = {
+      "stDt": moment(startDate).format("YYYYMMDD"),
+      "endDt": moment(endDate).format("YYYYMMDD"),
+      "procFlg": "DF",
+      "beginIdx": 0,
+      "endIdx": 25,
+      "pageChanged": false,
+      "coCd": "DOU",
+      "lstTeamId": "ATM201705250009,ATM201705150001",
+      "stsChanged": "N",
+      "tskSts": "PR",
+      "rsName": ""
+  };
+  
+
+    // console.log("RO", ro);
+
+    // console.log("reqee", req)
+    const response = await axios.post(`${url}/uiPim026/searchUserInTeam`, ro)
+      .then(async function (response) {
+        return response.data.lstUserInTeam ;
+    });
+
+  
+    // console.log("response", response);
+    return new Promise((resolve, reject) => {
+        resolve(response);
+    });
+  }
 
   async function getDailyTasksByUser(item:any) {
     let ro = {
@@ -193,11 +227,11 @@ export default function TaskEffortByUser(props) {
                   "timeStandard":   sheet.getCell(i, 39).formattedValue,
                   "expect":     sheet.getCell(i, 9).formattedValue,
                   "description": sheet.getCell(i, 10).formattedValue,
-                  "averageEffortPoint":sheet.getCell(i, 40).formattedValue,
-                  "minEffortPoint":sheet.getCell(i, 41).formattedValue,
-                  "maxEffortPoint":sheet.getCell(i, 42).formattedValue,
-                  "effortPointByCurrentLevel":sheet.getCell(i, 43).formattedValue,
-                  "effortPointByTargetLevel":sheet.getCell(i, 44).formattedValue,
+                  "averageEffortPoint":sheet.getCell(i, 39).formattedValue,
+                  "minEffortPoint":sheet.getCell(i, 40).formattedValue,
+                  "maxEffortPoint":sheet.getCell(i, 41).formattedValue,
+                  "effortPointByCurrentLevel":sheet.getCell(i, 42).formattedValue,
+                  "effortPointByTargetLevel":sheet.getCell(i, 43).formattedValue,
 
                 },
                 "role":           sheet.getCell(i, 11).formattedValue.split(","),
@@ -249,6 +283,8 @@ export default function TaskEffortByUser(props) {
 
       // const newList = await getDailyTasksByUser(memberSelect[0]);
       let sheetMember = await selectMemberList();
+      const lstUserInTeam = await searchUserInTeam();
+    
       const newList = sheetMember.map(async function (item) {
         //Get task
       
@@ -270,6 +306,13 @@ export default function TaskEffortByUser(props) {
               "agvDay": 0,
               "agvMonth": 0
             }
+          }
+          // console.log("lstUserInTeam", lstUserInTeam);
+          let itemTask = lstUserInTeam.filter(itm2 => itm2.usrId == item.userId);
+          item.countTask = 0;
+          if(itemTask && itemTask.length > 0){
+            let _task = itemTask[0];
+            item.countTask = _task.pd_knt +  _task.op_knt +  _task.proc_knt;
           }
         }
         return item;
@@ -359,40 +402,44 @@ export default function TaskEffortByUser(props) {
         
       </div>
       <div className="table-container-10" style={{
-        height: "170px",
+        height: "310px",
       }}>
         <table className="w-full border border-gray-500 custom-scroll">
           <thead>
             <tr className="bg-gray-200">
               <th className="px-4 py-2 w-100">Name</th>
               <th className="px-4 py-2 w-150">Target Level</th>
-              <th className="px-4 py-2 text-right w-100">Avg Point</th>
-              <th className="px-4 py-2 w-100 text-right">Point Standard</th>
-              <th className="px-4 py-2 text-right w-100">Gap</th>
-              <th className="px-4 py-2 w-100 text-right">Point Target</th>
-              <th className="px-4 py-2 text-right w-100">Gap</th>
-              <th className="px-4 py-2 w-100 text-right">Total Point</th>
+              <th className="px-4 py-2 w-50">Task</th>
+              <th className="px-4 py-2 text-right w-70">Current Eff.</th>
+              <th className="px-4 py-2 w-70 text-right">Standard Eff.</th>
+              <th className="px-4 py-2 text-right w-70">Gap STD</th>
+              <th className="px-4 py-2 w-70 text-right">Target Eff.</th>
+              <th className="px-4 py-2 text-right w-70">Gap Target</th>
+              <th className="px-4 py-2 w-70 text-right">Eff.(BP)</th>
               <th className="px-4 py-2 text-right w-70">Min</th>
+              <th className="px-4 py-2 text-right w-70">Mean</th>
               <th className="px-4 py-2 text-right w-70">Max</th>
-              <th className="px-4 py-2 text-right w-70">Avg Month</th>
-              <th className="px-4 py-2 text-right w-100">Next Preview</th>
+              <th className="px-4 py-2 text-right w-150">Start Review</th>
+              <th className="px-4 py-2 text-right w-150">End Review</th>
             </tr>
           </thead>
           <tbody className="border-t">  
             {effortList.map((item) => (
-              <tr key={item.value} className={(item.pointOnHour.expect * workday * 8 ) > item.effortPoint  ? "border-t bg-misty" : "border-t"}>
+              <tr key={item.value} className={(item.pointOnHour.expect * workday * 8 ) > item.effortPoint || item.countTask <= 0  ? "border-t bg-misty" : "border-t"}>
                 <td className="px-4 py-2 w-100">{item.fullName}</td> {/* Name */}
                 <td className="px-4 py-2 w-150">{item.targetLevel}-{item.tagartRating}</td> {/* Target Level */}
-                <td className="px-4 py-2 text-right w-100">{formatPrice(item.effortPoint / (monthDay == 0 ? 1: monthDay), 0)}</td> {/* Avg Point */}
-                <td className="px-4 py-2 text-right w-100">{formatPrice(item.pointOnHour.effortPointByCurrentLevel, 0)}</td> {/* Point Standard */}
-                <td className="px-4 py-2 text-right w-100">{formatPrice(item.pointOnHour.effortPointByCurrentLevel - (item.effortPoint / (monthDay == 0 ? 1: monthDay)), 0)}</td> {/*GAP */}
-                <td className="px-4 py-2 text-right w-100">{formatPrice(item.pointOnHour.effortPointByTargetLevel, 0)}</td> {/* Point Target */}
-                <td className="px-4 py-2 text-right w-100">{formatPrice(item.pointOnHour.effortPointByTargetLevel - (item.effortPoint / (monthDay == 0 ? 1: monthDay)), 0)}</td> {/*GAP */}
-                <td className="px-4 py-2 text-right w-100">{formatPrice(item.effortPoint,0)}</td> {/*  Total Point */}
-                <td className="px-4 py-2 text-right w-70">{item.pointOnHour.minEffortPoint}</td> {/*  Min */}
-                <td className="px-4 py-2 text-right w-70">{item.pointOnHour.maxEffortPoint}</td> {/*  Max */}
-                <td className="px-4 py-2 text-right w-70">{item.pointOnHour.averageEffortPoint}</td> {/*  Avg Month */}
-                <td className="px-4 py-2 text-right w-100">{item.nextReviewDate}</td> {/*  Next Preview */}
+                <td className="px-4 py-2 w-50 text-right">{item.countTask}</td>
+                <td className="px-4 py-2 text-right w-70">{formatPrice(item.effortPoint / (monthDay == 0 ? 1: monthDay), 0)}</td> {/* Avg Point */}
+                <td className="px-4 py-2 text-right w-70">{formatPrice(item.pointOnHour.effortPointByCurrentLevel, 0)}</td> {/* Point Standard */}
+                <td className="px-4 py-2 text-right w-70">{formatPrice(item.pointOnHour.effortPointByCurrentLevel - (item.effortPoint / (monthDay == 0 ? 1: monthDay)), 0)}</td> {/*GAP */}
+                <td className="px-4 py-2 text-right w-70">{formatPrice(item.pointOnHour.effortPointByTargetLevel, 0)}</td> {/* Point Target */}
+                <td className="px-4 py-2 text-right w-70">{formatPrice(item.pointOnHour.effortPointByTargetLevel - (item.effortPoint / (monthDay == 0 ? 1: monthDay)), 0)}</td> {/*GAP */}
+                <td className="px-4 py-2 text-right w-70">{formatPrice(item.effortPoint,0)}</td> {/*  Total Point */}
+                <td className="px-4 py-2 text-right w-70">{formatPrice(item.pointOnHour.minEffortPoint, 0)}</td> {/*  Min */}
+                <td className="px-4 py-2 text-right w-70">{formatPrice(item.pointOnHour.averageEffortPoint, 0)}</td> {/*  Mean */}
+                <td className="px-4 py-2 text-right w-70">{formatPrice(item.pointOnHour.maxEffortPoint, 0)}</td> {/*  Max */}
+                <td className="px-4 py-2 text-right w-150">{item.effectDateFrom}</td> {/*  Next Preview */}
+                <td className="px-4 py-2 text-right w-150">{item.effectDateTo}</td> {/*  Next Preview */}
 
               </tr>
             ))}

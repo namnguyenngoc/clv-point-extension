@@ -107,6 +107,11 @@ export default function TaskSearchForm() {
     TASK_MEMBER_API: WEB_INFO.TASK_MEMBER_API
   });
 
+  let [isShowDetailEffortTable, setIsShowDetailEffortTable] = useState(true);
+  let [isCheckEffort, setIsCheckEffort] = useState(false);
+  let [isCurrentMonth, setIsCurrentMonth] = useState(true);
+
+  
   const prjId = "PJT20211119000000001";
 
   const url = 'https://blueprint.cyberlogitec.com.vn/api';
@@ -136,6 +141,10 @@ export default function TaskSearchForm() {
   const [logWorkDate, setLogWorkDate] = useState(new Date());
   let [clickTaskInfo, setClickTaskInfo] = useState(null);
   let [isOpenConfirm, setIsOpenConfirm] = useState(false);
+  const today = moment(new Date());
+  const firstDayOfMonth = today.clone().startOf("month");
+  const [startDate, setStartDate] = useState(firstDayOfMonth._d);
+  const [endDate, setEndDate] = useState(new Date());
 
   const onChangeLevel = (option: any) => {
     setTaskLevel(option);
@@ -153,6 +162,30 @@ export default function TaskSearchForm() {
   const handlePointOnHourChange = (event) => {
     setPointOnHour(event.target.value);
   };
+  async function getDailyTasksByUser(ro) {
+    
+    console.log("RO", ro);
+
+    // console.log("reqee", req)
+    const response = await axios.post(`${url}/uiPim026/getDailyTasksByUser`, ro)
+      .then(async function (response) {
+        return response.data;
+    });
+
+  
+    // console.log("response", response);
+    return new Promise((resolve, reject) => {
+        resolve(response);
+    });
+  }
+  
+  const sumEfrtKnt = (arr) => {
+    let sum = 0;
+    for(let i = 0; i < arr.length; i ++){
+      sum += arr[i].efrtKnt;
+    }
+    return sum;
+  }
 
   const searchRequirement = async () => {
     openModal();
@@ -216,6 +249,9 @@ export default function TaskSearchForm() {
                   const phsCd =  lsPharseMember[idx].phsCd;
                   const member =  lsMember.find(mem => mem.userId == userId);
                   const total = sumEffort(lsReq.lstActEfrtPnt, userId, phsCd);
+
+                  //set flag get point form estimate or actual
+                  let isBurnPointEstimate = true;
                   let pointDefaultByPharse = {
                       "standard": 25,
                       "timeStandard": 0,
@@ -242,6 +278,46 @@ export default function TaskSearchForm() {
                     item.minPoint = member.minPoint;
                     item.maxPoint = member.maxPoint;
                     item.target = member.target;
+                    item.averageeffortpoint_month = member.averageeffortpoint_month;
+
+                    if(isCheckEffort) {
+                      // let reqParam = {
+                      //   usrId: item.usrId,
+                      //   effectDateFrom: member.effectDateFrom,
+                      //   effectDateTo: member.effectDateTo
+                      // }
+                      let newStart = startDate;
+                      // let newStart = startDate;
+                      let effectDateFromORG =  moment(moment(member.effectDateFrom));
+                      let effectDateToORG =  moment(moment(member.effectDateTo));
+
+                      //Mặc định chỉ check effort trong tháng
+                      if(isCurrentMonth && member.effectDateFrom && member.effectDateTo) {
+                        newStart = effectDateFromORG;
+                      }
+                      let ro = {
+                        "usrId": item.usrId,
+                        "fromDt": moment(newStart).format("YYYYMMDD"),
+                        "toDt": moment(endDate).format("YYYYMMDD"),
+                        "fromDtOrg": moment(newStart),
+                        "toDtOrg": moment(endDate),
+                      };
+                    
+                      const res = await getDailyTasksByUser(ro);
+                      console.log("RES", res);
+                      item.effortPoint = 0; // Waiting API
+                      if(res){
+                        const diffMonth = moment(ro.toDtOrg._i).diff(moment(ro.fromDtOrg._i), 'months', true);
+                        const totalMonth  = moment(effectDateToORG._i).diff(moment(effectDateFromORG._i), 'months', true);
+                        const countMonth = diffMonth && diffMonth >= 1 ?  Math.round(diffMonth) : 1;
+                        item.countMonth = countMonth;
+                        item.totalMonth = Math.round(totalMonth);
+                        item.effortPoint = sumEfrtKnt (res.dailyRsrcLst) / countMonth;
+
+                      
+                    
+                      }
+                    }
                   }
 
                   if(taskSheet && taskSheet.length > 0) { //Check status develop/dev in the sprint
@@ -253,16 +329,19 @@ export default function TaskSearchForm() {
                   item.standardPoint = standardPoint;
                   item.expectPoint = expectPoint;
               
-                  console.log("ITEM_MEMBER", item);
-                  console.log("taskSheet", taskSheet);
-                  console.log("isDevelopInSprint", isDevelopInSprint);
-                  console.log("isTestInSprint", isTestInSprint);
+                  // console.log("ITEM_MEMBER", item);
+                  // console.log("taskSheet", taskSheet);
+                  // console.log("isDevelopInSprint", isDevelopInSprint);
+                  // console.log("isTestInSprint", isTestInSprint);
 
                   if("PIM_PHS_CDREG" == phsCd){ 
                     //Check Neu la point default
                     item.effortHours =  parseInt(pointDefaultByPharse.timeStandard); //12min = 5 point
                     item.bpAdddpoint =  parseInt(pointDefaultByPharse.timeStandard);
                     item.point =  parseInt(pointDefaultByPharse.timeStandard);
+
+                    item.pointEST = parseInt(pointDefaultByPharse.timeStandard);
+                    item.pointACT = parseInt(pointDefaultByPharse.timeStandard);
                     // parseFloat(pointDefaultByPharse.standard);
                   
                   } else {
@@ -272,18 +351,31 @@ export default function TaskSearchForm() {
                       item.estHours = estByMember * 60; //Hour
 
                       //Nêu task nhận trong sprint thì sẽ lấy thời gian EST tính effort point, ngược lại lấy thời gian log work tính effort point.
+                      //IsEST = true
+
                       if(isDevelopInSprint) { //Task nhan develop trong sprint
                           if(total > 0){
                             item.effortHours = total; 
                             let pointSuggest = estByMember > 0 ? estByMember : (total*1.0) / (60 * 1.0);
                             item.point = Math.ceil(parseFloat(pointSuggest) * expectPoint);
+                            item.pointEST = Math.ceil(parseFloat(pointSuggest) * expectPoint);
+
+                            //THEM BIEN DE TINH TOAN
+                            item.pointACT = parseInt((total / (60 * 1.0)) * expectPoint);
+
                           } else {
                             item.effortHours = 0; 
                             item.point = 0;
+                            item.pointEST = 0;
+                            item.pointACT = 0;
                           }
                       } else {
                         item.effortHours = total; 
                         item.point = parseInt((total / (60 * 1.0)) * expectPoint);
+                        item.pointACT = parseInt((total / (60 * 1.0)) * expectPoint);
+
+                        //THEM BIEN DE TINH TOAN
+                        item.pointEST = Math.ceil(parseFloat(pointSuggest) * expectPoint);
 
                       }
                     } else {
@@ -299,19 +391,33 @@ export default function TaskSearchForm() {
                             item.effortHours = total; 
                             let pointSuggest = estByMember > 0 ? estByMember : (total*1.0) / (60 * 1.0);
                             item.point = Math.ceil(parseFloat(pointSuggest) * expectPoint);
+
+                            item.pointEST = Math.ceil(parseFloat(pointSuggest) * expectPoint);
+
+                            //THEM BIEN DE TINH TOAN
+                            item.pointACT = parseInt((total / (60 * 1.0)) * expectPoint);
+
                           } else {
                             item.effortHours = 0; 
                             item.point = 0;
+                            item.pointEST = 0;
+                            item.pointACT = 0;
                           }
 
                         } else {
                           item.effortHours = total; 
                           item.point = parseInt((total / (60 * 1.0)) * expectPoint);
+                          item.pointACT = parseInt((total / (60 * 1.0)) * expectPoint);
+
+                        //THEM BIEN DE TINH TOAN
+                        item.pointEST = Math.ceil(parseFloat(pointSuggest) * expectPoint);
                         }
                         
                       } else {
                         item.effortHours = total; 
                         item.point = Math.ceil(parseFloat((total / (60 * 1.0)) * expectPoint));
+                        item.pointEST = Math.ceil(parseFloat((total / (60 * 1.0)) * expectPoint));
+                        item.pointACT = Math.ceil(parseFloat((total / (60 * 1.0)) * expectPoint));
                       }
                       
                     }
@@ -328,6 +434,10 @@ export default function TaskSearchForm() {
                     item.point = (item.point == undefined ? 0: item.point) + (expectPoint * taskLevel.value);
 
                   }
+
+                  //set effort
+                  item.isBurnPointEstimate = isBurnPointEstimate;
+                  tmpResult.effortPoint = item.effortPoint;
                   tmpResult.push(item);
 
                 }
@@ -459,30 +569,47 @@ export default function TaskSearchForm() {
     return comment;
   } 
 
-  const logWorkFinish = async () => {
+  const logWorkFinish = async (usrId) => {
     //https://blueprint.cyberlogitec.com.vn/api/task-details/add-actual-effort-point
     // Req
     // {"usrId":"namnnguyen","wrkDt":"20230621","reqId":"PRQ20230607000000031","pjtId":"PJT20211119000000001","subPjtId":"PJT20211119000000001","cmt":"Done task.","jbId":"JOB20211125000000001","phsCd":"PIM_PHS_CDFIN","phsNm":"Finish","jbNm":"Skill","wrkTm":" 20 Minute","dt":"Jun 21, 2023","addSts":true,"type":"actual","actEfrtMnt":20,"cmtCtnt":"<div class=\"system-comment\">Added time worked:</div><div style=\"margin-left: 10px\"> <b><i> &nbsp; Phase Name: </i></b>Finish</div><div style=\"margin-left: 10px\"> <b><i> &nbsp; Job Category: </i></b>Skill</div><div style=\"margin-left: 10px\"> <b><i> &nbsp; Time Worked : </i></b> 20 Minute</div><div style=\"margin-left: 10px\"> <b><i> &nbsp; Date: </i></b>Jun 21, 2023</div>","pstTpCd":"PST_TP_CDACT"}
     let w_date_log = moment(logWorkDate).format("ll");
+    let memberResponse = await axios.get(`${config.TASK_MEMBER_API}/memberList`)
+      .then(async function (response) {
+        let data =  response.data.data;
+        
+        return data;
+
+      });
+
+    let timeLog = 20;
+    let cmt = "Done Task.";
+    let currentUser = memberResponse.filter(item => item.userId == usrId);
+    if(currentUser && currentUser.length > 0) {
+      currentUser = currentUser[0];
+      timeLog = parseInt(currentUser.pharsetimestandard_min);
+      cmt = currentUser.description;
+    }
     let ro = {
-        "usrId": "namnnguyen",
+        "usrId": usrId,
         "wrkDt": moment(logWorkDate).format("YYYYMMDD"),  
         "reqId": reqDetail.detailReqVO.reqId,
         "pjtId": reqDetail.detailReqVO.pjtId,
         "subPjtId": reqDetail.detailReqVO.subPjtId,
-        "cmt": "Done task.",
+        "cmt": cmt,
         "jbId": "JOB20211125000000001",
         "phsCd": "PIM_PHS_CDFIN",
         "phsNm": "Finish",
         "jbNm":  "Skill",
-        "wrkTm": " 20 Minute",
+        "wrkTm": ` ${timeLog} Minute`,
         "dt": w_date_log,
         "addSts": true,
         "type": "actual",
-        "actEfrtMnt": 20,
+        "actEfrtMnt": timeLog,
         "cmtCtnt": "",
         "pstTpCd": "PST_TP_CDACT"
     }
+
     let cnt = buildComment(ro);
     if(cnt) {
       ro.cmtCtnt = cnt;
@@ -1063,6 +1190,46 @@ export default function TaskSearchForm() {
    
   }
 
+  let sumPoint = (task) => {
+    let total = 0;
+    for(let item of task){
+      total += item.point;
+    }
+    return total;
+  }
+  const changeEstimateOrActual = (item, isEstimate) => {
+    console.log("changeEstimateOrActual", item);
+    item.isBurnPointEstimate = isEstimate;
+    if(isEstimate) {
+      item.point = item.pointEST;
+    } else {
+      item.point = item.pointACT;
+    }
+    // setEffortWithMember(effortWithMember);
+
+    let newEffort = [...effortWithMember];
+    setEffortWithMember(newEffort);
+
+    // >Estimate: {(memberTaskList && memberTaskList.taskList && memberTaskList.length > 0) ? memberTaskList.taskList[0].effortdev : 0}h (point) 
+    // </th>
+
+    // <th className="px-4 py-2">Effort Point: { (taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0) ? taskInfo.lstReq[0].pntNo : 0}</th>
+    // <th className="px-4 py-2 text-blue-600">
+    //   Actual Point: {taskInfo.totalPoint}
+
+    // setTaskInfo(requirementRP);
+    let total = sumPoint(newEffort);
+    taskInfo.totalPoint = total;
+
+    let newTaskInfo = {
+      ...taskInfo
+    }
+    setTaskInfo(newTaskInfo);
+
+    // setEffortWithMember(tmpResult);
+    // setMemberTaskList(result);
+  }
+
   const openClickUp = (item) => {
     if(item && item.id) {
       const url = `https://app.clickup.com/t/${item.id}`;
@@ -1223,7 +1390,7 @@ export default function TaskSearchForm() {
                   <div className="grid grid-flow-col text-center">
                     <DatePicker selected={logWorkDate} onChange={(date) => onChangeDate(date)} className="w-150"/>
                     <button type="button" className="bg-green text-white py-2 px-2 rounded-lg" 
-                      onClick={event => logWorkFinish()}>
+                      onClick={event => logWorkFinish('namnnguyen')}>
                       (+)Log Work FN
                     </button>
                   </div>
@@ -1285,7 +1452,33 @@ export default function TaskSearchForm() {
                 </th>
 
                 <th className="px-4 py-2">Effort Point: { (taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0) ? taskInfo.lstReq[0].pntNo : 0}</th>
-                <th className="px-4 py-2 text-blue-600">Actual Point: {taskInfo.totalPoint}</th>
+                <th className="px-4 py-2 text-blue-600">
+                  Actual Point: {taskInfo.totalPoint}
+                  <label className="ml-4 ">
+                    <input type="checkbox"
+                      defaultChecked={isShowDetailEffortTable}
+                      onChange={() => setIsShowDetailEffortTable(!isShowDetailEffortTable)}
+                    />
+                      Show Detail
+                  </label>
+
+                  <label className="ml-4 ">
+                    <input type="checkbox"
+                      defaultChecked={isCheckEffort}
+                      onChange={() => setIsCheckEffort(!isCheckEffort)}
+                    />
+                      Check Effort
+                  </label>
+
+                  <label className="ml-4 ">
+                    <input type="checkbox"
+                      defaultChecked={isCurrentMonth}
+                      onChange={() => setIsCurrentMonth(!isCurrentMonth)}
+                    />
+                      In current month
+                  </label>
+
+                </th>
                 <th className="px-4 py-2 text-right">
                   Gap: {taskInfo.totalPoint - ((taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0) ? taskInfo.lstReq[0].pntNo : 0)}
                   <label className="ml-4 ">
@@ -1299,7 +1492,7 @@ export default function TaskSearchForm() {
               </tr>
             </thead>
           </table>
-          <table className="w-full border border-gray-500">
+          <table className={`w-full border border-gray-500 ${isShowDetailEffortTable ? "" : "hidden"}`}>
             <thead>
               <tr className="bg-gray-200">
                 <th className="px-4 py-2">Member</th>
@@ -1312,6 +1505,7 @@ export default function TaskSearchForm() {
                 <th className="px-4 py-2 text-right">Estimate</th>
                 <th className="px-4 py-2 text-right">Min</th>
                 <th className="px-4 py-2 text-right">Max</th>
+                <th className="px-4 py-2 text-right">Eff/AVG (m)</th>
                 <th className="px-4 py-2 text-right">Target</th>
               </tr>
             </thead>
@@ -1328,14 +1522,15 @@ export default function TaskSearchForm() {
                   <td className="px-4 py-2 text-right text-blue-600">
                     <label className="ml-4 ">
                       <input type="checkbox"
-                        defaultChecked={isOpenConfirm}
-                        onChange={() => setIsOpenConfirm(!isOpenConfirm)}
+                        defaultChecked={result.isBurnPointEstimate}
+                        onChange={() => changeEstimateOrActual(result, !result.isBurnPointEstimate)}
                       />
                     </label>
                   
                   </td>
                   <td className="px-4 py-2 text-right bg-light-green">{formatNumber(result.minPoint, 0)}</td>
                   <td className="px-4 py-2 text-right bg-light-green">{formatNumber(result.maxPoint, 0)}</td>
+                  <td className="px-4 py-2 text-right bg-light-green font-bold">{formatNumber(result.effortPoint, 0)}/{formatNumber(result.averageeffortpoint_month, 0)} ({formatNumber(result.countMonth, 0)}/{formatNumber(result.totalMonth, 0)})</td>
                   <td className="px-4 py-2 text-right bg-light-green">{result.target}</td>
                 </tr>
               ))}
