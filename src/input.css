@@ -135,11 +135,16 @@ table.custom-scroll {
   border: 1px solid #dcdcdc;
  
  }
+
  tr.bg-misty, td.bg-misty {
   background-color: #FFE4E1;
  }
  tr.bg-misty-2, td.bg-misty-2 {
   background-color: #7FFFD4;
+ }
+
+ .bg-misty {
+  background-color: #FFE4E1;
  }
  .mr-4 {
   margin-right: 4px;

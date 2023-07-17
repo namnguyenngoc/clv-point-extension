@@ -95,6 +95,9 @@ export default function TaskSearchForm() {
   let [clickID, setClickID] = useState("");
   let [effortWithMember, setEffortWithMember] = useState([]);
   let [taskInfo, setTaskInfo] = useState({});
+  let [orgTaskInfo, setOrgTaskInfo] = useState({});
+  let [effortInfo, setEffortInfo] = useState({});
+
   let [taskInfoSheet, setTaskInfoSheet] = useState({});
   let [reqDetail, setReqDetail] = useState({});
   let [memberTaskList, setMemberTaskList] = useState({});
@@ -293,7 +296,7 @@ export default function TaskSearchForm() {
                       let effectDateToORG =  moment(moment(member.effectDateTo));
 
                       //Mặc định chỉ check effort trong tháng
-                      if(isCurrentMonth && member.effectDateFrom && member.effectDateTo) {
+                      if(!isCurrentMonth && member.effectDateFrom && member.effectDateTo) {
                         newStart = effectDateFromORG;
                       }
                       let ro = {
@@ -478,6 +481,10 @@ export default function TaskSearchForm() {
               }
               requirementRP.totalPoint = totalPoint;
               setTaskInfo(requirementRP);
+              setEffortInfo({
+                totalPoint: totalPoint
+              })
+              // setOrgTaskInfo(requirementRP);
               setEffortWithMember(tmpResult);
               setMemberTaskList(result);
               await clickupGetTask();
@@ -1198,16 +1205,40 @@ export default function TaskSearchForm() {
    
   }
 
-  let sumPoint = (task) => {
+  let sumPoint = (task, isAbs) => {
     let total = 0;
+    console.log("sumPoint", task);
+    let finEffort = 0;
     for(let item of task){
       total += item.point;
+      // if(task.isBurnPointEstimate){
+      //   total += Math.abs(item.pointEST);
+      // } else {
+      //   total += Math.abs(item.pointACT);
+      // }
     }
     return total;
   }
-  const changeEstimateOrActual = (item, isEstimate) => {
-    console.log("changeEstimateOrActual", item);
 
+  let sumPointActual = (task) => {
+    let total = 0;
+    for(let item of task){
+      if("PIM_PHS_CDFIN" != item.prntPhsCd) {
+        if(item.isBurnPointEstimate){
+          total += item.pointEST;
+        } else {
+          total += item.pointACT;
+        }
+      }
+    }
+    console.log("total", total);
+    return total;
+  }
+
+  const changeEstimateOrActual = (item, isEstimate) => {
+  
+    // setTaskInfo(orgTaskInfo);
+// 
     item.isBurnPointEstimate = isEstimate;
     if(isEstimate) {
       item.point = item.pointEST;
@@ -1219,60 +1250,62 @@ export default function TaskSearchForm() {
     let newEffort = [...effortWithMember];
     
    
-    const effort = (taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0) ? taskInfo.lstReq[0].pntNo : 0;
-    const act = sumPoint(newEffort);
+    // const effort = (taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0) ? taskInfo.lstReq[0].pntNo : 0;
+    // const act = sumPoint(newEffort, true);
 
-    //Neu estimate ma lon hơn act thi lay act tinh toan
-    if(effort > act) {
-      console.log("taskInfo-taskInfo", taskInfo);
+    // //Neu estimate ma lon hơn act thi lay act tinh toan
+    // if(effort > act) {
+    //   console.log("taskInfo-taskInfo", taskInfo);
 
-      taskInfo.totalPoint = effort;
-    } else {
+    //   // taskInfo.totalPoint = effort;
+    //   const temp = {
+    //     totalPoint: effort
+    //   }
+    //   setEffortInfo(temp);
 
-      taskInfo.totalPoint = sumPoint(newEffort);
+    // } else {
+    //   const temp = {
+    //     totalPoint: sumPointActual(newEffort)
+    //   }
+    //   setEffortInfo(temp);
+    //   // taskInfo.totalPoint = sumPointActual(newEffort, true);
+    // }
+    let temp = {
+      ...effortInfo
     }
 
-
+    temp.totalPoint= sumPointActual(newEffort);
+    setEffortInfo(temp);
+    console.log("setEffortInfo", effortInfo);
 
     let newTaskInfo = {
       ...taskInfo
     }
-    console.log("taskInfo-newTaskInfo", taskInfo);
+    // newTaskInfo.totalPoint = sumPoint(newEffort, true);
     setTaskInfo(newTaskInfo);
-
-    let total = sumPoint(newEffort);
+   
 
     // console.log("taskInfo-gapAddFinish", gapAddFinish);
     let pointFin = taskInfo.lstReq[0].pntNo;
     
     for(let pharse of newEffort) {
       if("PIM_PHS_CDFIN" == pharse.prntPhsCd) {
-        // let gapFinish = taskInfo.totalPoint - pharse.point
-        // let pointOfFin = pharse.effortHours * (pharse.expectPoint/60);
-        // if(pharse.point <= pointOfFin) {
-          //   pharse.point  = pointOfFin;
-        //   pharse.pointACT  = pointOfFin;
-        //   pharse.pointEST  = pointOfFin;
-        // } else {
-          //   pharse.point  = pharse.point + gapAddFinish;
-          //   pharse.pointACT  = pharse.point + gapAddFinish;
-          //   pharse.pointEST  = pharse.point + gapAddFinish;
-          // }
           
-        } else {
-          if(pharse.isBurnPointEstimate){
-            pointFin = pointFin -  pharse.pointEST;
+      } else {
+        console.log(`POINT: ${pointFin}-${ taskInfo.lstReq[0].pntNo}-${ pharse.pointEST}-${pharse.pointACT}`);
+        if(pharse.isBurnPointEstimate){
+          pointFin = pointFin -  pharse.pointEST;
 
-          } else {
-            pointFin = pointFin -  pharse.pointACT;
-          }
+        } else {
+          pointFin = pointFin -  pharse.pointACT;
         }
+      }
     }
       
     console.log("taskInfo-newEffort", newEffort);
 
     console.log("taskInfo-pointFin", pointFin);
-    
+    console.log(`POINT-fn: ${pointFin}`);
     //Cap nhat point fin 
     for(let pharse of newEffort) {
       if("PIM_PHS_CDFIN" == pharse.prntPhsCd) {
@@ -1511,7 +1544,7 @@ export default function TaskSearchForm() {
                   Effort Point: { (taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0) ? taskInfo.lstReq[0].pntNo : 0}
                 </th>
                 <th className="px-4 py-2 text-blue-600">
-                  Actual Point: {taskInfo.totalPoint}
+                  Actual Point: {effortInfo.totalPoint}
                   <label className="ml-4 ">
                     <input type="checkbox"
                       defaultChecked={isShowDetailEffortTable}
@@ -1532,6 +1565,7 @@ export default function TaskSearchForm() {
                     <input type="checkbox"
                       defaultChecked={isCurrentMonth}
                       onChange={() => setIsCurrentMonth(!isCurrentMonth)}
+                      disabled={!isCheckEffort}
                     />
                       In current month
                   </label>
@@ -1602,7 +1636,7 @@ export default function TaskSearchForm() {
       <div className="pt-8">
         <PointSuggest 
           total = { (taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0) ? taskInfo.lstReq[0].pntNo : 0}
-          actualtotal = {taskInfo.totalPoint}
+          actualtotal = {effortInfo.totalPoint}
           prjId = { prjId }
           reqId = { reqId }
           reqDetail = { reqDetail }

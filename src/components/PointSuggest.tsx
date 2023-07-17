@@ -12,6 +12,8 @@ export default function PointSuggest(props) {
   const effortPointCategory = myData.effortPointCategory;
 
   let [totalPoint, setTotalPoint] = useState(0);
+  let [increasePoint, setIncreasePoint] = useState(0);
+
   let [totalListPoint, setTotalListPoint] = useState(0);
   let [suggetPrtList, setSuggetPrtList] = useState([]);
   let [suggestList, setSuggestList] = useState([]);
@@ -343,7 +345,7 @@ export default function PointSuggest(props) {
   }
 
   const genListPoint = (pointList: Array<Object>) => {
-    let tmpTotalPoint = props.actualtotal - props.total;
+    let tmpTotalPoint = (props.actualtotal + parseInt(increasePoint)) - props.total;
     let lsPoint = [];
     //1. Tim point lon nhat ma total%max = 0;
     // let pointMax = findMaxPoint(pointList, tmpTotalPoint);
@@ -398,6 +400,16 @@ export default function PointSuggest(props) {
                   Total suggest
 
                 </div>
+              </th>
+              <th className="px-4 py-2 text-right">
+                <input
+                  type="text"
+                  id="increasePoint"
+                  defaultValue={increasePoint}
+                  value={increasePoint}
+                  onChange={event => setIncreasePoint(event.target.value) }
+                  className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-70 text-right bg-misty"
+                />
               </th>
               <th className="px-4 py-2 text-right">
                 <input
