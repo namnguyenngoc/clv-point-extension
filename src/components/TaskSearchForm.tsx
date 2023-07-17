@@ -240,7 +240,7 @@ export default function TaskSearchForm() {
               let lsReq = res.data;
               let tmpResult = new Array();
               if(lsReq.lstActEfrtPnt != undefined && lsReq.lstActEfrtPnt != null && lsReq.lstActEfrtPnt.length > 0) {
-                console.log("----------------");
+               
                 // let addedPoint = taskInfo.lstReq[0].pntNo;
                 let currentTotalPoint = 0;
                 for(let idx = 0; idx < lsPharseMember.length; idx ++){
@@ -272,6 +272,7 @@ export default function TaskSearchForm() {
                   let expectPoint = 25;
                   let isDevelopInSprint = false;
                   let isTestInSprint = false;
+                  console.log("member", member);
                   if(member){
                     expectPoint = member.pointOnHour.expect;
                     standardPoint = member.pointOnHour.standard;
@@ -346,6 +347,7 @@ export default function TaskSearchForm() {
                   
                   } else {
                     if("PIM_PHS_CDIMP" == phsCd){ 
+                      console.log("DEV ITEM -S");
                       let estByMember = 0;
                       estByMember = (taskSheet && taskSheet.length > 0) ? taskSheet[0].effortdev : 0;
                       item.estHours = estByMember * 60; //Hour
@@ -354,9 +356,9 @@ export default function TaskSearchForm() {
                       //IsEST = true
 
                       if(isDevelopInSprint) { //Task nhan develop trong sprint
+                          let pointSuggest = estByMember > 0 ? estByMember : (total*1.0) / (60 * 1.0);
                           if(total > 0){
                             item.effortHours = total; 
-                            let pointSuggest = estByMember > 0 ? estByMember : (total*1.0) / (60 * 1.0);
                             item.point = Math.ceil(parseFloat(pointSuggest) * expectPoint);
                             item.pointEST = Math.ceil(parseFloat(pointSuggest) * expectPoint);
 
@@ -365,8 +367,8 @@ export default function TaskSearchForm() {
 
                           } else {
                             item.effortHours = 0; 
-                            item.point = 0;
-                            item.pointEST = 0;
+                            item.point =  Math.ceil(parseFloat(estByMember) * expectPoint);
+                            item.pointEST = Math.ceil(parseFloat(estByMember) * expectPoint);
                             item.pointACT = 0;
                           }
                       } else {
@@ -375,21 +377,24 @@ export default function TaskSearchForm() {
                         item.pointACT = parseInt((total / (60 * 1.0)) * expectPoint);
 
                         //THEM BIEN DE TINH TOAN
+                        pointSuggest = estByMember > 0 ? estByMember : (total*1.0) / (60 * 1.0);
                         item.pointEST = Math.ceil(parseFloat(pointSuggest) * expectPoint);
 
                       }
+                      console.log("DEV ITEM -S", item);
                     } else {
                       if("PIM_PHS_CDTSD" == phsCd){ 
+                        console.log("TESTER ITEM -S");
                         let estByMember = 0;
                         estByMember = (taskSheet && taskSheet.length > 0) ? taskSheet[0].efforttest : 0;
   
                         item.estHours = estByMember * 60; //Hour
 
                         //Nêu task nhận trong sprint thì sẽ lấy thời gian EST tính effort point, ngược lại lấy thời gian log work tính effort point.
+                        let pointSuggest = estByMember > 0 ? estByMember : (total*1.0) / (60 * 1.0);
                         if(isTestInSprint) { //Task nhan develop trong sprint
                           if(total > 0){
                             item.effortHours = total; 
-                            let pointSuggest = estByMember > 0 ? estByMember : (total*1.0) / (60 * 1.0);
                             item.point = Math.ceil(parseFloat(pointSuggest) * expectPoint);
 
                             item.pointEST = Math.ceil(parseFloat(pointSuggest) * expectPoint);
@@ -399,8 +404,8 @@ export default function TaskSearchForm() {
 
                           } else {
                             item.effortHours = 0; 
-                            item.point = 0;
-                            item.pointEST = 0;
+                            item.point =  Math.ceil(parseFloat(estByMember) * expectPoint);
+                            item.pointEST = Math.ceil(parseFloat(estByMember) * expectPoint);
                             item.pointACT = 0;
                           }
 
@@ -410,8 +415,10 @@ export default function TaskSearchForm() {
                           item.pointACT = parseInt((total / (60 * 1.0)) * expectPoint);
 
                         //THEM BIEN DE TINH TOAN
-                        item.pointEST = Math.ceil(parseFloat(pointSuggest) * expectPoint);
+                          pointSuggest = estByMember > 0 ? estByMember : (total*1.0) / (60 * 1.0);
+                          item.pointEST = Math.ceil(parseFloat(pointSuggest) * expectPoint);
                         }
+                        console.log("TESTER ITEM",item);
                         
                       } else {
                         item.effortHours = total; 
@@ -419,6 +426,7 @@ export default function TaskSearchForm() {
                         item.pointEST = Math.ceil(parseFloat((total / (60 * 1.0)) * expectPoint));
                         item.pointACT = Math.ceil(parseFloat((total / (60 * 1.0)) * expectPoint));
                       }
+                      
                       
                     }
                   }
@@ -1199,6 +1207,7 @@ export default function TaskSearchForm() {
   }
   const changeEstimateOrActual = (item, isEstimate) => {
     console.log("changeEstimateOrActual", item);
+
     item.isBurnPointEstimate = isEstimate;
     if(isEstimate) {
       item.point = item.pointEST;
@@ -1208,26 +1217,73 @@ export default function TaskSearchForm() {
     // setEffortWithMember(effortWithMember);
 
     let newEffort = [...effortWithMember];
-    setEffortWithMember(newEffort);
+    
+   
+    const effort = (taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0) ? taskInfo.lstReq[0].pntNo : 0;
+    const act = sumPoint(newEffort);
 
-    // >Estimate: {(memberTaskList && memberTaskList.taskList && memberTaskList.length > 0) ? memberTaskList.taskList[0].effortdev : 0}h (point) 
-    // </th>
+    //Neu estimate ma lon hơn act thi lay act tinh toan
+    if(effort > act) {
+      console.log("taskInfo-taskInfo", taskInfo);
 
-    // <th className="px-4 py-2">Effort Point: { (taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0) ? taskInfo.lstReq[0].pntNo : 0}</th>
-    // <th className="px-4 py-2 text-blue-600">
-    //   Actual Point: {taskInfo.totalPoint}
+      taskInfo.totalPoint = effort;
+    } else {
 
-    // setTaskInfo(requirementRP);
-    let total = sumPoint(newEffort);
-    taskInfo.totalPoint = total;
+      taskInfo.totalPoint = sumPoint(newEffort);
+    }
+
+
 
     let newTaskInfo = {
       ...taskInfo
     }
+    console.log("taskInfo-newTaskInfo", taskInfo);
     setTaskInfo(newTaskInfo);
 
-    // setEffortWithMember(tmpResult);
-    // setMemberTaskList(result);
+    let total = sumPoint(newEffort);
+
+    // console.log("taskInfo-gapAddFinish", gapAddFinish);
+    let pointFin = taskInfo.lstReq[0].pntNo;
+    
+    for(let pharse of newEffort) {
+      if("PIM_PHS_CDFIN" == pharse.prntPhsCd) {
+        // let gapFinish = taskInfo.totalPoint - pharse.point
+        // let pointOfFin = pharse.effortHours * (pharse.expectPoint/60);
+        // if(pharse.point <= pointOfFin) {
+          //   pharse.point  = pointOfFin;
+        //   pharse.pointACT  = pointOfFin;
+        //   pharse.pointEST  = pointOfFin;
+        // } else {
+          //   pharse.point  = pharse.point + gapAddFinish;
+          //   pharse.pointACT  = pharse.point + gapAddFinish;
+          //   pharse.pointEST  = pharse.point + gapAddFinish;
+          // }
+          
+        } else {
+          if(pharse.isBurnPointEstimate){
+            pointFin = pointFin -  pharse.pointEST;
+
+          } else {
+            pointFin = pointFin -  pharse.pointACT;
+          }
+        }
+    }
+      
+    console.log("taskInfo-newEffort", newEffort);
+
+    console.log("taskInfo-pointFin", pointFin);
+    
+    //Cap nhat point fin 
+    for(let pharse of newEffort) {
+      if("PIM_PHS_CDFIN" == pharse.prntPhsCd) {
+          pharse.point  =  pointFin;
+          pharse.pointACT  = pointFin;
+          pharse.pointEST  = pointFin;
+        }
+      
+    }
+    setEffortWithMember(newEffort);
+ 
   }
 
   const openClickUp = (item) => {
@@ -1451,7 +1507,9 @@ export default function TaskSearchForm() {
                 >Estimate: {(memberTaskList && memberTaskList.taskList && memberTaskList.length > 0) ? memberTaskList.taskList[0].effortdev : 0}h (point) 
                 </th>
 
-                <th className="px-4 py-2">Effort Point: { (taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0) ? taskInfo.lstReq[0].pntNo : 0}</th>
+                <th className="px-4 py-2">
+                  Effort Point: { (taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0) ? taskInfo.lstReq[0].pntNo : 0}
+                </th>
                 <th className="px-4 py-2 text-blue-600">
                   Actual Point: {taskInfo.totalPoint}
                   <label className="ml-4 ">
@@ -1500,7 +1558,7 @@ export default function TaskSearchForm() {
                 <th className="px-4 py-2 text-right">Time Worked</th>
                 <th className="px-4 py-2 text-right">EST (H)</th>
                 <th className="px-4 py-2 text-right">Exp P/H</th>
-                <th className="px-4 py-2 text-right">Point</th>
+                <th className="px-4 py-2 text-right">Effort Point</th>
                 <th className="px-4 py-2 text-right">BP Point</th>
                 <th className="px-4 py-2 text-right">Estimate</th>
                 <th className="px-4 py-2 text-right">Min</th>
@@ -1517,8 +1575,8 @@ export default function TaskSearchForm() {
                   <td className="px-4 py-2 text-right">{formatTime(result.effortHours)}</td>
                   <td className="px-4 py-2 text-right">{formatTime(result.estHours)}</td>
                   <td className="px-4 py-2 text-right">{result.expectPoint}</td>
-                  <td className="px-4 py-2 text-right">{result.point}</td>
-                  <td className="px-4 py-2 text-right text-blue-600">{result.point }</td>
+                  <td className="px-4 py-2 text-right bg-misty">{result.point}</td>
+                  <td className="px-4 py-2 text-right text-blue-600">{result.efrtNo /** BP Point*/ }</td>  
                   <td className="px-4 py-2 text-right text-blue-600">
                     <label className="ml-4 ">
                       <input type="checkbox"
