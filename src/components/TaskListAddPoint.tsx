@@ -52,7 +52,8 @@ export default function TaskListAddPoint() {
         "itrtnId": "_ALL_",
         "beginIdx": 0,
         "endIdx": 200,
-        "isLoadLast": false
+        "isLoadLast": false,
+        "pageSize": 25
     };
     // let lsPharseMember = requirementDetail.lstSkdUsr
     let requirement = await axios.post(`${url}/uiPim001/searchRequirement`,   data

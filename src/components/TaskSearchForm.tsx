@@ -135,7 +135,6 @@ export default function TaskSearchForm() {
   const MGMT_TASK_RANGE_MEMBER_SHEET = 'A1:AO';
   const MGMT_TASK_SPREADSHEET_ID = "1jsBbrJZ8AYuNTRiBMLfcngHi0f6vCF1XocbvvpJDBAM";
   let [docTitle, setDocTitle] = useState();
-  let [memList, setMemList] = useState([]);
   const [modalIsOpen, setIsOpen] = React.useState(false);
   let subtitle;
   let [loading, setLoading] = useState(false);
@@ -148,7 +147,7 @@ export default function TaskSearchForm() {
   const firstDayOfMonth = today.clone().startOf("month");
   const [startDate, setStartDate] = useState(firstDayOfMonth._d);
   const [endDate, setEndDate] = useState(new Date());
-
+  const [memberList, setMemberList] =  useState({});
   const onChangeLevel = (option: any) => {
     setTaskLevel(option);
   }
@@ -189,7 +188,30 @@ export default function TaskSearchForm() {
     }
     return sum;
   }
-
+  const count_holiday = (start, end) => {
+    let count = 0;
+    const DT_FM = 'YYYYMMDD';
+    while (start <= end) {
+      console.log("start", start.format(DT_FM));
+      if(myData.workingDay.holidays.find(({ holidayDate }) => holidayDate == start.format(DT_FM))){
+        count++;
+      }
+      start = start.add(1, "days");
+     
+    }
+    return count;
+  };
+  const workday_count = (start, end) => {
+    var first = start.clone().endOf("week"); // end of first week
+    var last = end.clone().startOf("week"); // start of last week
+    var days = (last.diff(first, "days") * 5) / 7; // this will always multiply of 7
+    var wfirst = first.day() - start.day(); // check first week
+    if (start.day() == 0) --wfirst; // -1 if start with sunday
+    var wlast = end.day() - last.day(); // check last week
+    if (end.day() == 6) --wlast; // -1 if end with saturday
+    var holidays = count_holiday(start, end);
+    return wfirst + Math.floor(days) + wlast - holidays; // get the total
+  };   
   const searchRequirement = async () => {
     openModal();
        // https://blueprint.cyberlogitec.com.vn/api/uiPim001/searchRequirement
@@ -212,7 +234,8 @@ export default function TaskSearchForm() {
           "beginIdx": 0,
           "endIdx": 200,
           // "picId": "_ALL_",
-          "isLoadLast": false
+          "isLoadLast": false,
+          "pageSize": 25
       };
       let lsPharseMember = reqDetail.lstSkdUsr;
       let requirement = await axios.post(`${url}/uiPim001/searchRequirement`,   data
@@ -229,6 +252,7 @@ export default function TaskSearchForm() {
               console.log("selectMember_TaskList");
               let taskSheet = result.taskList;
               let lsMember = result.arrMember;
+             
               //         arrMember: [],
               // taskList: []
               // let taskGoogleSheet = await selectTaskList("A");
@@ -283,6 +307,7 @@ export default function TaskSearchForm() {
                     item.maxPoint = member.maxPoint;
                     item.target = member.target;
                     item.averageeffortpoint_month = member.averageeffortpoint_month;
+                    item.pointinday = member.pointinday ? parseInt(member.pointinday) : 200;
 
                     if(isCheckEffort) {
                       // let reqParam = {
@@ -311,13 +336,15 @@ export default function TaskSearchForm() {
                       console.log("RES", res);
                       item.effortPoint = 0; // Waiting API
                       if(res){
+                        const diffDays = workday_count (ro.fromDtOrg, ro.toDtOrg);
                         const diffMonth = moment(ro.toDtOrg._i).diff(moment(ro.fromDtOrg._i), 'months', true);
                         const totalMonth  = moment(effectDateToORG._i).diff(moment(effectDateFromORG._i), 'months', true);
                         const countMonth = diffMonth && diffMonth >= 1 ?  Math.round(diffMonth) : 1;
                         item.countMonth = countMonth;
                         item.totalMonth = Math.round(totalMonth);
                         item.effortPoint = sumEfrtKnt (res.dailyRsrcLst) / countMonth;
-
+                        item.averageeffortpoint_days = diffDays * item.pointinday;
+                        item.totalDays = diffDays;
                       
                     
                       }
@@ -485,6 +512,14 @@ export default function TaskSearchForm() {
                 totalPoint: totalPoint
               })
               // setOrgTaskInfo(requirementRP);
+              let picFinish = [...tmpResult].filter(item => "PIM_PHS_CDFIN" == item.phsCd);
+              if(picFinish) {
+                const propMember = {
+                  picFinish: picFinish,
+                  lsMember: [...lsMember]
+                }
+                setMemberList(propMember);
+              }
               setEffortWithMember(tmpResult);
               setMemberTaskList(result);
               await clickupGetTask();
@@ -1597,7 +1632,7 @@ export default function TaskSearchForm() {
                 <th className="px-4 py-2 text-right">Estimate</th>
                 <th className="px-4 py-2 text-right">Min</th>
                 <th className="px-4 py-2 text-right">Max</th>
-                <th className="px-4 py-2 text-right">Eff/AVG (m)</th>
+                <th className="px-4 py-2 text-right">Eff/Est/AVG(m)</th>
                 <th className="px-4 py-2 text-right">Target</th>
               </tr>
             </thead>
@@ -1622,7 +1657,7 @@ export default function TaskSearchForm() {
                   </td>
                   <td className="px-4 py-2 text-right bg-light-green">{formatNumber(result.minPoint, 0)}</td>
                   <td className="px-4 py-2 text-right bg-light-green">{formatNumber(result.maxPoint, 0)}</td>
-                  <td className="px-4 py-2 text-right bg-light-green font-bold">{formatNumber(result.effortPoint, 0)}/{formatNumber(result.averageeffortpoint_month, 0)} ({formatNumber(result.countMonth, 0)}/{formatNumber(result.totalMonth, 0)})</td>
+                  <td className="px-4 py-2 text-right bg-light-green font-bold">{formatNumber(result.effortPoint, 0)}/{formatNumber(result.averageeffortpoint_days, 0)}/{formatNumber(result.averageeffortpoint_month, 0)} ({formatNumber(result.countMonth, 0)}/{formatNumber(result.totalMonth, 0)} {formatNumber(result.totalDays, 0)} days)</td>
                   <td className="px-4 py-2 text-right bg-light-green">{result.target}</td>
                 </tr>
               ))}
@@ -1641,6 +1676,7 @@ export default function TaskSearchForm() {
           reqId = { reqId }
           reqDetail = { reqDetail }
           detailReqVO = { taskInfo }
+          memberList = { memberList }
         />
       </div>
     </div>

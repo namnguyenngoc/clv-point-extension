@@ -12,7 +12,7 @@ export default function PointSuggest(props) {
   const effortPointCategory = myData.effortPointCategory;
 
   let [totalPoint, setTotalPoint] = useState(0);
-  let [increasePoint, setIncreasePoint] = useState(0);
+  let [increasePoint, setIncreasePoint] = useState(50);
 
   let [totalListPoint, setTotalListPoint] = useState(0);
   let [suggetPrtList, setSuggetPrtList] = useState([]);
@@ -94,7 +94,19 @@ export default function PointSuggest(props) {
   } 
 
   const datasuggestList = async () => {
-    console.log("PropsSuggest", props);
+   
+    let effortIncrease = 0;
+    // picFinish: picFinish,
+    // lsMember: setMemberList(lsMember)
+    if(props.memberList.lsMember) {
+      let picFinish = props.memberList.picFinish && props.memberList.picFinish.length > 0  ? props.memberList.picFinish[0] : null ;
+      console.log("PropsSuggest", picFinish);
+      // let temp = props.memberList.lsMember.filter(item => item.userId == picFinish.usrId);
+      if(picFinish) {
+       
+        setIncreasePoint(picFinish.expectPoint);
+      }
+    }
     const param = {
       "pjtId": prjId,
       "isSearchDeleted":"N",

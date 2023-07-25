@@ -288,7 +288,10 @@
           { "holidayDate": "20220103", "description": "Tet Duong Lich" },
           { "holidayDate": "20230501", "description": "International Workers' Day" },
           { "holidayDate": "20230502", "description": "Compensation Day (Liberation Day)" },
-          { "holidayDate": "20230503", "description": "Compensation Day (Hung Kings' Commemoration Day)" }
+          { "holidayDate": "20230503", "description": "Compensation Day (Hung Kings' Commemoration Day)" },
+          { "holidayDate": "20230901", "description": "National Day (Vietnam)" },
+          { "holidayDate": "20230902", "description": "National Day (Vietnam)" }
+          
         ]
     },
     "levelList": [
