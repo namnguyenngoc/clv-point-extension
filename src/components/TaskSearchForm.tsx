@@ -306,7 +306,7 @@ export default function TaskSearchForm() {
                     item.minPoint = member.minPoint;
                     item.maxPoint = member.maxPoint;
                     item.target = member.target;
-                    item.averageeffortpoint_month = member.averageeffortpoint_month;
+                    item.averageeffortpoint_month = member.averageeffortpoint_month * parseFloat(member.workload);
                     item.pointinday = member.pointinday ? parseInt(member.pointinday) : 200;
 
                     if(isCheckEffort) {
@@ -343,7 +343,7 @@ export default function TaskSearchForm() {
                         item.countMonth = countMonth;
                         item.totalMonth = Math.round(totalMonth);
                         item.effortPoint = sumEfrtKnt (res.dailyRsrcLst) / countMonth;
-                        item.averageeffortpoint_days = diffDays * item.pointinday;
+                        item.averageeffortpoint_days = diffDays * item.pointinday * parseFloat(member.workload);
                         item.totalDays = diffDays;
                       
                     
