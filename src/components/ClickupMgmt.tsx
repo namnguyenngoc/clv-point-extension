@@ -1,9 +1,9 @@
-import React, { useState, CSSProperties } from "react";
+import React, { useState, CSSProperties, useEffect } from "react";
 import axios from "axios";
 import 'moment-timezone';
 import moment from 'moment'
 
-import { REQ_HEADER } from '../const';
+import { REQ_HEADER, CLICKUP_INFO } from '../const';
 import Select, { components } from "react-select";
 import ScaleLoader from "react-spinners/ScaleLoader";
 import ReactDOM from 'react-dom';
@@ -2801,7 +2801,37 @@ function openTaskBP(item) {
   function closeModal() {
     setIsOpen(false);
   }
-
+  //https://api.clickup.com/api/v2/space/26265831/folder
+  async function getFolders() {
+    let itemTask = {};
+    const config2 = {
+        method: 'get',
+        url: `${API_CLICKUP}/space/${CLICKUP_INFO.SPACE_ID}/folder`,
+        headers:  REQ_HEADER.headers,
+    };
+    console.log("config2", config2);
+    const response = await axios(config2).then((res2) => {
+        console.log("res2", res2);
+        // const data2 = res2.data;
+        // if(data2){
+        //     itemTask = data2;
+        // }
+        
+        return res2;
+    });
+    return new Promise((resolve, reject) => {
+        resolve(response);
+    });
+  }
+//   useEffect(()=>{
+//     console.log("Request searchRequirement");
+//     getFolders().then((data) => {
+//         console.log("getFolders", data);
+//     }).then((data) => {
+//         console.log("data2", data);
+//     //   closeModal();
+//     });
+//   },[])
 
   // const allOptions = getListMembers(900800090277);
   return (

@@ -37,3 +37,7 @@ export const REQ_HEADER = {
     'Authorization': 'pk_32193054_YQNFO05VHHM9ABEJUTOE8YUPS7RII2JN'
   }
 }
+
+export const CLICKUP_INFO = {
+  SPACE_ID: 26265831,
+}
