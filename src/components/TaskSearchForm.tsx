@@ -71,8 +71,9 @@ export default function TaskSearchForm(props, { term }) {
         "jbTpCd": "_ALL_",
         "itrtnId": "_ALL_",
         "beginIdx": 0,
-        "endIdx": 200,
-        "picId": "_ALL_"
+        "endIdx": 25,
+        "picId": "_ALL_",
+        "isLoadLast": false
     };
     let lsPharseMember = requirementDetail.lstSkdUsr;
     let requirement = await axios.post(`${url}/uiPim001/searchRequirement`,   data

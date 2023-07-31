@@ -11,7 +11,7 @@ export default function TaskListAddPoint(props) {
   // Moment.locale('en');
   const [children, setChildren] = useState([]);
 
-  let [picId, setPicId] = React.useState("");
+  let [picId, setPicId] = React.useState("namnnguyen");
   let [reqId, setReqId] = React.useState("");
   let [seqNo, setSeqNo] = React.useState(0);
   
@@ -74,7 +74,7 @@ export default function TaskListAddPoint(props) {
 
   const searchRequirement = async () => {
 
-    const data = {
+    let data = {
         "pjtId": "PJT20211119000000001",
         "advFlg": "N",
         "reqStsCd": [
@@ -85,8 +85,15 @@ export default function TaskListAddPoint(props) {
         "jbTpCd": "_ALL_",
         "itrtnId": "_ALL_",
         "beginIdx": 0,
-        "endIdx": 200,
+        "endIdx": 25,
+        "reqPhsCd": "PIM_PHS_CDAPP",
+        "isLoadLast": false
     };
+   
+    if (approvalChecked && finishChecked && focalChecked) {
+    
+    }
+
     // let lsPharseMember = requirementDetail.lstSkdUsr
     let requirement = await axios.post(`${url}/uiPim001/searchRequirement`,   data
     ).then(res => {
@@ -178,7 +185,7 @@ export default function TaskListAddPoint(props) {
     event.preventDefault();
     //https://blueprint.cyberlogitec.com.vn/api/getUserInfoDetails
     console.log("LOAD", "doc.title");
-    searchRequirement();
+    await searchRequirement();
  
   };
 
@@ -339,8 +346,9 @@ export default function TaskListAddPoint(props) {
         "jbTpCd": "_ALL_",
         "itrtnId": "_ALL_",
         "beginIdx": 0,
-        "endIdx": 200,
-        "picId": "_ALL_"
+        "endIdx": 25,
+        "picId": "_ALL_",
+        "isLoadLast": false
     };
     let lsPharseMember = requirementDetail.lstSkdUsr
     let requirement = await axios.post(`${url}/uiPim001/searchRequirement`,   data

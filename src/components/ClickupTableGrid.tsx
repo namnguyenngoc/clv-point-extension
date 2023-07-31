@@ -19,7 +19,10 @@ import {
     //   { active: false, firstName: 'Jeff', lastName: 'Bezos' },
     // ])
     const defaultSize = { width: 1};
+    const defaultSizeIdx = { width: 1, minWidth: 30};
     const defaultSizeNm = { width: 1, minWidth: 300};
+    const defaultSizePIC = { width: 1, minWidth: 100};
+    const defaultSizeNumber = { width: 1, minWidth: 50};
     const columns = [
     //   {
     //     ...keyColumn('active', checkboxColumn),
@@ -33,7 +36,7 @@ import {
       {
         ...keyColumn('idx', intColumn),
         title: 'No.',
-        ...defaultSize,
+        ...defaultSizeIdx,
       },
       {
         ...keyColumn('id', textColumn),
@@ -48,7 +51,7 @@ import {
       {
         ...keyColumn('clk_parent_nm', textColumn),
         title: 'Parent',
-        ...defaultSize,
+        ...defaultSizeNm,
       },
       {
         ...keyColumn('task_nm', textColumn),
@@ -58,22 +61,22 @@ import {
       {
         ...keyColumn('USP_dev_nm', textColumn),
         title: 'PIC DEV',
-        ...defaultSize,
+        ...defaultSizePIC,
       },
       {
         ...keyColumn('USP_dev_point', intColumn),
         title: 'USP',
-        ...defaultSize,
+        ...defaultSizeNumber,
       },
       {
         ...keyColumn('USP_test_nm', textColumn),
         title: 'PIC TEST',
-        ...defaultSize,
+        ...defaultSizePIC,
       },
       {
         ...keyColumn('USP_test_point', intColumn),
         title: 'USP',
-        ...defaultSize,
+        ...defaultSizeNumber,
 
       },
       {
@@ -82,22 +85,22 @@ import {
         ...defaultSize,
       },
       {
-        ...keyColumn('lastName', textColumn),
+        ...keyColumn('bp_task_startDateFm', textColumn),
         title: 'Start Date',
         ...defaultSize,
       },
       {
-        ...keyColumn('lastName', textColumn),
+        ...keyColumn('bp_task_endDateFm', textColumn),
         title: 'End Date',
         ...defaultSize,
       },
       {
-        ...keyColumn('lastName', textColumn),
+        ...keyColumn('bp_task_sumActEfrtMnt', textColumn),
         title: 'Act Dev',
         ...defaultSize,
       },
       {
-        ...keyColumn('lastName', textColumn),
+        ...keyColumn('bp_task_test_sumActEfrtMnt', textColumn),
         title: 'Act TEST',
         ...defaultSize,
       },
@@ -114,12 +117,12 @@ import {
       {
         ...keyColumn('creator_nm', textColumn),
         title: 'Created By',
-        ...defaultSize,
+        ...defaultSizePIC,
       },
       {
-        ...keyColumn('lastName', intColumn),
+        ...keyColumn('seqNo', intColumn),
         title: 'BP#Seq',
-        ...defaultSize,
+        ...defaultSizeNumber,
       },
     ]
   

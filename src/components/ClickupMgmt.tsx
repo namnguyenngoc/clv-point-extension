@@ -1750,7 +1750,7 @@ const override: CSSProperties = {
     };
 export default function ClickupMgmt(props) {
   const API_CLICKUP = 'https://api.clickup.com/api/v2';
-  const API_WORKNG = 'http://anvatchibeo.ddns.net:9789/api';
+  const API_WORKNG = 'http://ec2-52-65-10-185.ap-southeast-2.compute.amazonaws.com:9789/api';
 
   let [taskList, setTaskList] = React.useState([]);
   let [originTaskList, setOriginTaskList] = useState([]);
@@ -2240,18 +2240,34 @@ function openTaskBP(item) {
             //Process mapping name
 
             // console.log("arr", arr);
-            const resultTaskList = await Promise.resolve(genTaskInformation(arr));
+            let resultTaskList = await Promise.resolve(genTaskInformation(arr));
             // console.log("resultTaskList", resultTaskList);
                     
             //Format data table 
-            // const task2 = finalListTask.map(function(item, idx) {
-            //     item.idx = idx + 1;
-            //     item.clk_parent_nm = item.parent == null ? item.name : item.parent_nm;
-            //     item.task_nm = item.parent ? item.name : "";
-            //     return item;
-            // });
+            //format task
+            resultTaskList?.map(function (task, idx){
+                // task.idx = idx + 1;
+                // task.clk_parent_nm = task.parent == null ? task.name : task.parent_nm;
+                // task.task_nm = task.parent ? task.name : task.id;
+                // task.USP_dev_nm = task.USP.dev_nm;
+                // task.USP_dev_point = task.USP.dev_point;
+                // task.USP_test_nm = task.USP.test_nm;
+                // task.USP_test_point = task.USP.test_point;
+                // task.USP_DONE =  parseInt(task.USP.test_point) + parseInt(task.USP.dev_point);
+
+                // task.bp_task_endDate = task.compare_data.endDate;
+                // task.bp_task_endDateFm = task.compare_data.endDateFm;
+                // task.bp_task_endDateObj = task.compare_data.endDateObj;
+                // task.bp_task_startDate = task.compare_data.startDate;
+                // task.bp_task_startDateFm = task.compare_data.startDateFm;
+                // task.bp_task_startDateObj  = task.compare_data.startDateObj;
+                // task.bp_task_sumActEfrtMnt = task.compare_data.sumActEfrtMnt;
+                customBPFormat(task, idx);
+
+            });
             //End format data table
-            setTaskList([]);
+            console.log("setTaskList", resultTaskList);
+            setTaskList(resultTaskList);
             setOriginTaskList(resultTaskList);
             setLoading(false);
         }
@@ -2589,16 +2605,24 @@ function openTaskBP(item) {
                             }
                             task.USP = splitUSP(task);
 
-                            //format task
-                            task.idx = idx + 1;
-                            task.clk_parent_nm = task.parent == null ? task.name : task.parent_nm;
-                            task.task_nm = task.parent ? task.name : "";
-                            task.USP_dev_nm = task.USP.dev_nm;
-                            task.USP_dev_point = task.USP.dev_point;
-                            task.USP_test_nm = task.USP.test_nm;
-                            task.USP_test_point = task.USP.test_point;
-                            task.USP_DONE =  parseInt(task.USP.test_point) + parseInt(task.USP.dev_point);
+                            // //format task
+                            // task.idx = idx + 1;
+                            // task.clk_parent_nm = task.parent == null ? task.name : task.parent_nm;
+                            // task.task_nm = task.parent ? task.name : task.id;
+                            // task.USP_dev_nm = task.USP.dev_nm;
+                            // task.USP_dev_point = task.USP.dev_point;
+                            // task.USP_test_nm = task.USP.test_nm;
+                            // task.USP_test_point = task.USP.test_point;
+                            // task.USP_DONE =  parseInt(task.USP.test_point) + parseInt(task.USP.dev_point);
 
+                            // task.bp_task_endDate = task.compare_data.endDate;
+                            // task.bp_task_endDateFm = task.compare_data.endDateFm;
+                            // task.bp_task_endDateObj = task.compare_data.endDateObj;
+                            // task.bp_task_startDate = task.compare_data.startDate;
+                            // task.bp_task_startDateFm = task.compare_data.startDateFm;
+                            // task.bp_task_startDateObj  = task.compare_data.startDateObj;
+                            // task.bp_task_sumActEfrtMnt = task.compare_data.sumActEfrtMnt;
+                            customBPFormat(task, idx);
                             finalListTask.push(task);
                         })
 
@@ -2616,6 +2640,29 @@ function openTaskBP(item) {
     // })
 
   }
+  
+  const customBPFormat = (task, idx) => {
+    console.log("customBPFormat");
+    //format task
+    task.idx = idx + 1;
+    task.clk_parent_nm = task.parent == null ? task.name : task.parent_nm;
+    task.task_nm = task.parent ? task.name : task.id;
+    task.USP_dev_nm = task.USP.dev_nm;
+    task.USP_dev_point = task.USP.dev_point;
+    task.USP_test_nm = task.USP.test_nm;
+    task.USP_test_point = task.USP.test_point;
+    task.USP_DONE =  parseInt(task.USP.test_point) + parseInt(task.USP.dev_point);
+    
+    if(task.compare_data){
+        task.bp_task_endDate = task.compare_data.endDate;
+        task.bp_task_endDateFm = task.compare_data.endDateFm;
+        task.bp_task_endDateObj = task.compare_data.endDateObj;
+        task.bp_task_startDate = task.compare_data.startDate;
+        task.bp_task_startDateFm = task.compare_data.startDateFm;
+        task.bp_task_startDateObj  = task.compare_data.startDateObj;
+        task.bp_task_sumActEfrtMnt = task.compare_data.sumActEfrtMnt;
+    }
+  }
   const bpSearchRequirement = async (prjId: string, reqTitNm: string) => {
     // API_WORKNG
     const data = {
@@ -2627,9 +2674,10 @@ function openTaskBP(item) {
             ["REQ_STS_CDPRC", "REQ_STS_CDOPN", "REQ_STS_CDFIN", "REQ_STS_CDCC", "REQ_STS_CDPD"],
             "jbTpCd": "_ALL_",
             "itrtnId": "_ALL_",
+            "picId": "_ALL_",
             "beginIdx": 0,
-            "endIdx": 200,
-            "picId": "_ALL_"
+            "endIdx": 25,
+            "isLoadLast": false
         }
       };
     // let lsPharseMember = requirementDetail.lstSkdUsr
@@ -2649,8 +2697,94 @@ function openTaskBP(item) {
     return pm;
 
   }
+    const formatBpEffortByPharse = (task: any, pharseCD: any) => {
+        console.log("taskBPDetail");
+        let result = {
+            startDate: "",
+            endDate: "",
+            sumActEfrtMnt: 0, //hour
+            test: {
+                startDate: "",
+                endDate: "",
+                sumActEfrtMnt: 0, //hour
+            }
+        }
+        let bpItem = task.blueprint;
+        if(bpItem) {
+            let lstActEfrtPnt = bpItem.actualEffort.lstActEfrtPnt;
+            let logPharse = lstActEfrtPnt.filter(item => item.phsCd == pharseCD);
+            if(logPharse && logPharse.length > 0) {
+                //Sort
+                logPharse.sort(function(a,b){
+                    // Turn your strings into dates, and then subtract them
+                    // to get a value that is either negative, positive, or zero.
+                    return moment(b.wrkDt, 'YYYYMMDD') - moment(a.wrkDt, 'YYYYMMDD');
+                });
+                console.log("logPharse",logPharse);
+                result.startDate = logPharse[logPharse.length - 1].wrkDt;
+                result.endDate = logPharse[0].wrkDt;
 
+                let startDate = moment(result.startDate, 'YYYYMMDD').format("MM-DD-YYYY");
+                let endDate = moment(result.endDate, 'YYYYMMDD').format("MM-DD-YYYY");
+
+                result.startDateFm = startDate;
+                result.endDateFm = endDate;
+                result.startDateObj = moment(result.startDate, 'YYYYMMDD');
+                result.endDateObj = moment(result.endDate, 'YYYYMMDD');
+
+                const sum = logPharse.reduce((accumulator, object) => {
+                    return accumulator + Number(object.actEfrtMnt);
+                }, 0);
+                result.sumActEfrtMnt = (sum / 60).toFixed(2) ;
+                
+                task.bp_task_endDate = result.endDate;
+                task.bp_task_endDateFm = result.endDateFm;
+                task.bp_task_endDateObj = result.endDateObj;
+                task.bp_task_startDate = result.startDate;
+                task.bp_task_startDateFm = result.startDateFm;
+                task.bp_task_startDateObj  = result.startDateObj;
+                task.bp_task_sumActEfrtMnt = result.sumActEfrtMnt;
+
+            }
+
+            //Test
+            let test_logPharse = lstActEfrtPnt.filter(item => item.phsCd == "PIM_PHS_CDTSD");
+            if(test_logPharse && test_logPharse.length > 0) {
+                test_logPharse.sort(function(a,b){
+                    // Turn your strings into dates, and then subtract them
+                    // to get a value that is either negative, positive, or zero.
+                    return moment(b.wrkDt, 'YYYYMMDD') - moment(a.wrkDt, 'YYYYMMDD'); //Sort DESC
+                });
+                result.test.startDate = test_logPharse[test_logPharse.length - 1].wrkDt;
+                result.test.endDate = test_logPharse[0].wrkDt;
+
+                let startDate = moment(result.test.startDate, 'YYYYMMDD').format("MM-DD-YYYY");
+                let endDate = moment(result.test.endDate, 'YYYYMMDD').format("MM-DD-YYYY");
+
+                result.test.startDateFm = startDate;
+                result.test.endDateFm = endDate;
+                result.test.startDateObj = moment(result.test.startDate, 'YYYYMMDD');
+                result.test.endDateObj = moment(result.test.endDate, 'YYYYMMDD');
+
+                const sum = test_logPharse.reduce((accumulator, object) => {
+                    return accumulator + Number(object.actEfrtMnt);
+                }, 0);
+                result.test.sumActEfrtMnt = (sum / 60).toFixed(2) ;
+                
+                task.bp_task_test_endDate = result.test.endDate;
+                task.bp_task_test_endDateFm = result.test.endDateFm;
+                task.bp_task_test_endDateObj = result.test.endDateObj;
+                task.bp_task_test_startDate = result.test.startDate;
+                task.bp_task_test_startDateFm = result.test.startDateFm;
+                task.bp_task_test_startDateObj  = result.test.startDateObj;
+                task.bp_task_test_sumActEfrtMnt = result.test.sumActEfrtMnt;
+
+            }
+        }  
+        return result;
+    }
   const taskBPDetail = (task: any, pharseCD: any) => {
+    console.log("taskBPDetail");
     let result = {
         startDate: "",
         endDate: "",
@@ -2675,6 +2809,14 @@ function openTaskBP(item) {
                 return accumulator + Number(object.actEfrtMnt);
             }, 0);
             result.sumActEfrtMnt = (sum / 60).toFixed(2) ;
+            
+            result.bp_task_endDate = result.endDate;
+            result.bp_task_endDateFm = result.endDateFm;
+            result.bp_task_endDateObj = result.endDateObj;
+            result.bp_task_startDate = result.startDate;
+            result.bp_task_startDateFm = result.startDateFm;
+            result.bp_task_startDateObj  = result.startDateObj;
+            result.bp_task_sumActEfrtMnt = result.sumActEfrtMnt;
 
         }
     }  
@@ -2683,6 +2825,7 @@ function openTaskBP(item) {
 
   const syncBlueprint = async (event: any) => {
     // API_WORKNG
+    console.log("syncBlueprint");
     setLoading(true);
     const prjId = "PJT20211119000000001";
      let copyTaskList = [...taskList];
@@ -2722,6 +2865,8 @@ function openTaskBP(item) {
 
                 item.compare_data = taskBPDetail(item.blueprint, "PIM_PHS_CDIMP");
 
+                formatBpEffortByPharse(item, "PIM_PHS_CDIMP");
+
                 if(item.compare_data){
                     if (moment(Number(item.due_date)) < item.compare_data.endDateObj) {
                         item.class_over = "over-due-date";
@@ -2731,6 +2876,7 @@ function openTaskBP(item) {
             }
            
         }
+        console.log("copyTaskList", copyTaskList);
         setTaskList(copyTaskList);
         setLoading(false);
     }
@@ -3013,7 +3159,7 @@ function openTaskBP(item) {
                         taskList = {taskList}
                     />   
                 </div>
-            <table className="w-full border border-gray-500 custom-scroll">
+            <table className="w-full border border-gray-500 custom-scroll" style={{display: "none"}}>
                 <thead>
                 <tr className="bg-gray-200">
                     <th className="px-2 py-2 w-50 text-eclipse">URL</th>
