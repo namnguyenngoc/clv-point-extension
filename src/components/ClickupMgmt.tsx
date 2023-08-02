@@ -3075,7 +3075,7 @@ function openTaskBP(item) {
             ...item,
             clk_parent_nm: !item.parent ? item.name : "",
             task_nm: item.parent ? `${levelSpace ? levelSpace : ""}${item.name}` : "",
-            assignees: (item.assignees.isArray) ? item.assignees.map(item2 => item2.username).join(',') : "",
+            assignees_full: item.assignees.map(item2 => item2.username).join(','),
             status_nm: item.status.status,
             due_date_str: due_date_str,
             ...splitUSP(item),
@@ -3129,8 +3129,7 @@ function openTaskBP(item) {
             console.log("Selected Member", selectedOptions);
             console.log("Selected Status", selectedStatus);
             const arrMember = selectedOptions.map(a => a.value);
-            const arrStatus = selectedStatus.map(a => a.label);
-
+            
             for(let i = 0; i < data.length; i ++) {
                 let task = await getTask({
                     parent: data[i].id
@@ -3158,11 +3157,11 @@ function openTaskBP(item) {
                 
             
             }
-            console.log("arrPromise0a", arrPromise);
             await Promise.all([...arrPromise]).then(async (response) => {
                
                 let newLsTask = [];
                 let lsTask = [];
+                setTaskList([]);
                 response?.map((item) => {
                     let parent = formatClickup(item);
                     lsTask.push(parent);
@@ -3223,7 +3222,6 @@ function openTaskBP(item) {
                                     console.log("idx", idx);
                                     // return task;
                                 });
-
                                 lsTask = [...lsTask].concat(arrNewSubTask);
 
                             }
@@ -3231,9 +3229,33 @@ function openTaskBP(item) {
 
                         }
                     }
+
+
                 });
-                console.log("lsTask", lsTask);
-                setTaskList(lsTask);
+                // console.log("lsTask", lsTask);
+                let newLsTaskFinal = [...lsTask];
+
+                if(newLsTaskFinal && selectedStatus) {
+                    let idx = 0;
+                    newLsTaskFinal = newLsTaskFinal.filter((item) => {
+                        console.log("status", item.status.status);
+                        const taskFilter = selectedStatus.filter(itm => itm.label == item.status.status);
+
+                        // const index = selectedStatus.findIndex(x => x.label.toLowerCase() == item.status.status.toLowerCase());
+                        console.log("index", taskFilter);
+
+                        if(taskFilter && taskFilter.length > 0) {
+                            // item.idx = idx ++;
+                            return true;
+                        }
+                        // console.log("index", index);
+                        return false;
+                    });
+                    
+                    console.log("newLsTaskFinal", newLsTaskFinal);
+                    setTaskList(newLsTaskFinal);
+                }
+                //Filter by Status
             });
 
             

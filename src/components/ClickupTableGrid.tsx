@@ -21,6 +21,7 @@ import {
     const defaultSize = { width: 1};
     const defaultSizeIdx = { width: 1, minWidth: 30};
     const defaultSizeNm = { width: 1, minWidth: 300};
+    const defaultSizeFullNm = { width: 1, minWidth: 400};
     const defaultSizePIC = { width: 1, minWidth: 100};
     const defaultSizeNumber = { width: 1, minWidth: 50};
     const columns = [
@@ -28,16 +29,12 @@ import {
     //     ...keyColumn('active', checkboxColumn),
     //     title: 'Active',
     //   },
-      {
-        ...keyColumn('url', textColumn),
-        title: 'Link',
-        ...defaultSize,
-      },
-      {
-        ...keyColumn('idx', intColumn),
-        title: 'No.',
-        ...defaultSizeIdx,
-      },
+      // {
+      //   ...keyColumn('url', textColumn),
+      //   title: 'Link',
+      //   frozen: true,
+      //   ...defaultSize,
+      // },
       {
         ...keyColumn('id', textColumn),
         title: 'ID',
@@ -46,42 +43,55 @@ import {
       {
         ...keyColumn('module', textColumn),
         title: 'Module',
+        frozen: true,
         ...defaultSize,
       },
       {
         ...keyColumn('clk_parent_nm', textColumn),
-        title: 'Parent',
+        title: 'Story',
+        frozen: true,
         ...defaultSizeNm,
       },
       {
         ...keyColumn('task_nm', textColumn),
         title: 'Name',
-        ...defaultSizeNm,
+        frozen: true,
+        ...defaultSizeFullNm,
       },
       {
-        ...keyColumn('assignees', textColumn),
+        ...keyColumn('assignees_full', textColumn),
         title: 'PIC(s)',
         ...defaultSizeNm,
       },
-      {
-        ...keyColumn('dev_point', intColumn),
-        title: 'USP',
-        ...defaultSizeNumber,
-      },
-      {
-        ...keyColumn('test_nm', textColumn),
-        title: 'PIC TEST',
-        ...defaultSizePIC,
-      },
-      {
-        ...keyColumn('test_point', intColumn),
-        title: 'USP',
-        ...defaultSizeNumber,
+      // {
+      //   ...keyColumn('dev_point', intColumn),
+      //   title: 'USP',
+      //   ...defaultSizeNumber,
+      // },
+      // {
+      //   ...keyColumn('test_nm', textColumn),
+      //   title: 'PIC TEST',
+      //   ...defaultSizePIC,
+      // },
+      // {
+      //   ...keyColumn('test_point', intColumn),
+      //   title: 'USP',
+      //   ...defaultSizeNumber,
 
+      // },
+      {
+        ...keyColumn('USP', intColumn),
+        title: 'USP DONE',
+        ...defaultSize,
       },
       {
-        ...keyColumn('USP_DONE', intColumn),
-        title: 'USP DONE',
+        ...keyColumn('status_nm', textColumn),
+        title: 'Status',
+        ...defaultSize,
+      },
+      {
+        ...keyColumn('due_date_str', textColumn),
+        title: 'Due Date',
         ...defaultSize,
       },
       {
@@ -102,16 +112,6 @@ import {
       {
         ...keyColumn('bp_task_test_sumActEfrtMnt', textColumn),
         title: 'Act TEST',
-        ...defaultSize,
-      },
-      {
-        ...keyColumn('status_nm', textColumn),
-        title: 'Status',
-        ...defaultSize,
-      },
-      {
-        ...keyColumn('due_date_str', textColumn),
-        title: 'Due Date',
         ...defaultSize,
       },
       {
