@@ -3198,11 +3198,12 @@ function openTaskBP(item) {
                                 let arrNewSubTask = [];
                                 newSubTask?.map(function (task, idx){
                                     let subSubTask = task.subtasks;
+                                    const itemSubTask = formatClickup(task);
+                                    arrNewSubTask.push(itemSubTask);
                                     if(subSubTask && subSubTask.length > 0) {
 
                                         console.log("task", task);
-                                        const itemSubTask = formatClickup(task);
-                                        arrNewSubTask.push(itemSubTask);
+                                        
                                         if(itemSubTask.subtasks && itemSubTask.subtasks.length > 0) {
                                             let subItemSubTask = itemSubTask.subtasks;
                                             subItemSubTask?.map(function (task2, idx2){
