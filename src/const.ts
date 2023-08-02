@@ -31,13 +31,20 @@ export const APP_EXTEND_MGMT_HEIGHT = 900;
 export const APP_COLLAPSE_MGMT_WIDTH = 65;
 export const APP_COLLAPSE_MGMT_HEIGHT = 60;
 
+export const CLICKUP_INFO = {
+  SPACE_ID: 26265831,
+  CLICKUP_TOKEN: `eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjozMjE5MzA1NCwidmFsaWRhdGVkIjp0cnVlLCJ3c19rZXkiOjcyMDU5ODY2OTIsInNlc3Npb25fdG9rZW4iOnRydWUsImlhdCI6MTY5MDc3MzczNCwiZXhwIjoxNjkwOTQ2NTM0fQ.UTHt4CURDiUzm3xlE8-1HTqVnnvf7oMemn-zuknmi10`
+
+}
 export const REQ_HEADER = {
   headers: {
     'Content-Type': 'application/json',
     'Authorization': 'pk_32193054_YQNFO05VHHM9ABEJUTOE8YUPS7RII2JN'
-  }
-}
+  },
+  headersBear: { 
+    headers: {
+      Authorization: `Bearer ${CLICKUP_INFO.CLICKUP_TOKEN}` 
 
-export const CLICKUP_INFO = {
-  SPACE_ID: 26265831,
+    }
+  }
 }

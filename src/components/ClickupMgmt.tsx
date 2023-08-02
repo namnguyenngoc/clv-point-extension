@@ -11,6 +11,7 @@ import Modal from 'react-modal';
 // Modal.setAppElement('#side-bar-extension-root');
 import ClickupTableGrid from './ClickupTableGrid';
 import { APP_COLLAPSE_MGMT_WIDTH, APP_EXTEND_MGMT_WIDTH, APP_EXTEND_MGMT_HEIGHT, APP_COLLAPSE_MGMT_HEIGHT} from '../const';
+import { useCookies } from "react-cookie";
 
 const customStyles = {
     content: {
@@ -229,23 +230,7 @@ const allOptions = [
             "viewed_top_tier_user": null
         }
     },
-    {
-        "value": 55673790,
-        "label": "Nguyen Phan Hoai Nam",
-        "email": "nam.nph@cyberlogitec.com",
-        "color": "#536cfe",
-        "initials": "NN",
-        "profilePicture": null,
-        "profileInfo": {
-            "display_profile": null,
-            "verified_ambassador": null,
-            "verified_consultant": null,
-            "top_tier_user": null,
-            "viewed_verified_ambassador": null,
-            "viewed_verified_consultant": null,
-            "viewed_top_tier_user": null
-        }
-    },
+  
     {
         "value": 32193054,
         "label": "Nguyen Ngoc Nam",
@@ -1656,85 +1641,6 @@ const allTags = [
         
 ]
 
-const allEpic = [
-        {
-            "value": "152185323",
-            "label": "🏆 Epics",
-            "orderindex": 6,
-            "status": null,
-            "priority": null,
-            "assignee": null,
-            "task_count": 111,
-            "due_date": null,
-            "start_date": null,
-            "folder": {
-                "id": "104188201",
-                "name": "Product Backlogs",
-                "hidden": false,
-                "access": true
-            },
-            "space": {
-                "id": "26265831",
-                "name": "New FWD",
-                "access": true
-            },
-            "archived": false,
-            "override_statuses": true,
-            "permission_level": "create"
-        },
-        {
-            "value": "900800090277",
-            "label": "🏆 Epics - Target 1",
-            "orderindex": 8,
-            "status": null,
-            "priority": null,
-            "assignee": null,
-            "task_count": 63,
-            "due_date": null,
-            "start_date": null,
-            "folder": {
-                "id": "104188201",
-                "name": "Product Backlogs",
-                "hidden": false,
-                "access": true
-            },
-            "space": {
-                "id": "26265831",
-                "name": "New FWD",
-                "access": true
-            },
-            "archived": false,
-            "override_statuses": true,
-            "permission_level": "create"
-        },
-        {
-            "value": "900800996894",
-            "label": "🏆 Epics - Target 2",
-            "orderindex": 9,
-            "content": "",
-            "status": null,
-            "priority": null,
-            "assignee": null,
-            "task_count": 10,
-            "due_date": null,
-            "start_date": null,
-            "folder": {
-                "id": "104188201",
-                "name": "Product Backlogs",
-                "hidden": false,
-                "access": true
-            },
-            "space": {
-                "id": "26265831",
-                "name": "New FWD",
-                "access": true
-            },
-            "archived": false,
-            "override_statuses": false,
-            "permission_level": "create"
-        }
-    ]
-
 const override: CSSProperties = {
         display: "block",
         margin: "0 auto",
@@ -1782,23 +1688,6 @@ export default function ClickupMgmt(props) {
       "profilePicture": "https://attachments.clickup.com/profilePictures/49593105_Eai.jpg",
       "profileInfo": {
           "display_profile": true,
-          "verified_ambassador": null,
-          "verified_consultant": null,
-          "top_tier_user": null,
-          "viewed_verified_ambassador": null,
-          "viewed_verified_consultant": null,
-          "viewed_top_tier_user": null
-      }
-    },
-    {
-      "value": 55673790,
-      "label": "Nguyen Phan Hoai Nam",
-      "email": "nam.nph@cyberlogitec.com",
-      "color": "#536cfe",
-      "initials": "NN",
-      "profilePicture": null,
-      "profileInfo": {
-          "display_profile": null,
           "verified_ambassador": null,
           "verified_consultant": null,
           "top_tier_user": null,
@@ -1929,23 +1818,6 @@ export default function ClickupMgmt(props) {
       }
     },
     {
-      "value": 49640752,
-      "label": "Trương Đình Ánh",
-      "email": "anh.td@cyberlogitec.com",
-      "color": "#f57c01",
-      "initials": "TÁ",
-      "profilePicture": null,
-      "profileInfo": {
-          "display_profile": null,
-          "verified_ambassador": null,
-          "verified_consultant": null,
-          "top_tier_user": null,
-          "viewed_verified_ambassador": null,
-          "viewed_verified_consultant": null,
-          "viewed_top_tier_user": null
-      }
-    },
-    {
       "value": 32270675,
       "label": "Ao Pham",
       "email": "ao.pham@cyberlogitec.com",
@@ -1981,6 +1853,7 @@ export default function ClickupMgmt(props) {
     // },
   ]
 
+  let defaultTeam = {};
   let defaultStatus = [
     {
       "value": "subcat152185323_subcat24726670_subcat24726295_subcat67371792_subcat40246481_subcat38252924_subcat27722344_subcat27722322_subcat23647187_subcat23599212_subcat23564660_subcat23564619_sc23553590_Vy1k3mmq",
@@ -2085,22 +1958,40 @@ let defaultEpic =
         "permission_level": "create"
     }
 ;
+
+let defaultSprint = {
+
+}
   // const [allOptions, setAllOptions] = useState([]);
   const [selectedOptions, setSelectedOptions] = useState(defaultMem);
   const [selectedStatus, setSelectedStatus] = useState(defaultStatus);
   const [selectedTags, setSelectedTags] = useState(defaultTags);
   const [selectEpic, setSelectEpic] = useState(defaultEpic);
+  const [selectTeam, setSelectTeam] = useState(defaultTeam);
+  const [selectSprint, setSelectSprint] = useState(defaultSprint);
+  
+  const [allTeam, setAllTeam] = useState([]);
+  const [allEpic, setAllEpic] = useState([]);
+  const [allSprint, setAllSprint] = useState([]);
+
   const [oneSelectMember, setOneSelectMember] = useState({});
   const [taskName, setTaskName] = useState("");
   const [idList, setIdList] = useState("");
   const [page, setPage] = useState(1);
   const [countId, setCountId] = useState(0);
+  const [task_ids, setTask_ids] = useState("");
+  const [arrTaskIds, setArrTaskIds] = useState([]);
+
   
   let isEnableSearch = false;
   let [loading, setLoading] = useState(false);
   let [color, setColor] = useState("#0E71CC");
   let subtitle;
   const [modalIsOpen, setIsOpen] = React.useState(false);
+
+  const [cookies, setCookie] = useCookies(["CLV_MGMT_TEAM"]);
+    const [token, setToken] = useState("");
+
 //   setSelectedOptions(defaultMem);
 //   setSelectedStatus(defaultStatus);
 //   setSelectedTags(defaultTags);
@@ -2138,13 +2029,34 @@ function openTaskBP(item) {
     }
     
   }
-  async function getTask(item:any) {
+  async function getTask(item:any, includeSub) {
+    let itemTask = {};
+    let paramSub = includeSub ? 'include_subtasks=true' : 'subtasks=true';
+    const config2 = {
+        method: 'get',
+        url: `${API_CLICKUP}/task/${item.parent}?${paramSub}`,
+        headers:  REQ_HEADER.headers,
+        delayed: false  // use this custom option to allow overrides
+    };
+    const response = axios(config2).then((res2) => {
+        console.log("---getTask---", res2);
+        const data2 = res2.data;
+        if(data2){
+            itemTask = data2;
+        }
+        return itemTask;
+    });
+    return new Promise((resolve, reject) => {
+        resolve(response);
+    });
+  }
+
+  async function getTaskIncludeSubTask(item:any) {
     let itemTask = {};
     const config2 = {
         method: 'get',
-        url: `${API_CLICKUP}/task/${item.parent}?subtasks=true`,
-        headers:  REQ_HEADER.headers,
-        delayed: false  // use this custom option to allow overrides
+        url: `https://api.clickup.com/api/v2/task/${item.parent}?include_subtasks=true`,
+        ...REQ_HEADER.headersBear
     };
     const response = axios(config2).then((res2) => {
         const data2 = res2.data;
@@ -2273,7 +2185,6 @@ function openTaskBP(item) {
         }
     });
 
-   
     
   }
 
@@ -2419,7 +2330,7 @@ function openTaskBP(item) {
         let regexp = /\[(.*?)\]/gi;
         const matches = name.matchAll(regexp);
         // let arr = item.name.match(regexp);
-        console.log("matches", matches);
+        // console.log("matches", matches);
         let flag = false;
         for (const match of matches) {
             // console.log(match);
@@ -2453,9 +2364,9 @@ function openTaskBP(item) {
                     }
                     
                     usp.dev_nm = (devArr && devArr.length > 0) ? devArr.join(",") : "";
-                    usp.dev_point = (point && point.length > 0) ? point[0].replace("P", "") : "";
+                    usp.dev_point = (point && point.length > 0) ? parseInt(point[0].replace("P", "")) : "";
                     usp.test_nm = (testArr && testArr.length > 0) ? testArr.join(",") : "";
-                    usp.test_point = (point && point.length > 1) ? point[1].replace("P", "") : "";
+                    usp.test_point = (point && point.length > 1) ? parseInt(point[1].replace("P", "")) : "";
                 }
             }
         }
@@ -2554,6 +2465,7 @@ function openTaskBP(item) {
 //   useEffect(() => { searchTaskById()})}
 
     const searchTaskById = async (event: any) => {  
+        
     // useEffect(() => { 
         setLoading(true);
         setTaskList([]);
@@ -2948,8 +2860,10 @@ function openTaskBP(item) {
     setIsOpen(false);
   }
   //https://api.clickup.com/api/v2/space/26265831/folder
-  async function getFolders() {
+  async function getFolders(teamSelected) {
     let itemTask = {};
+    setAllSprint([]);
+   
     const config2 = {
         method: 'get',
         url: `${API_CLICKUP}/space/${CLICKUP_INFO.SPACE_ID}/folder`,
@@ -2957,27 +2871,390 @@ function openTaskBP(item) {
     };
     console.log("config2", config2);
     const response = await axios(config2).then((res2) => {
-        console.log("res2", res2);
-        // const data2 = res2.data;
-        // if(data2){
-        //     itemTask = data2;
-        // }
+        let folders = res2.data.folders;
+        let sprints = [];
+        const team = folders.map((item) => {
+            return {
+                ...item,
+                value: item.id,
+                label: item.name,
+            }
+            
+        });
+        let tempTeam = teamSelected;
+        if(!tempTeam){
+            tempTeam = {
+                ...team[2]
+            }
+        }
+        let backLogs = [...team].filter(item => item.id == tempTeam.id);
+        if(backLogs && backLogs.length > 0) {
+            let tempData = backLogs[0].lists;
+            const epics = tempData.map((item) => {
+                return {
+                    ...item,
+                    value: item.id,
+                    label: item.name,
+                }
+                
+            })
+            setAllEpic(epics);
+        }
         
-        return res2;
+        sprints = tempTeam.lists; 
+        let tmp2 = sprints.map(item => {
+            return {
+                ...item,
+                value: item.id,
+                label: item.name,
+            }
+        })
+        setAllSprint(tmp2);
+
+        setAllTeam(team);
+        // setSelectTeam(folders);
+        
+        console.log("getFolders", team);
     });
     return new Promise((resolve, reject) => {
         resolve(response);
     });
   }
-//   useEffect(()=>{
-//     console.log("Request searchRequirement");
-//     getFolders().then((data) => {
-//         console.log("getFolders", data);
-//     }).then((data) => {
-//         console.log("data2", data);
-//     //   closeModal();
-//     });
-//   },[])
+
+    //https://app.clickup.com/view/v1/genericView?fresh_req=false&available_rollups=true&last_view=list-900801844109
+    const searchGenericView = async (sprint) => {
+        setSelectSprint(sprint);
+
+        setLoading(true);
+        let  _url = `https://app.clickup.com/view/v1/genericView?fresh_req=false&available_rollups=true&last_view=list-${sprint.id}`;
+        // https://app.clickup.com/view/v1/genericView?fresh_req=false&available_rollups=true&last_view=list-900801844109
+        const config = {
+            // ...REQ_HEADER.headersBear
+            headers: {
+                Authorization: `Bearer ${token}` 
+          
+            }
+        };
+        console.log("Config", config);
+        const body = {
+            "id": "list",
+            "members": [],
+            "group_members": [],
+            "name": "List",
+            "parent": {
+                "id": sprint.id,
+                "type": 6
+            },
+            "type": 1,
+            "me_view": false,
+            "visibility": 1,
+            "settings": {
+                "show_task_locations": false,
+                "show_timer": false,
+                "show_subtasks": 1,
+                "me_comments": true,
+                "me_subtasks": true,
+                "me_checklists": true,
+                "show_closed_subtasks": false,
+                "show_task_ids": false,
+                "show_empty_statuses": false,
+                "time_in_status_view": 1,
+                "auto_wrap": false
+            },
+            "embed_settings": null,
+            "grouping": {
+                "field": "status",
+                "dir": 1,
+                "collapsed": [],
+                "ignore": false
+            },
+            "divide": {
+                "field": null,
+                "dir": null,
+                "collapsed": [],
+                "by_subcategory": null
+            },
+            "sorting": {
+                "fields": []
+            },
+            "filters": {
+                "search": "",
+                "show_closed": false,
+                "search_custom_fields": true,
+                "search_description": true,
+                "search_name": true,
+                "op": "AND",
+                "filter_group_ops": [],
+                "filter_groups": [],
+                "fields": []
+            },
+            "columns": {
+                "fields": [
+                    {
+                        "field": "assignee",
+                        "pinned": true,
+                        "hidden": false
+                    },
+                    {
+                        "field": "dueDate",
+                        "pinned": false,
+                        "hidden": false
+                    },
+                    {
+                        "field": "priority",
+                        "pinned": false,
+                        "hidden": false
+                    },
+                    {
+                        "field": "pointsEstimate",
+                        "pinned": true,
+                        "hidden": false,
+                        "width": null
+                    }
+                ]
+            },
+            "default": false,
+            "standard": true,
+            "standard_view": true,
+            "tasks_shared_with_me": false,
+            "team_sidebar": {
+                "assigned_comments": false,
+                "assignees": [],
+                "group_assignees": [],
+                "unassigned_tasks": false
+            },
+            "auto_save": false,
+            "public_share_expires_on": null,
+            "share_tasks": true,
+            "board_settings": {},
+            "sidebar_view": false,
+            "sidebar_orderindex": null,
+            "sidebar_num_subcats_between": 0
+        }
+        const tasks = await axios.post(
+                                        _url, 
+                                        body, 
+                                        config
+        ).then(async (res) => {
+            const data = res.data;
+            console.log("searchGenericView", data);
+            const divisions = data.list.divisions;
+            let task_ids = [];
+            if(divisions && divisions.length > 0) {
+                for(let i = 0; i < divisions.length; i ++) {
+                    let grpData = divisions[i];
+                    for(let grp = 0; grp < grpData.groups.length; grp++) {
+                        let item = grpData.groups[grp];
+
+                        if(item && item.task_count > 0){
+                            // [...arrFocal.concat(arrApp).concat(arrFn)];
+                            task_ids = [...task_ids.concat(item.task_ids)];
+                        }
+                    }
+                  
+                }
+                setArrTaskIds(task_ids);
+                let strId = task_ids.join('\r\n');
+                setCountId(task_ids ? task_ids.length : 0);
+                setTask_ids(strId);
+            }
+            // if(data && data.tasks) {
+            //     return data.tasks;
+            // }
+            return [];
+        });
+        setLoading(false);
+    }
+    const formatClickup = (item) => {
+        let due_date_str = "";
+        if(item.due_date && item.due_date != null) {
+            due_date_str = moment(Number(item.due_date)).format("ddd, MMM DD");
+        } 
+
+        let newItem = {
+            ...item,
+            clk_parent_nm: !item.parent ? item.name : "",
+            task_nm: item.parent ? item.name : "",
+            assignees: (item.assignees.isArray) ? item.assignees.map(item2 => item2.username).join(',') : "",
+            status_nm: item.status.status,
+            due_date_str: due_date_str,
+            ...splitUSP(item),
+            module: item.tags.map(item2 => item2.name).join(','),
+        };
+        return newItem;
+    }
+    const searchMuitiTask = async () => {
+        setLoading(true);
+        let  _url = `https://app.clickup.com/tasks/v2/task`;
+        // https://app.clickup.com/view/v1/genericView?fresh_req=false&available_rollups=true&last_view=list-900801844109
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}` 
+          
+            }
+        };
+        const body = {
+            "show_closed_subtasks": false,
+            "subtask_archived": false,
+            "rollup": [],
+            "task_ids": [...arrTaskIds],
+            "fields": [
+                "rolledUpPointsEstimate",
+                "assignees",
+                "assigned_comments_count",
+                "dependency_state",
+                "parent_task",
+                "subtasks_by_status",
+                "attachments_count",
+                "tags",
+                "simple_statuses",
+                "rolledUpTimeEstimate",
+                "rolledUpTimeSpent",
+                "totalTimeSpent",
+                "statuses",
+                "pageLinks"
+            ],
+            "include_default_permissions": false
+        }
+
+        console.log("body", body);
+        const tasks = await axios.post(
+                                        _url, 
+                                        body, 
+                                        config
+        ).then(async (res) => {
+            const data = res.data.tasks;
+
+            let arrPromise = [];
+            console.log("Selected Member", selectedOptions);
+            console.log("Selected Status", selectedStatus);
+            const arrMember = selectedOptions.map(a => a.value);
+            const arrStatus = selectedStatus.map(a => a.label);
+
+            for(let i = 0; i < data.length; i ++) {
+                let task = await getTask({
+                    parent: data[i].id
+                }, true);  
+                arrPromise.push(task);
+                
+                // let assignees = task.assignees.map(item => item.username).join(',');
+                // task.assignees_ls = assignees;
+                // task.creator_nm = task.creator.username;
+                // task.status_nm = task.status.status;
+                // task.status_tp = task.status.type;
+                // task.status_color = task.status.color;
+                // task.module = task.tags.length > 0 ? task.tags[0].name : "";
+                // if(task.due_date && task.due_date != null) {
+                //     task.due_date_str = moment(Number(task.due_date)).format("ddd, MMM DD");
+                // } else {
+                //     task.due_date_str = "";
+                // }
+                // task.parent_nm = task.name;
+                // // taskListByParent.push(item); // push parent;
+                // const isExit = parentMissingArr.find(item => item.id == task.id);
+                // if(task && isExit == undefined) {
+                //     parentMissingArr.push(task);
+                // }
+                
+            
+            }
+            console.log("arrPromise0a", arrPromise);
+            await Promise.all([...arrPromise]).then(async (response) => {
+               
+                let newLsTask = [];
+                let lsTask = [];
+                response?.map((item) => {
+                    let parent = formatClickup(item);
+                    lsTask.push(parent);
+                    if(parent && parent.subtasks && parent.subtasks.length > 0) {
+                        let subTask = parent.subtasks;
+                        let subTaskFormat = subTask?.map(function (item2){
+                            console.log("Assignee", item2.assignees);
+                            const itemFm = formatClickup(item2);
+                            console.log("itemFm", itemFm);
+                            if(item2.assignees && item2.assignees.length > 0){
+                                const arrAssignees = item2.assignees.map(a => a.id);
+                                const isExistMember = arrMember.some(r=> arrAssignees.indexOf(r) >= 0);
+                                
+                                if(isExistMember) {
+                                    return itemFm;
+                                }
+
+                            } else {
+                                return itemFm;
+                            }
+                           
+                            
+                        });
+                        
+
+                        
+                        if(subTaskFormat) {
+                            let newSubTask = [...subTaskFormat].filter(function( element ) {
+                                return element !== undefined;
+                            });
+
+                            if(newSubTask && newSubTask.length > 0){
+                                newSubTask?.map(function (task){
+                                    let subSubTask = task.subtasks;
+                                    if(subSubTask && subSubTask.length > 0) {
+
+                                        console.log("task", task);
+                                        const itemSubTask = formatClickup(task);
+                                        console.log("itemSubTask", itemSubTask);
+
+                                        lsTask.push(itemSubTask);
+                                        // newSubTask.push()
+                                    }
+                                });
+
+                                lsTask = [...lsTask].concat(newSubTask);
+
+                            }
+
+
+                        }
+                    }
+                });
+                console.log("lsTask", lsTask);
+                setTaskList(lsTask);
+            });
+
+            
+            return [];
+        });
+        setLoading(false);
+    }
+
+    const teamChange = async (options) => {
+        console.log("teamChange", options);
+        setSelectTeam(options);
+        await getFolders(options)
+    }
+
+//   setAllEpic
+  useEffect(()=>{
+ 
+
+    //Check cookie
+    
+    // if(cookies && cookies.CLV_MGMT_TEAM) {
+    //     setCookie("CLV_MGMT_TEAM", CLICKUP_INFO.CLICKUP_TOKEN, {
+    //         path: "/"
+    //     });
+    // }
+    // let t =  localStorage.setItem('items', JSON.stringify(items));
+    let refresh_token =  localStorage.getItem('id_token');
+
+    setToken(refresh_token);
+    console.log("Request searchRequirement", refresh_token);
+    getFolders().then((data) => {
+        
+    }).then((data) => {
+        console.log("data2", data);
+    //   closeModal();
+    });
+  },[])
 
   // const allOptions = getListMembers(900800090277);
   return (
@@ -2988,6 +3265,7 @@ function openTaskBP(item) {
                 <div className="grid grid-flow-row gap-3 w-full">
                     <div className="flex flex-flow-col gap-1">
                         <div className="w-300">
+                            {/* Target */}
                             <Select
                                 defaultValue={defaultEpic}
                                 closeMenuOnSelect={false}
@@ -2997,6 +3275,40 @@ function openTaskBP(item) {
                                 }
                                 } 
                                 options={allEpic}
+                                components={{
+                                    Option: InputOption
+                                }}
+                            />
+                        </div>
+                        <div>
+                            {/* Team */}
+                            <Select
+                                defaultValue={defaultTeam}
+                                closeMenuOnSelect={false}
+                                hideSelectedOptions={false}
+                                onChange={(options) => {
+                                    teamChange(options);
+                                    
+                                }
+                                } 
+                                options={allTeam}
+                                components={{
+                                    Option: InputOption
+                                }}
+                            />
+                        </div>
+                        <div>
+                            {/* Sprint */}
+                            <Select
+                                defaultValue={defaultSprint}
+                                closeMenuOnSelect={false}
+                                hideSelectedOptions={false}
+                                onChange={(options) => {
+                                    //https://app.clickup.com/view/v1/genericView?fresh_req=false&available_rollups=true&last_view=list-900801844109
+                                    searchGenericView(options);
+                                }
+                                } 
+                                options={allSprint}
                                 components={{
                                     Option: InputOption
                                 }}
@@ -3078,11 +3390,13 @@ function openTaskBP(item) {
                         type="text"
                         className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-300"
                         onChange={(event) => {onChangeTaskList(event)}}
+                        defaultValue={task_ids}
+                        value={task_ids}
                     />
                     <button 
                         type="button" 
                         className="bg-blue-500 text-white py-2 px-4 rounded-lg w-150"
-                        onClick={ (event) => syncBlueprint(event)}>
+                        onClick={ (event) => searchMuitiTask()}>
                             SYNC BLUEPRINT
                     </button>
                     <button 
@@ -3159,92 +3473,9 @@ function openTaskBP(item) {
                         taskList = {taskList}
                     />   
                 </div>
-            <table className="w-full border border-gray-500 custom-scroll" style={{display: "none"}}>
-                <thead>
-                <tr className="bg-gray-200">
-                    <th className="px-2 py-2 w-50 text-eclipse">URL</th>
-                    <th className="px-2 py-2 w-30 text-center">#</th>
-                    <th className="px-2 py-2 w-70 text-center">ID</th>
-                    <th className="px-2 py-2 w-70 text-center">Module</th>
-                    <th className="px-2 py-2">Parent</th>
-                    <th className="px-2 py-2">Name</th>
-                    <th className="px-2 py-2 w-150">Assignee</th>
-                    <th className="px-2 py-2 w-100 text-center">PIC DEV</th>
-                    <th className="px-2 py-2 w-30 text-right">USP</th>
-                    <th className="px-2 py-2 w-100 text-center">PIC TEST</th>
-                    <th className="px-2 py-2 w-30 text-right">USP</th>
-                    <th className="px-2 py-2 w-30 text-right">UD</th>
-                    <th className="px-2 py-2 w-100 text-right">StartDate</th>
-                    <th className="px-2 py-2 w-100 text-right">EndDate</th>
-                    <th className="px-2 py-2 w-30 text-right">DEV</th>
-                    <th className="px-2 py-2 w-30 text-right">TEST</th>
-                    <th className="px-2 py-2 w-100 text-center">Status</th>
-                    <th className="px-2 py-2 text-center w-100">Due Date</th>
-                    <th className="px-2 py-2 text-center w-100">Created By</th>
-                    <th className="px-2 py-2 text-center w-50">BP#Seq</th>
-                    <th className="px-2 py-2 text-center w-100 blueprint-name">BP#Name</th>
-                    
-                </tr>
-                </thead>
-                <tbody className="border-t">
-                {taskList.map((item, idx) => (
-                    <tr key={item.id} className={ (item.USP.test_nm && item.USP.test_nm.length > 0) ? "border-t dev-test ".concat(item.class_over): "border-t ".concat(item.class_over)}>
-                    {/* <td className="px-2 py-2 w-100">{item.list.name}</td> */}
-                   
-                    <td className="px-2 py-2 w-50 text-center text-eclipse">{ item.url }</td>
-                    <td className="px-2 py-2 w-30 text-center">{idx + 1}</td>
-                    <td className="px-2 py-2 w-70 text-center">
-                        <a onClick={event => openTask(item.url)}>
-                            {item.id}
-                        </a>
-                    </td>
-                    
-                    <td className="px-2 py-2 w-70 text-center">{item.module}</td>
-                    <td className="px-2 py-2" style={{
-                        color: item.status_color,
-                        fontWeight: "bold",
-                    }}>
-                        {item.parent == null ? item.name : item.parent_nm}
-                    </td>
-                    <td className="px-2 py-2 text-blue">
-                        {item.parent ? item.name : ""}
-                    </td>
-                    <td className="px-2 py-2 w-150">{item.assignees_ls}</td>
-                    <td className="px-2 py-2 w-100 text-center">{item.USP.dev_nm}</td>
-                    <td className="px-2 py-2 w-30 text-right">{item.USP.dev_point}</td>
-                    <td className="px-2 py-2 w-100 text-center">{item.USP.test_nm}</td>
-                    <td className="px-2 py-2 w-30 text-right">{item.USP.test_point}</td>
-                    <th className="px-2 py-2 w-30 text-right">{item.USP.test_point + item.USP.dev_point}</th>
-                    <td className="px-2 py-2 w-100 text-right">{item.compare_data ? item.compare_data.startDateFm : ""}</td>
-                    <td className="px-2 py-2 w-100 text-right">{item.compare_data ? item.compare_data.endDateFm : ""}</td>
-                    <td className="px-2 py-2 w-100 text-right">{item.compare_data ? item.compare_data.sumActEfrtMnt : ""}</td>
-
-                    <td className="px-2 py-2 w-100 text-center w-100" style={{
-                        color: item.status_color,
-                        fontWeight: "bold",
-
-                    }}>{item.status_nm}</td>
-                    <td className="px-2 py-2 w-30 text-right">0</td>
-                    <td className="px-2 py-2 w-30 text-right">0</td>
-                    <td className="px-2 py-2 text-center w-100">{item.due_date_str}</td>
-                    <td className="px-2 py-2 text-center w-100">{item.creator_nm}</td> 
-                    <td className="px-2 py-2 text-center w-50">
-                        <a onClick={event => openTaskBP(item)}>
-                            {item.blueprint ? item.blueprint.seqNo : ""}
-                        </a>
-                    </td> 
-                    <td className={"px-2 py-2 text-center w-100  " + (item.blueprint ? (item.blueprint.css ? item.blueprint.css : "") : "")}>
-                        <div className="blueprint-name" onClick={event => showFullName(item)} >
-                            {item.blueprint ? item.blueprint.reqTitNm : ""}
-
-                        </div>
-                    </td> 
-                    
-                    </tr>
-                ))}
-                </tbody>
-            </table>
+           
             </div>
+        
         </div>
         <Modal
             isOpen={modalIsOpen}

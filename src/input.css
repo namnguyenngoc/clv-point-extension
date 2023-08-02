@@ -956,3 +956,8 @@ div.vertical-middle {
   @tailwind components;
   @tailwind utilities;
 }
+
+
+.dsg-container {
+  height: 600px !important;
+}

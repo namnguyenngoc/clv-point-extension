@@ -59,22 +59,22 @@ import {
         ...defaultSizeNm,
       },
       {
-        ...keyColumn('USP_dev_nm', textColumn),
-        title: 'PIC DEV',
-        ...defaultSizePIC,
+        ...keyColumn('assignees', textColumn),
+        title: 'PIC(s)',
+        ...defaultSizeNm,
       },
       {
-        ...keyColumn('USP_dev_point', intColumn),
+        ...keyColumn('dev_point', intColumn),
         title: 'USP',
         ...defaultSizeNumber,
       },
       {
-        ...keyColumn('USP_test_nm', textColumn),
+        ...keyColumn('test_nm', textColumn),
         title: 'PIC TEST',
         ...defaultSizePIC,
       },
       {
-        ...keyColumn('USP_test_point', intColumn),
+        ...keyColumn('test_point', intColumn),
         title: 'USP',
         ...defaultSizeNumber,
 
