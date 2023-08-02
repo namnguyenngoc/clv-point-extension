@@ -3065,7 +3065,7 @@ function openTaskBP(item) {
         });
         setLoading(false);
     }
-    const formatClickup = (item) => {
+    const formatClickup = (item, levelSpace) => {
         let due_date_str = "";
         if(item.due_date && item.due_date != null) {
             due_date_str = moment(Number(item.due_date)).format("ddd, MMM DD");
@@ -3074,7 +3074,7 @@ function openTaskBP(item) {
         let newItem = {
             ...item,
             clk_parent_nm: !item.parent ? item.name : "",
-            task_nm: item.parent ? item.name : "",
+            task_nm: item.parent ? `${levelSpace ? levelSpace : ""}${item.name}` : "",
             assignees: (item.assignees.isArray) ? item.assignees.map(item2 => item2.username).join(',') : "",
             status_nm: item.status.status,
             due_date_str: due_date_str,
@@ -3193,22 +3193,37 @@ function openTaskBP(item) {
                             let newSubTask = [...subTaskFormat].filter(function( element ) {
                                 return element !== undefined;
                             });
-
+                            let levelSpace = "     ";
                             if(newSubTask && newSubTask.length > 0){
-                                newSubTask?.map(function (task){
+                                let arrNewSubTask = [];
+                                newSubTask?.map(function (task, idx){
                                     let subSubTask = task.subtasks;
                                     if(subSubTask && subSubTask.length > 0) {
 
                                         console.log("task", task);
                                         const itemSubTask = formatClickup(task);
-                                        console.log("itemSubTask", itemSubTask);
+                                        arrNewSubTask.push(itemSubTask);
+                                        if(itemSubTask.subtasks && itemSubTask.subtasks.length > 0) {
+                                            let subItemSubTask = itemSubTask.subtasks;
+                                            subItemSubTask?.map(function (task2, idx2){
+                                                const task2FM = formatClickup(task2, levelSpace);
+                                                arrNewSubTask.push(task2FM);
+                                                // newSubTask.splice(idx, idx, task2FM);
+                                            });
+                                            
+                                            // lsTask = [...lsTask].concat(itemSubTask.subtasks);
+                                        } 
+                                        
 
-                                        lsTask.push(itemSubTask);
+                                        // lsTask.push(itemSubTask);
                                         // newSubTask.push()
                                     }
+                                    console.log("subSubTask", task);
+                                    console.log("idx", idx);
+                                    // return task;
                                 });
 
-                                lsTask = [...lsTask].concat(newSubTask);
+                                lsTask = [...lsTask].concat(arrNewSubTask);
 
                             }
 
