@@ -116,11 +116,12 @@ table.custom-scroll tbody tr td {
 #side-bar-extension-root div,
 #side-bar-extension-root label,
 #side-bar-extension-root span {
-  color: #2a2e34 !important;
+  color: #2a2e34;
+  /* color: inherit !important; */
 }
 .main-body-mgmt input,
 .main-body-mgmt textarea {
-  color: #2a2e34 !important;
+  /* color: #2a2e34 !important; */
 }
 
 .main-body-mgmt .grid {
@@ -961,3 +962,4 @@ div.vertical-middle {
 .dsg-container {
   height: 600px !important;
 }
+/* #side-bar-extension-root div, #side-bar-extension-root label, #side-bar-extension-root span, .main-body-mgmt input, .main-body-mgmt textarea { */

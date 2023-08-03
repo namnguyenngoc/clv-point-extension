@@ -1887,14 +1887,14 @@ export default function ClickupMgmt(props) {
         "value": "sc152185323_x6vRfapx",
         "label": "in testing",
         "orderindex": 4,
-        "color": "#25CB89",
+        "color": "#f900ea",
         "type": "custom"
     },
     {
         "value": "2",
         "label": "code review",
         "orderindex": 4,
-        "color": "#25CB89",
+        "color": "#02BCD4",
         "type": "custom"
     },
     {
@@ -1908,7 +1908,7 @@ export default function ClickupMgmt(props) {
         "value": "4",
         "label": "po review",
         "orderindex": 4,
-        "color": "#25CB89",
+        "color": "#7C4DFF",
         "type": "custom"
     },
   ]
@@ -2039,7 +2039,6 @@ function openTaskBP(item) {
         delayed: false  // use this custom option to allow overrides
     };
     const response = axios(config2).then((res2) => {
-        console.log("---getTask---", res2);
         const data2 = res2.data;
         if(data2){
             itemTask = data2;
@@ -2129,7 +2128,7 @@ function openTaskBP(item) {
         };
         const apiResponseTask =  axios(config).then(async (res) => {
             const data = res.data;
-            // console.log("data", data);
+            // ///console.log("data", data);
             if(data && data.tasks) {
                 return data.tasks;
             }
@@ -2138,9 +2137,9 @@ function openTaskBP(item) {
         const pm = await Promise.resolve(apiResponseTask);
         promiseTask.push(pm);
     }
-    // console.log("promiseTask", promiseTask);
+    // ///console.log("promiseTask", promiseTask);
     const result = await Promise.all(promiseTask).then(async (data) => {
-        // console.log("data", data);
+        // ///console.log("data", data);
         if(data && data.length > 0) {
             let arr = [];
             for(let i = 0; i < data.length; i ++) {
@@ -2151,9 +2150,9 @@ function openTaskBP(item) {
 
             //Process mapping name
 
-            // console.log("arr", arr);
+            // //console.log("arr", arr);
             let resultTaskList = await Promise.resolve(genTaskInformation(arr));
-            // console.log("resultTaskList", resultTaskList);
+            // //console.log("resultTaskList", resultTaskList);
                     
             //Format data table 
             //format task
@@ -2178,7 +2177,7 @@ function openTaskBP(item) {
 
             });
             //End format data table
-            console.log("setTaskList", resultTaskList);
+            //console.log("setTaskList", resultTaskList);
             setTaskList(resultTaskList);
             setOriginTaskList(resultTaskList);
             setLoading(false);
@@ -2257,7 +2256,7 @@ function openTaskBP(item) {
 
         lsFinalParent = lsMainParent.concat(await Promise.all([...parentMissingArr]));
         // let lsFinalParent = lsMainParent.concat([...parentMissingArr]);
-        // console.log("lsFinalParent", lsFinalParent);
+        // //console.log("lsFinalParent", lsFinalParent);
         lsFinalParent.map(function(item) {
             let _assignees = item.assignees.map(item4 => item4.username).join(',');
             item.assignees_ls = _assignees;
@@ -2277,7 +2276,7 @@ function openTaskBP(item) {
 
             let lsTaskByParent = [...taskList.filter(item2 => item2.parent == item.id)];
             if(lsTaskByParent){
-                // console.log("lsTaskByParent", lsTaskByParent);
+                // //console.log("lsTaskByParent", lsTaskByParent);
                 lsTaskByParent.map(function(item3) {
                     let assignees = item3.assignees.map(item => item.username).join(',');
                     item3.assignees_ls = assignees;
@@ -2330,11 +2329,11 @@ function openTaskBP(item) {
         let regexp = /\[(.*?)\]/gi;
         const matches = name.matchAll(regexp);
         // let arr = item.name.match(regexp);
-        // console.log("matches", matches);
+        // //console.log("matches", matches);
         let flag = false;
         for (const match of matches) {
-            // console.log(match);
-            // console.log(match.index);
+            // //console.log(match);
+            // //console.log(match.index);
             if(match) {
                 let arr = match[1].split(":");
                 let scope = [];
@@ -2397,7 +2396,7 @@ function openTaskBP(item) {
     setTaskList([]);
     let originList = [...originTaskList];
     let filterList = [];
-    console.log("ty", type);
+    //console.log("ty", type);
     if(type) {
         
         filterList = originList.filter(function (item) { 
@@ -2496,7 +2495,7 @@ function openTaskBP(item) {
 
                 //Process data
                 const result = await Promise.all(promiseTaskID).then(async (data) => {
-                    // console.log("data", data);
+                    // //console.log("data", data);
                     let finalListTask = [];
                     if(data && data.length > 0) {
                         data.map(function (task, idx) {
@@ -2554,7 +2553,7 @@ function openTaskBP(item) {
   }
   
   const customBPFormat = (task, idx) => {
-    console.log("customBPFormat");
+    //console.log("customBPFormat");
     //format task
     task.idx = idx + 1;
     task.clk_parent_nm = task.parent == null ? task.name : task.parent_nm;
@@ -2610,7 +2609,7 @@ function openTaskBP(item) {
 
   }
     const formatBpEffortByPharse = (task: any, pharseCD: any) => {
-        console.log("taskBPDetail");
+        //console.log("taskBPDetail");
         let result = {
             startDate: "",
             endDate: "",
@@ -2632,7 +2631,7 @@ function openTaskBP(item) {
                     // to get a value that is either negative, positive, or zero.
                     return moment(b.wrkDt, 'YYYYMMDD') - moment(a.wrkDt, 'YYYYMMDD');
                 });
-                console.log("logPharse",logPharse);
+                //console.log("logPharse",logPharse);
                 result.startDate = logPharse[logPharse.length - 1].wrkDt;
                 result.endDate = logPharse[0].wrkDt;
 
@@ -2696,7 +2695,7 @@ function openTaskBP(item) {
         return result;
     }
   const taskBPDetail = (task: any, pharseCD: any) => {
-    console.log("taskBPDetail");
+    //console.log("taskBPDetail");
     let result = {
         startDate: "",
         endDate: "",
@@ -2737,7 +2736,7 @@ function openTaskBP(item) {
 
   const syncBlueprint = async (event: any) => {
     // API_WORKNG
-    console.log("syncBlueprint");
+    //console.log("syncBlueprint");
     setLoading(true);
     const prjId = "PJT20211119000000001";
      let copyTaskList = [...taskList];
@@ -2788,7 +2787,7 @@ function openTaskBP(item) {
             }
            
         }
-        console.log("copyTaskList", copyTaskList);
+        //console.log("copyTaskList", copyTaskList);
         setTaskList(copyTaskList);
         setLoading(false);
     }
@@ -2869,7 +2868,7 @@ function openTaskBP(item) {
         url: `${API_CLICKUP}/space/${CLICKUP_INFO.SPACE_ID}/folder`,
         headers:  REQ_HEADER.headers,
     };
-    console.log("config2", config2);
+    //console.log("config2", config2);
     const response = await axios(config2).then((res2) => {
         let folders = res2.data.folders;
         let sprints = [];
@@ -2914,7 +2913,7 @@ function openTaskBP(item) {
         setAllTeam(team);
         // setSelectTeam(folders);
         
-        console.log("getFolders", team);
+        //console.log("getFolders", team);
     });
     return new Promise((resolve, reject) => {
         resolve(response);
@@ -2935,7 +2934,7 @@ function openTaskBP(item) {
           
             }
         };
-        console.log("Config", config);
+        //console.log("Config", config);
         const body = {
             "id": "list",
             "members": [],
@@ -3037,7 +3036,7 @@ function openTaskBP(item) {
                                         config
         ).then(async (res) => {
             const data = res.data;
-            console.log("searchGenericView", data);
+            //console.log("searchGenericView", data);
             const divisions = data.list.divisions;
             let task_ids = [];
             if(divisions && divisions.length > 0) {
@@ -3117,7 +3116,7 @@ function openTaskBP(item) {
             "include_default_permissions": false
         }
 
-        console.log("body", body);
+        //console.log("body", body);
         const tasks = await axios.post(
                                         _url, 
                                         body, 
@@ -3126,8 +3125,8 @@ function openTaskBP(item) {
             const data = res.data.tasks;
 
             let arrPromise = [];
-            console.log("Selected Member", selectedOptions);
-            console.log("Selected Status", selectedStatus);
+            //console.log("Selected Member", selectedOptions);
+            //console.log("Selected Status", selectedStatus);
             const arrMember = selectedOptions.map(a => a.value);
             
             for(let i = 0; i < data.length; i ++) {
@@ -3168,9 +3167,9 @@ function openTaskBP(item) {
                     if(parent && parent.subtasks && parent.subtasks.length > 0) {
                         let subTask = parent.subtasks;
                         let subTaskFormat = subTask?.map(function (item2){
-                            console.log("Assignee", item2.assignees);
+                            //console.log("Assignee", item2.assignees);
                             const itemFm = formatClickup(item2);
-                            console.log("itemFm", itemFm);
+                            //console.log("itemFm", itemFm);
                             if(item2.assignees && item2.assignees.length > 0){
                                 const arrAssignees = item2.assignees.map(a => a.id);
                                 const isExistMember = arrMember.some(r=> arrAssignees.indexOf(r) >= 0);
@@ -3201,7 +3200,7 @@ function openTaskBP(item) {
                                     arrNewSubTask.push(itemSubTask);
                                     if(subSubTask && subSubTask.length > 0) {
 
-                                        console.log("task", task);
+                                        //console.log("task", task);
                                         
                                         if(itemSubTask.subtasks && itemSubTask.subtasks.length > 0) {
                                             let subItemSubTask = itemSubTask.subtasks;
@@ -3218,8 +3217,8 @@ function openTaskBP(item) {
                                         // lsTask.push(itemSubTask);
                                         // newSubTask.push()
                                     }
-                                    console.log("subSubTask", task);
-                                    console.log("idx", idx);
+                                    //console.log("subSubTask", task);
+                                    //console.log("idx", idx);
                                     // return task;
                                 });
                                 lsTask = [...lsTask].concat(arrNewSubTask);
@@ -3232,27 +3231,27 @@ function openTaskBP(item) {
 
 
                 });
-                // console.log("lsTask", lsTask);
+                // //console.log("lsTask", lsTask);
                 let newLsTaskFinal = [...lsTask];
 
                 if(newLsTaskFinal && selectedStatus) {
                     let idx = 0;
                     newLsTaskFinal = newLsTaskFinal.filter((item) => {
-                        console.log("status", item.status.status);
+                        //console.log("status", item.status.status);
                         const taskFilter = selectedStatus.filter(itm => itm.label == item.status.status);
 
                         // const index = selectedStatus.findIndex(x => x.label.toLowerCase() == item.status.status.toLowerCase());
-                        console.log("index", taskFilter);
+                        //console.log("index", taskFilter);
 
                         if(taskFilter && taskFilter.length > 0) {
                             // item.idx = idx ++;
                             return true;
                         }
-                        // console.log("index", index);
+                        // //console.log("index", index);
                         return false;
                     });
                     
-                    console.log("newLsTaskFinal", newLsTaskFinal);
+                    //console.log("newLsTaskFinal", newLsTaskFinal);
                     setTaskList(newLsTaskFinal);
                 }
                 //Filter by Status
@@ -3265,7 +3264,7 @@ function openTaskBP(item) {
     }
 
     const teamChange = async (options) => {
-        console.log("teamChange", options);
+        //console.log("teamChange", options);
         setSelectTeam(options);
         await getFolders(options)
     }
@@ -3285,18 +3284,18 @@ function openTaskBP(item) {
     let refresh_token =  localStorage.getItem('id_token');
 
     setToken(refresh_token);
-    console.log("Request searchRequirement", refresh_token);
+    //console.log("Request searchRequirement", refresh_token);
     getFolders().then((data) => {
         
     }).then((data) => {
-        console.log("data2", data);
+        //console.log("data2", data);
     //   closeModal();
     });
   },[])
 
   // const allOptions = getListMembers(900800090277);
   return (
-    <div className="grid grid-flow-col gap-2 px-4 sweet-loading">
+    <div className="grid grid-flow-col gap-2 px-4 sweet-loading" id="clv-mgmt-clickup">
       <form>
         <div className="grid grid-flow-row gap-2 col-span-2">
             <div className="flex flex-flow-col gap-1">
@@ -3458,11 +3457,11 @@ function openTaskBP(item) {
                         >
                         OVER DUE-DATE 
                         </div>
-                        <div className="due-date-lbl"
+                        <div className="due-date-lbl text-[#667684]"
                         onClick={ event => filterTaskContent("today")}>
                         TODAY 
                         </div>
-                        <div className="dev-test"
+                        <div className="dev-test text-[#667684] text-[#fc0] text-[#ff7800] text-[#3397dd] text-[#f900ea] text-[#02BCD4] text-[#7C4DFF] text-[#7C4DFF] text-[#25CB89]"
                         onClick={ event => filterTaskContent("dev-test")}>
                         DEV & TEST 
                         </div>
@@ -3540,6 +3539,7 @@ function openTaskBP(item) {
             aria-label="Loading Spinner"
             data-testid="loader"
         />
+       
       </form>
     
   </div>

@@ -7,7 +7,7 @@ import {
     keyColumn,
     intColumn,
     floatColumn,
-    dateColumn
+    dateColumn,
   } from 'react-datasheet-grid'
   
   // Import the style only once in your app!
@@ -38,6 +38,7 @@ import {
       {
         ...keyColumn('id', textColumn),
         title: 'ID',
+        cellClassName: "text-[#ff7800]",
         ...defaultSize,
       },
       {
@@ -45,23 +46,51 @@ import {
         title: 'Module',
         frozen: true,
         ...defaultSize,
+        cellClassName: "text-[#02BCD4]",
       },
       {
         ...keyColumn('clk_parent_nm', textColumn),
         title: 'Story',
-        frozen: true,
+        cellClassName: (data: any, index: any) => {
+          const rowData = data.rowData;
+          if(rowData) {
+            if(rowData.status.status){
+              const classNm = `text-[${rowData.status.color}]`;
+              return classNm;
+
+            } else {
+              return "";
+            }
+          } else {
+            return "";
+          }
+        },
         ...defaultSizeNm,
       },
       {
         ...keyColumn('task_nm', textColumn),
-        title: 'Name',
-        frozen: true,
         ...defaultSizeFullNm,
+        title: 'Name',
+        cellClassName: (data: any, index: any) => {
+          const rowData = data.rowData;
+          if(rowData) {
+            if(rowData.status.status){
+              const classNm = `text-[${rowData.status.color}]`;
+              return classNm;
+
+            } else {
+              return "";
+            }
+          } else {
+            return "";
+          }
+        },
       },
       {
         ...keyColumn('assignees_full', textColumn),
-        title: 'PIC(s)',
         ...defaultSizeNm,
+        title: 'PIC(s)',
+        cellClassName: "bg-[#F0FFFF]"
       },
       // {
       //   ...keyColumn('dev_point', intColumn),
@@ -81,12 +110,27 @@ import {
       // },
       {
         ...keyColumn('USP', intColumn),
-        title: 'USP DONE',
         ...defaultSize,
+        title: 'USP DONE',
+        
       },
       {
         ...keyColumn('status_nm', textColumn),
         title: 'Status',
+        cellClassName: (data: any, index: any) => {
+          const rowData = data.rowData;
+          if(rowData) {
+            if(rowData.status.status){
+              const classNm = `text-[${rowData.status.color}]`;
+              return classNm;
+
+            } else {
+              return "";
+            }
+          } else {
+            return "";
+          }
+        },
         ...defaultSize,
       },
       {
@@ -125,11 +169,16 @@ import {
         ...defaultSizeNumber,
       },
     ]
+
+    const rowClassName = {
+      rowData: "x",
+      rowIndex: 1,
+    }
   
     return (
       <DataSheetGrid
         value={props.taskList}
-        columns={columns} 
+        columns={ columns } 
       />
     )
   }
