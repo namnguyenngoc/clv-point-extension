@@ -1,6 +1,6 @@
 {
-  "short_name": "react-chrome-extension-template-side-panel",
-  "name": "Blueprint Point Suggest",
+  "short_name": "clv-add-effort-point",
+  "name": "CLV ADD EFFORT POINT",
   "version": "0.2.0",
   "manifest_version": 3,
   "background": {

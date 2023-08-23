@@ -233,7 +233,7 @@ export default function TaskSearchForm() {
           "itrtnId": "_ALL_",
           "beginIdx": 0,
           "endIdx": 200,
-          // "picId": "_ALL_",
+          "picId": "",
           "isLoadLast": false,
           "pageSize": 25
       };
@@ -379,7 +379,7 @@ export default function TaskSearchForm() {
                     if("PIM_PHS_CDIMP" == phsCd){ 
                       console.log("DEV ITEM -S");
                       let estByMember = 0;
-                      estByMember = (taskSheet && taskSheet.length > 0) ? taskSheet[0].effortdev : 0;
+                      estByMember = (taskSheet && taskSheet.length > 0) ? NaNToZero(taskSheet[0].effortdev) : 0;
                       item.estHours = estByMember * 60; //Hour
 
                       //Nêu task nhận trong sprint thì sẽ lấy thời gian EST tính effort point, ngược lại lấy thời gian log work tính effort point.
@@ -416,7 +416,7 @@ export default function TaskSearchForm() {
                       if("PIM_PHS_CDTSD" == phsCd){ 
                         console.log("TESTER ITEM -S");
                         let estByMember = 0;
-                        estByMember = (taskSheet && taskSheet.length > 0) ? taskSheet[0].efforttest : 0;
+                        estByMember = (taskSheet && taskSheet.length > 0) ? NaNToZero(taskSheet[0].efforttest) : 0;
   
                         item.estHours = estByMember * 60; //Hour
 
@@ -465,17 +465,17 @@ export default function TaskSearchForm() {
                   //   setTaskLevel(taskLevelList[0]);
                   // }
                   if(item.bpAdddpoint > 0){
-                    item.bpAdddpoint = item.bpAdddpoint + (expectPoint * taskLevel.value);
+                    item.bpAdddpoint = NaNToZero(item.bpAdddpoint) + (expectPoint * taskLevel.value);
 
                   }
                   if(item.point > 0){
-                    item.point = (item.point == undefined ? 0: item.point) + (expectPoint * taskLevel.value);
+                    item.point = NaNToZero(item.point) + (expectPoint * taskLevel.value);
 
                   }
 
                   //set effort
                   item.isBurnPointEstimate = isBurnPointEstimate;
-                  tmpResult.effortPoint = item.effortPoint;
+                  tmpResult.effortPoint = NaNToZero(item.effortPoint);
                   tmpResult.push(item);
 
                 }
@@ -486,7 +486,7 @@ export default function TaskSearchForm() {
               // tmpResult.pntNo = lsReq.pntNo;
               let totalPoint = 0;
               for(let k = 0; k < tmpResult.length; k ++){
-                totalPoint += tmpResult[k].point;
+                totalPoint += NaNToZero(tmpResult[k].point);
                 // if("PIM_PHS_CDFIN" == tmpResult[k].phsCd){
                 //   tmpResult[k].point = 1000;
                 // }
@@ -496,13 +496,13 @@ export default function TaskSearchForm() {
               //Check total 
               requirementRP.lstReq = requirementRP.lstReq.filter(item => item.reqId == reqId);
               
-              const gapPoint = requirementRP.lstReq[0].pntNo - totalPoint; //pntNo
+              const gapPoint = NaNToZero(requirementRP.lstReq[0].pntNo) - totalPoint; //pntNo
               // console.log("totalPoint", totalPoint);
               // console.log("requirement.lstReq[0]", requirementRP.lstReq[0].pntNo);
 
               for(let k = 0; k < tmpResult.length; k ++){
                 if("PIM_PHS_CDFIN" == tmpResult[k].phsCd){
-                  tmpResult[k].point = tmpResult[k].point + gapPoint;
+                  tmpResult[k].point = NaNToZero(tmpResult[k].point) + gapPoint;
                   // totalPoint += parseInt(FIN_POINT);
                 }
               }
@@ -567,6 +567,16 @@ export default function TaskSearchForm() {
       return ''
 
     return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  }
+
+  const NaNToZero = (value: any) => {
+    try {
+      return parseFloat(value);
+    } catch (error) {
+      console.log("NaNToZero", error);
+      console.log("NaNToZero-value", value);
+      return 0;
+    }
   }
 
   const handleSubmit = async (event) => {

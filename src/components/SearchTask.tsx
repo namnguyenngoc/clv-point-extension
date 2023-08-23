@@ -97,7 +97,8 @@ export default function SearchTask(props) {
       "seqNo": seqNo,
       "reqNm": reqNm,
       "isLoadLast": false,
-      "pageSize": 25
+      "picId": "",
+      "pageSize": 200
     };
     console.log("data", data);
     let requirement = await axios.post(`${url}/uiPim001/searchRequirement`, data
