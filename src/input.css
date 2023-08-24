@@ -963,3 +963,8 @@ div.vertical-middle {
   height: 600px !important;
 }
 /* #side-bar-extension-root div, #side-bar-extension-root label, #side-bar-extension-root span, .main-body-mgmt input, .main-body-mgmt textarea { */
+
+.text-right input {
+  padding: 4px 8px !important;
+  text-align: right;
+}

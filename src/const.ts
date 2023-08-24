@@ -48,3 +48,24 @@ export const REQ_HEADER = {
     }
   }
 }
+
+
+
+export const WEB_INFO = {
+  BLUEPRINT: {
+    API: 'https://blueprint.cyberlogitec.com.vn/api',
+    PROJECTS: {
+      NEW_FWD: {
+        ID: 'PJT20211119000000001',
+        NAME: 'NEW FWD',
+      }
+    }
+   
+  },
+  WORKING_API: "http://localhost:81/workingapi/api",
+  TASK_MEMBER_API: "http://localhost:81/fapi/working",
+  CLICKUP: {
+    SPACE_ID: 26265831,
+    
+  }
+}

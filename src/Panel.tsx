@@ -2,6 +2,8 @@ import React, { ReactElement, useEffect, useState } from 'react';
 import { APP_COLLAPSE_MGMT_WIDTH, APP_EXTEND_MGMT_WIDTH, APP_EXTEND_MGMT_HEIGHT, APP_COLLAPSE_MGMT_HEIGHT} from './const';
 import Button from './components/Button';
 import TaskListAddPoint from './components/TaskListAddPoint';
+import SearchTaskBluePrint from './components/SearchTask';
+
 import ClickupMgmt from './components/ClickupMgmt';
 
 
@@ -86,9 +88,9 @@ export default function Panel({ onWidthChange, initialEnabled }: { onWidthChange
       <div className='main-layout-mgmt'>
        
         <div className={!enabledMgmt ? 'hidden' : 'pt-4'}>
-          <TaskListAddPoint onSearch={handleSearch} >
+          <SearchTaskBluePrint onSearch={handleSearch} >
             {/* <TaskDetaillAddPoint text="Hello1333"/> */}
-          </TaskListAddPoint>
+          </SearchTaskBluePrint>
           
         </div>
         <div className={!enabledClickup ? 'hidden' : 'pt-4'}>

@@ -36,6 +36,7 @@
     "react-select": "^5.7.0",
     "react-spinners": "^0.13.8",
     "react-table": "^7.8.0",
+    "react-tabs": "^6.0.2",
     "tailwind": "^4.0.0",
     "use-google-spreadsheet": "^0.4.2"
   },
