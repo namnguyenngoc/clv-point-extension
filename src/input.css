@@ -999,3 +999,24 @@ div.vertical-middle {
 .react-tabs .dsg-custom-table .dsg-container {
   height: 695px !important;
 }
+
+.rdt_TableRow {
+  border-bottom: 1px #dcdcdc !important;
+  border-style: dashed !important;
+}
+.rdt_TableRow .rdt_TableCell {
+  border-color: #dcdcdc !important;
+  border-right-width: 1px !important;
+  border-style: dashed !important;
+}
+
+.rdt_TableRow .rdt_TableCell:first-child {
+  border-color: #dcdcdc !important;
+  border-left-width: 1px !important;
+  
+}
+
+.rdt_TableRow .rdt_TableCell:last-child {
+  border-color: #dcdcdc !important;
+  border-right-width: 1px !important;
+}

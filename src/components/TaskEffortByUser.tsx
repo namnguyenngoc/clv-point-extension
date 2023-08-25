@@ -411,11 +411,11 @@ export default function TaskEffortByUser(props) {
               <th className="px-4 py-2 w-150">Target Level</th>
               <th className="px-4 py-2 w-50">Task</th>
               <th className="px-4 py-2 text-right w-70">Current Eff.</th>
-              <th className="px-4 py-2 w-70 text-right">Standard Eff.</th>
+              <th className="px-4 py-2 w-70 text-right">Std by Wrk.Days</th>
+              <th className="px-4 py-2 w-70 text-right">Std by Level (month)</th>
               <th className="px-4 py-2 text-right w-70">Gap STD</th>
               <th className="px-4 py-2 w-70 text-right">Target Eff.</th>
               <th className="px-4 py-2 text-right w-70">Gap Target</th>
-              <th className="px-4 py-2 w-70 text-right">Eff.(BP)</th>
               <th className="px-4 py-2 text-right w-70">Min</th>
               <th className="px-4 py-2 text-right w-70">Mean</th>
               <th className="px-4 py-2 text-right w-70">Max</th>
@@ -425,16 +425,24 @@ export default function TaskEffortByUser(props) {
           </thead>
           <tbody className="border-t">  
             {effortList.map((item) => (
-              <tr key={item.value} className={(item.pointOnHour.expect * workday * 8 ) > item.effortPoint || item.countTask <= 0  ? "border-t bg-misty" : "border-t"}>
+              <tr key={item.value} 
+                className={
+                  (
+                    item.effortPoint  < item.pointOnHour.expect * workday * 8 
+                    || item.countTask <= 0  )
+                    ? "border-t bg-misty" : "border-t"
+                }>
                 <td className="px-4 py-2 w-100">{item.fullName}</td> {/* Name */}
                 <td className="px-4 py-2 w-150">{item.targetLevel}-{item.tagartRating}</td> {/* Target Level */}
                 <td className="px-4 py-2 w-50 text-right">{item.countTask}</td>
                 <td className="px-4 py-2 text-right w-70">{formatPrice(item.effortPoint / (monthDay == 0 ? 1: monthDay), 0)}</td> {/* Avg Point */}
+                <td className="px-4 py-2 text-right w-70">{formatPrice(item.pointOnHour.expect * workday * 8 ,0)}</td> {/*  Total Point */}
                 <td className="px-4 py-2 text-right w-70">{formatPrice(item.pointOnHour.effortPointByCurrentLevel, 0)}</td> {/* Point Standard */}
                 <td className="px-4 py-2 text-right w-70">{formatPrice(item.pointOnHour.effortPointByCurrentLevel - (item.effortPoint / (monthDay == 0 ? 1: monthDay)), 0)}</td> {/*GAP */}
                 <td className="px-4 py-2 text-right w-70">{formatPrice(item.pointOnHour.effortPointByTargetLevel, 0)}</td> {/* Point Target */}
                 <td className="px-4 py-2 text-right w-70">{formatPrice(item.pointOnHour.effortPointByTargetLevel - (item.effortPoint / (monthDay == 0 ? 1: monthDay)), 0)}</td> {/*GAP */}
-                <td className="px-4 py-2 text-right w-70">{formatPrice(item.effortPoint,0)}</td> {/*  Total Point */}
+                
+
                 <td className="px-4 py-2 text-right w-70">{formatPrice(item.pointOnHour.minEffortPoint, 0)}</td> {/*  Min */}
                 <td className="px-4 py-2 text-right w-70">{formatPrice(item.pointOnHour.averageEffortPoint, 0)}</td> {/*  Mean */}
                 <td className="px-4 py-2 text-right w-70">{formatPrice(item.pointOnHour.maxEffortPoint, 0)}</td> {/*  Max */}

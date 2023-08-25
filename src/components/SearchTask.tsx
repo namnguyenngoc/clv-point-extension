@@ -3,6 +3,8 @@ import axios from "axios";
 import Select, { components } from "react-select";
 import { WEB_INFO } from '../const';
 import BPTableGrid from "./BPTableGrid";
+import BPTableGridNew from "./BPTableGridNew";
+
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import TaskEffortByUser from "./TaskEffortByUser";
@@ -133,6 +135,10 @@ export default function SearchTask(props) {
     }
 
    
+  }
+
+  async function searchRequirementCallBack() {
+    await searchRequirement();
   }
   const searchRequirement = async () => {
     setLstReq([]);
@@ -352,12 +358,17 @@ export default function SearchTask(props) {
           </div>
           <div className="table-container-mgmt">
             
-            <div className="dsg-custom-table" style={{height: 695}} >
-                <BPTableGrid 
+            <div style={{height: 695}} >
+                {/* <BPTableGrid 
                   taskList = {lstReq}
                   handleClick={handleClick}
                     
+                />  */}
+                <BPTableGridNew
+                  taskList = {lstReq}
+                    
                 /> 
+
               
             </div>
           </div>
