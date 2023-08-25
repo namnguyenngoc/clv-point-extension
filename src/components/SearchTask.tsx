@@ -7,7 +7,7 @@ import BPTableGridNew from "./BPTableGridNew";
 
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
-import TaskEffortByUser from "./TaskEffortByUser";
+import TaskEffortByUserTable from "./TaskEffortByUserTable";
 
 let defaultPharse = [
   {
@@ -76,7 +76,7 @@ export default function SearchTask(props) {
   const url = WEB_INFO.BLUEPRINT.API;
   const pjtId = WEB_INFO.BLUEPRINT.PROJECTS.NEW_FWD.ID;
 
-  let [conditionSearch, setConditionSearch] = useState("Team B");
+  let [conditionSearch, setConditionSearch] = useState("");
   let [clickupID, setClickupID] = useState("");
   let [clickTaskInfo, setClickTaskInfo] = useState(null);
   let [taskList, setTaskList] = React.useState([]);
@@ -86,7 +86,7 @@ export default function SearchTask(props) {
   let [seqNo, setSeqNo] = useState("");
   let [lstReq, setLstReq] = useState([]);
   let [totalEffort, setTotalEffort] = useState("");
-
+  let [pic, setPic] = useState("namnnguyen");
   //   const response = await axios.post(requestURL + "searchRequirement", ro);
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
@@ -173,7 +173,7 @@ export default function SearchTask(props) {
       "seqNo": seqNo,
       "reqNm": reqNm,
       "isLoadLast": false,
-      "picId": "",
+      "picId": pic,
       "pageSize": 200
     };
     console.log("data", data);
@@ -324,6 +324,13 @@ export default function SearchTask(props) {
                 }}
                 className="col-span-1 border border-gray-500 px-4 py-2 rounded-lg"
               />
+              <input
+                type="text"
+                id="pic"
+                defaultValue={pic}
+                value={pic}
+                className="col-span-1 border border-gray-500 px-4 py-2 rounded-lg"
+              />
             </div>
             <div className="grid grid-flow-col gap-1">
               <Select
@@ -374,7 +381,7 @@ export default function SearchTask(props) {
           </div>
         </TabPanel>
         <TabPanel>
-          <TaskEffortByUser />
+          <TaskEffortByUserTable />
         </TabPanel>
       </Tabs>
     </div>

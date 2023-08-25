@@ -1020,3 +1020,7 @@ div.vertical-middle {
   border-color: #dcdcdc !important;
   border-right-width: 1px !important;
 }
+
+.focus-columnn {
+  background-color: #FAF0E6 !important;
+}
