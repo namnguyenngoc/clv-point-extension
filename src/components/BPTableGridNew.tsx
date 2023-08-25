@@ -67,6 +67,17 @@ export default function BPTableGridNew ({ handleClick }) {
   const [taskLevel, setTaskLevel] = useState(taskLevelList[0]);
   const columns = [
     {
+      name: 'ID',
+      width: "50px",
+      center: "yes",
+      selector: row => row.seqNo,
+      cell: row => (
+        <span>
+          {row.index + 1}
+        </span>
+      ),
+    },
+    {
         name: 'Seq',
         width: "50px",
         center: "yes",
@@ -114,6 +125,7 @@ export default function BPTableGridNew ({ handleClick }) {
     {
       name: 'Effort',
       width: "150px",
+      center: "yes",
       cell: row => (
         <button 
           class='bg-blue-500 text-white py-2 px-4 rounded-lg ml-4' 
@@ -943,11 +955,16 @@ export default function BPTableGridNew ({ handleClick }) {
   }
   return (
     <div className="grid grid-flow-row gap-1">
-      <DataTable
+      <label className="pt-3">
+        <h3>
+          Total: {localStorage.getItem('BP_TASK_LIST') ? JSON.parse(localStorage.getItem('BP_TASK_LIST')).length : 0 }
+        </h3>
+      </label>
+        <DataTable
             columns = {columns}
             theme="default"
             fixedHeader
-            fixedHeaderScrollHeight="730px"
+            fixedHeaderScrollHeight="690px"
             data = {
               localStorage.getItem('BP_TASK_LIST') ? JSON.parse(localStorage.getItem('BP_TASK_LIST')) : []
             }

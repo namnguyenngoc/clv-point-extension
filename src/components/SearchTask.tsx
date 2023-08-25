@@ -87,6 +87,9 @@ export default function SearchTask(props) {
   let [lstReq, setLstReq] = useState([]);
   let [totalEffort, setTotalEffort] = useState("");
   let [pic, setPic] = useState("namnnguyen");
+  let [pharse, setPharse] = useState({});
+  let [lstPhs, setLstPhs] = React.useState([]);
+
   //   const response = await axios.post(requestURL + "searchRequirement", ro);
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
@@ -142,6 +145,7 @@ export default function SearchTask(props) {
   }
   const searchRequirement = async () => {
     setLstReq([]);
+    localStorage.setItem('BP_TASK_LIST', JSON.stringify([]));
     let seqNo;
     let reqNm;
     if(conditionSearch != ""  && conditionSearch.length > 0){
@@ -176,6 +180,32 @@ export default function SearchTask(props) {
       "picId": pic,
       "pageSize": 200
     };
+
+    if(pharse.value){
+      data = {
+        "pjtId": pjtId,
+        "advFlg": "Y",
+        "reqStsCd": reqStsCd,
+        "jbTpCd": "_ALL_",
+        "itrtnId": "_ALL_",
+        "beginIdx": 0,
+        "endIdx": 200,
+        "isLoadLast": false,
+        "picId": pic,
+        "pageSize": 200,
+        "creUsrId": "",
+        "assiUsrId": "",
+        "stDt": "",
+        "endDt": "",
+        "reqPhsCd": pharse.value,
+        "regstStDt": "",
+        "regstEndDt": "",
+        "finStDt": "",
+        "finEndDt": "",
+        "imptCd": "_ALL_",
+        "rltIssCd": "_ALL_"
+      }
+    }
     console.log("data", data);
     let requirement = await axios.post(`${url}/uiPim001/searchRequirement`, data
     ).then(res => {
@@ -195,12 +225,19 @@ export default function SearchTask(props) {
     if(requirement.lstReq && requirement.lstReq.length > 0) {
       //Tinh total effort
       let dataTasks = requirement.lstReq.sort(comparePoint);
+      // set index
+      let idx = 0;
+      dataTasks.map(function(item) {
+        item.index = idx++;
+      });
 
       const sum = dataTasks.reduce((accumulator, object) => {
         return accumulator + Number(object.pntNo);
       }, 0);
 
       setTotalEffort(formatNumber(sum, 0));
+
+    
       setLstReq(dataTasks);
 
       localStorage.setItem('BP_TASK_LIST', JSON.stringify(dataTasks));
@@ -248,6 +285,15 @@ export default function SearchTask(props) {
       let data = res2.data;
       let lstComCd = data.lstComCd;
       let REQ_STS_CD_LIST = lstComCd.filter(item => item.prntCd == "REQ_STS_CD");
+      let lstPhs = data.lstPhs;
+      if(lstPhs) {
+        lstPhs.map(function(item) {
+          item.value = item.phsCd;
+          item.label = item.phsNm;
+        })
+        setLstPhs(lstPhs);
+      }
+
       if(REQ_STS_CD_LIST) {
         // "value": "subcat152185323_subcat24726670_subcat24726295_subcat67371792_subcat40246481_subcat38252924_subcat27722344_subcat27722322_subcat23647187_subcat23599212_subcat23564660_subcat23564619_sc23553590_Vy1k3mmq",
         // "label": "to do",
@@ -296,12 +342,14 @@ export default function SearchTask(props) {
                 defaultValue={conditionSearch}
                 onChange={event => setConditionSearch(event.target.value) }
                 onKeyDown={handleKeyDown}
+                placeholder="Task name or #SeqNo"
                 className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-full"
               />
               <input
                 type="text"
                 value={totalEffort}
                 readOnly={true}
+                placeholder="Total Effort"
                 className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-100 text-right"
               />
             </div>
@@ -313,11 +361,13 @@ export default function SearchTask(props) {
                 defaultValue={clickupID}
                 onChange={event => setClickupID(event.target.value) }
                 onKeyDown={handleKeyDownClickup}
+                placeholder="Clickup ID"
                 className="col-span-1 border border-gray-500 px-4 py-2 rounded-lg"
               />
               <input
                 type="text"
                 id="clickupStatus"
+                placeholder="Clickup Status"
                 value={clickTaskInfo ? clickTaskInfo.status.status : ""}
                 style={{
                   backgroundColor: clickTaskInfo ? clickTaskInfo.status.color : "#FFFFFF"
@@ -329,7 +379,23 @@ export default function SearchTask(props) {
                 id="pic"
                 defaultValue={pic}
                 value={pic}
+                onChange={event => setPic(event.target.value) }
+                placeholder="PIC ID"
                 className="col-span-1 border border-gray-500 px-4 py-2 rounded-lg"
+              />
+              <Select
+                  defaultValue={pharse}
+                  closeMenuOnSelect={true}
+                  hideSelectedOptions={false}
+                  onChange={(options) => {
+                    setPharse(options);
+                          
+                      }
+                  } 
+                  options={lstPhs}
+                  components={{
+                      Option: InputOption
+                  }}
               />
             </div>
             <div className="grid grid-flow-col gap-1">

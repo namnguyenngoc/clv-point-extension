@@ -1024,3 +1024,8 @@ div.vertical-middle {
 .focus-columnn {
   background-color: #FAF0E6 !important;
 }
+
+div[id="react-select-2-listbox"],
+div[id="react-select-3-listbox"] {
+  z-index: 9999 !important;
+}
