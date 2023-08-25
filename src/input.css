@@ -960,11 +960,42 @@ div.vertical-middle {
 
 
 .dsg-container {
-  height: 600px !important;
+  height: 695px !important;
 }
 /* #side-bar-extension-root div, #side-bar-extension-root label, #side-bar-extension-root span, .main-body-mgmt input, .main-body-mgmt textarea { */
 
 .text-right input {
   padding: 4px 8px !important;
   text-align: right;
+}
+
+
+/* Tabs */
+.react-tabs {
+  height: 830px;
+  border-left: 1px solid #dcdcdc !important;
+  border-right: 1px solid #dcdcdc !important;
+  border-bottom: 1px solid #dcdcdc !important;
+  border-radius: 4px !important;
+}
+
+.react-tabs__tab-list {
+  border-bottom: 1px solid #dcdcdc !important;
+}
+.react-tabs__tab-panel {
+  padding: 8px 16px;
+}
+
+.react-tabs__tab.react-tabs__tab--selected {
+  background: dodgerblue;
+  color: white;
+  font-weight: bold;
+}
+
+.hight-695 {
+  height: 695px !important;
+}
+
+.react-tabs .dsg-custom-table .dsg-container {
+  height: 695px !important;
 }

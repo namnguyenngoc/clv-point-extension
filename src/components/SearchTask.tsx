@@ -1,11 +1,11 @@
-import React, { useState,useEffect } from "react";
+import React, { useState,useEffect, useRef } from "react";
 import axios from "axios";
-import myData from '../data.json';
-import PointSuggest from './PointSuggest';
 import Select, { components } from "react-select";
 import { WEB_INFO } from '../const';
 import BPTableGrid from "./BPTableGrid";
-// "reqStsCd": ["REQ_STS_CDPRC", "REQ_STS_CDOPN", "REQ_STS_CDCC", "REQ_STS_CDPD"],
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
+import TaskEffortByUser from "./TaskEffortByUser";
 
 let defaultPharse = [
   {
@@ -83,7 +83,8 @@ export default function SearchTask(props) {
   let [reqStsCd, setReqStsCd] =  React.useState(['REQ_STS_CDOPN', 'REQ_STS_CDPRC',]);
   let [seqNo, setSeqNo] = useState("");
   let [lstReq, setLstReq] = useState([]);
-  
+  let [totalEffort, setTotalEffort] = useState("");
+
   //   const response = await axios.post(requestURL + "searchRequirement", ro);
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
@@ -94,6 +95,7 @@ export default function SearchTask(props) {
   const handleKeyDownClickup = (event) => {
     if (event.key === 'Enter') {
       clickupGetTask();
+
     }
   }
 
@@ -185,10 +187,30 @@ export default function SearchTask(props) {
     //   }
     // )]
     if(requirement.lstReq && requirement.lstReq.length > 0) {
+      //Tinh total effort
       let dataTasks = requirement.lstReq.sort(comparePoint);
+
+      const sum = dataTasks.reduce((accumulator, object) => {
+        return accumulator + Number(object.pntNo);
+      }, 0);
+
+      setTotalEffort(formatNumber(sum, 0));
       setLstReq(dataTasks);
 
+      localStorage.setItem('BP_TASK_LIST', JSON.stringify(dataTasks));
+
     }
+  }
+
+  const formatNumber = (value: any, tofix: any, isInt: boolean) => {
+    if (!value)
+      return ''
+
+    const val = (value / 1).toFixed(tofix).replace(',', '.')
+    if (!val)
+      return ''
+
+    return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   }
   const comparePoint  = (a: any, b: any) => {
     if(a.pntNo > b.pntNo) return 1;
@@ -234,84 +256,116 @@ export default function SearchTask(props) {
         resolve(response);
     });
   };
+  const handleClick = (event, num) => {
+    // 👇️ take the parameter passed from the Child component
+    // setCount(current => current + num);
 
+    console.log('argument from Child: ', num);
+  };
   useEffect(()=>{
     //console.log("Request searchRequirement", refresh_token);
     searchReqDefaultCdLst().then((data) => {
       
     }).then((data) => {
     });
+
+    
+
   },[])
   
   return (
     <div className="grid grid-flow-row">
-      <div className="grid grid-flow-col gap-2">
-        <div>
-          <input
-            type="text"
-            id="conditionSearch"
-            defaultValue={conditionSearch}
-            onChange={event => setConditionSearch(event.target.value) }
-            onKeyDown={handleKeyDown}
-            className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg"
-          />
-        </div>
-        <div className="grid grid-flow-col gap-1">
-          <input
-            type="text"
-            id="clickupID"
-            defaultValue={clickupID}
-            onChange={event => setClickupID(event.target.value) }
-            onKeyDown={handleKeyDownClickup}
-            className="col-span-1 border border-gray-500 px-4 py-2 rounded-lg"
-          />
-          <input
-            type="text"
-            id="clickupStatus"
-            value={clickTaskInfo ? clickTaskInfo.status.status : ""}
-            style={{
-              backgroundColor: clickTaskInfo ? clickTaskInfo.status.color : "#FFFFFF"
-            }}
-            className="col-span-1 border border-gray-500 px-4 py-2 rounded-lg"
-          />
-        </div>
-        <div>
-          <Select
-              defaultValue={defaultPharse}
-              isMulti
-              closeMenuOnSelect={false}
-              hideSelectedOptions={false}
-              onChange={(options) => {
-                      if (Array.isArray(options)) {
-                        console.log("Test");
-                        var code = options.map(function(item) {
-                          return item['value'];
-                        });
-                        setSelectedPharses(options);
-                        setReqStsCd(code);
+      <Tabs>
+        <TabList>
+          <Tab>Tasks</Tab>
+          <Tab>Effort Member</Tab>
+        </TabList>
+
+        <TabPanel>
+          <div className="grid grid-flow-col gap-2">
+            <div className="grid grid-flow-col gap-1">
+              <input
+                type="text"
+                id="conditionSearch"
+                defaultValue={conditionSearch}
+                onChange={event => setConditionSearch(event.target.value) }
+                onKeyDown={handleKeyDown}
+                className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-full"
+              />
+              <input
+                type="text"
+                value={totalEffort}
+                readOnly={true}
+                className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-100 text-right"
+              />
+            </div>
+            
+            <div className="grid grid-flow-col gap-1">
+              <input
+                type="text"
+                id="clickupID"
+                defaultValue={clickupID}
+                onChange={event => setClickupID(event.target.value) }
+                onKeyDown={handleKeyDownClickup}
+                className="col-span-1 border border-gray-500 px-4 py-2 rounded-lg"
+              />
+              <input
+                type="text"
+                id="clickupStatus"
+                value={clickTaskInfo ? clickTaskInfo.status.status : ""}
+                style={{
+                  backgroundColor: clickTaskInfo ? clickTaskInfo.status.color : "#FFFFFF"
+                }}
+                className="col-span-1 border border-gray-500 px-4 py-2 rounded-lg"
+              />
+            </div>
+            <div className="grid grid-flow-col gap-1">
+              <Select
+                  defaultValue={defaultPharse}
+                  isMulti
+                  closeMenuOnSelect={false}
+                  hideSelectedOptions={false}
+                  onChange={(options) => {
+                          if (Array.isArray(options)) {
+                            console.log("Test");
+                            var code = options.map(function(item) {
+                              return item['value'];
+                            });
+                            setSelectedPharses(options);
+                            setReqStsCd(code);
+                          }
                       }
-                  }
-              } 
-              options={pharseList}
-              components={{
-                  Option: InputOption
-              }}
-          />
-          <button 
-            type="button" 
-            className="bg-blue-500 text-white py-2 px-4 rounded-lg ml-4"
-            onClick={searchRequirement}
-          >
-            Search
-          </button>
-        </div>
-      </div>
-      <div className="table-container-search pt-2">
-          <BPTableGrid 
-              taskList = {lstReq}
-            /> 
-        
-      </div>
+                  } 
+                  options={pharseList}
+                  components={{
+                      Option: InputOption
+                  }}
+              />
+              <button 
+                type="button" 
+                className="bg-blue-500 text-white py-2 px-4 rounded-lg ml-4"
+                onClick={searchRequirement}
+              >
+                Search
+              </button>
+            </div>
+          </div>
+          <div className="table-container-mgmt">
+            
+            <div className="dsg-custom-table" style={{height: 695}} >
+                <BPTableGrid 
+                  taskList = {lstReq}
+                  handleClick={handleClick}
+                    
+                /> 
+              
+            </div>
+          </div>
+        </TabPanel>
+        <TabPanel>
+          <TaskEffortByUser />
+        </TabPanel>
+      </Tabs>
     </div>
   );
 }

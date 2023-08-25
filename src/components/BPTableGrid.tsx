@@ -1,4 +1,4 @@
-import React, { useState, CSSProperties } from "react";
+import React, { useState, CSSProperties, useRef, useEffect } from "react";
 
 import {
     DataSheetGrid,
@@ -8,16 +8,19 @@ import {
     intColumn,
     floatColumn,
     dateColumn,
+    DataSheetGridRef,
+  
   } from 'react-datasheet-grid'
   
   // Import the style only once in your app!
   import 'react-datasheet-grid/dist/style.css'
   
-  export default function BPTableGrid (props) {
+  export default function BPTableGrid ({ handleClick }) {
     // const [ data, setData ] = useState([
     //   { active: true, firstName: 'Elon', lastName: 'Musk' },
     //   { active: false, firstName: 'Jeff', lastName: 'Bezos' },
     // ])
+    const bpRef = useRef<DataSheetGridRef>(null);
     const defaultSize = { width: 1};
     const defaultSizeIdx = { width: 30, minWidth: 30};
     const defaultSizeNm = { width: 1, minWidth: 300};
@@ -53,6 +56,7 @@ import {
         title: 'Name',
         ...defaultSizeFullNm,
         cellClassName: (data: any, index: any) => {
+        //  console.log("br", bpRef);
           const rowData = data.rowData;
           if(rowData) {
             if(rowData.colrVal){
@@ -153,15 +157,22 @@ import {
       
     ]
 
-    const rowClassName = {
-      rowData: "x",
-      rowIndex: 1,
-    }
+    useEffect(() => {
+      bpRef.current?.setSelection({
+        min: { col: 'seqNo', row: 0 },
+        max: { col: 2, row: 3 },
+      })
+    }, [])
   
     return (
-      <DataSheetGrid
-        value={props.taskList}
-        columns={ columns } 
-      />
+      <div className="grid grid-flow-row gap-1">
+        <button onClick={event => handleClick(event, bpRef)}>Click</button>
+        <DataSheetGrid
+          value={localStorage.getItem('BP_TASK_LIST') ? JSON.parse(localStorage.getItem('BP_TASK_LIST')) : []}
+          columns={ columns } 
+          ref={bpRef}
+        />
+      </div>
+      
     )
   }
