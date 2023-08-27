@@ -173,3 +173,11 @@ div.ReactModalPortal .ReactModal__Content.ReactModal__Content--after-open {
   z-index: 9998;
   top: 170px
 }
+
+.dsg-container {
+  height: 190px !important;
+  overflow: auto;
+}
+.dsg-add-row {
+  display: none !important;
+}

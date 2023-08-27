@@ -369,10 +369,10 @@ export default function TaskSearchForm() {
                     //Check Neu la point default
                     item.effortHours =  parseInt(pointDefaultByPharse.timeStandard); //12min = 5 point
                     item.bpAdddpoint =  parseInt(pointDefaultByPharse.timeStandard);
-                    item.point =  parseInt(pointDefaultByPharse.timeStandard);
+                    item.point =  NaNToZero(parseInt(pointDefaultByPharse.timeStandard));
 
-                    item.pointEST = parseInt(pointDefaultByPharse.timeStandard);
-                    item.pointACT = parseInt(pointDefaultByPharse.timeStandard);
+                    item.pointEST = NaNToZero(parseInt(pointDefaultByPharse.timeStandard));
+                    item.pointACT = NaNToZero(parseInt(pointDefaultByPharse.timeStandard));
                     // parseFloat(pointDefaultByPharse.standard);
                   
                   } else {
@@ -389,7 +389,7 @@ export default function TaskSearchForm() {
                           let pointSuggest = estByMember > 0 ? estByMember : (total*1.0) / (60 * 1.0);
                           if(total > 0){
                             item.effortHours = total; 
-                            item.point = Math.ceil(parseFloat(pointSuggest) * expectPoint);
+                            item.point = NaNToZero(Math.ceil(parseFloat(pointSuggest) * expectPoint));
                             item.pointEST = Math.ceil(parseFloat(pointSuggest) * expectPoint);
 
                             //THEM BIEN DE TINH TOAN
@@ -397,13 +397,13 @@ export default function TaskSearchForm() {
 
                           } else {
                             item.effortHours = 0; 
-                            item.point =  Math.ceil(parseFloat(estByMember) * expectPoint);
+                            item.point =  NaNToZero(Math.ceil(parseFloat(estByMember) * expectPoint));
                             item.pointEST = Math.ceil(parseFloat(estByMember) * expectPoint);
                             item.pointACT = 0;
                           }
                       } else {
                         item.effortHours = total; 
-                        item.point = parseInt((total / (60 * 1.0)) * expectPoint);
+                        item.point = NaNToZero(parseInt((total / (60 * 1.0)) * expectPoint));
                         item.pointACT = parseInt((total / (60 * 1.0)) * expectPoint);
 
                         //THEM BIEN DE TINH TOAN
@@ -425,7 +425,7 @@ export default function TaskSearchForm() {
                         if(isTestInSprint) { //Task nhan develop trong sprint
                           if(total > 0){
                             item.effortHours = total; 
-                            item.point = Math.ceil(parseFloat(pointSuggest) * expectPoint);
+                            item.point = NaNToZero(Math.ceil(parseFloat(pointSuggest) * expectPoint));
 
                             item.pointEST = Math.ceil(parseFloat(pointSuggest) * expectPoint);
 
@@ -434,14 +434,14 @@ export default function TaskSearchForm() {
 
                           } else {
                             item.effortHours = 0; 
-                            item.point =  Math.ceil(parseFloat(estByMember) * expectPoint);
+                            item.point =  NaNToZero(Math.ceil(parseFloat(estByMember) * expectPoint));
                             item.pointEST = Math.ceil(parseFloat(estByMember) * expectPoint);
                             item.pointACT = 0;
                           }
 
                         } else {
                           item.effortHours = total; 
-                          item.point = parseInt((total / (60 * 1.0)) * expectPoint);
+                          item.point = NaNToZero(parseInt((total / (60 * 1.0)) * expectPoint));
                           item.pointACT = parseInt((total / (60 * 1.0)) * expectPoint);
 
                         //THEM BIEN DE TINH TOAN
@@ -452,7 +452,7 @@ export default function TaskSearchForm() {
                         
                       } else {
                         item.effortHours = total; 
-                        item.point = Math.ceil(parseFloat((total / (60 * 1.0)) * expectPoint));
+                        item.point = NaNToZero(Math.ceil(parseFloat((total / (60 * 1.0)) * expectPoint)));
                         item.pointEST = Math.ceil(parseFloat((total / (60 * 1.0)) * expectPoint));
                         item.pointACT = Math.ceil(parseFloat((total / (60 * 1.0)) * expectPoint));
                       }
@@ -465,11 +465,11 @@ export default function TaskSearchForm() {
                   //   setTaskLevel(taskLevelList[0]);
                   // }
                   if(item.bpAdddpoint > 0){
-                    item.bpAdddpoint = NaNToZero(item.bpAdddpoint) + (expectPoint * taskLevel.value);
+                    item.bpAdddpoint = NaNToZero(item.bpAdddpoint + (expectPoint * taskLevel.value));
 
                   }
                   if(item.point > 0){
-                    item.point = NaNToZero(item.point) + (expectPoint * taskLevel.value);
+                    item.point = NaNToZero(item.point + (expectPoint * taskLevel.value));
 
                   }
 
@@ -502,7 +502,7 @@ export default function TaskSearchForm() {
 
               for(let k = 0; k < tmpResult.length; k ++){
                 if("PIM_PHS_CDFIN" == tmpResult[k].phsCd){
-                  tmpResult[k].point = NaNToZero(tmpResult[k].point) + gapPoint;
+                  tmpResult[k].point = NaNToZero(tmpResult[k].point + gapPoint);
                   // totalPoint += parseInt(FIN_POINT);
                 }
               }
@@ -570,13 +570,17 @@ export default function TaskSearchForm() {
   }
 
   const NaNToZero = (value: any) => {
+    let val = 0;
     try {
-      return parseFloat(value);
+      console.log("NaNToZero", value);
+      if(value) {
+        val =  parseFloat(value);
+      } 
     } catch (error) {
-      console.log("NaNToZero", error);
-      console.log("NaNToZero-value", value);
       return 0;
     }
+
+    return val;
   }
 
   const handleSubmit = async (event) => {
@@ -741,6 +745,8 @@ export default function TaskSearchForm() {
 
           alert(msg);
           if('SAVE_SUCCEED' == msg) {
+            console.log(" window.opener", " window.opener");
+            // window.opener.searchRequirementCallBack();
             window.location.reload(false);
 
           }
@@ -1286,9 +1292,9 @@ export default function TaskSearchForm() {
 // 
     item.isBurnPointEstimate = isEstimate;
     if(isEstimate) {
-      item.point = item.pointEST;
+      item.point = NaNToZero(item.pointEST);
     } else {
-      item.point = item.pointACT;
+      item.point = NaNToZero(item.pointACT);
     }
     // setEffortWithMember(effortWithMember);
 
@@ -1331,7 +1337,7 @@ export default function TaskSearchForm() {
    
 
     // console.log("taskInfo-gapAddFinish", gapAddFinish);
-    let pointFin = taskInfo.lstReq[0].pntNo;
+    let pointFin = NaNToZero(taskInfo.lstReq[0].pntNo);
     
     for(let pharse of newEffort) {
       if("PIM_PHS_CDFIN" == pharse.prntPhsCd) {
@@ -1344,6 +1350,8 @@ export default function TaskSearchForm() {
         } else {
           pointFin = pointFin -  pharse.pointACT;
         }
+
+        pointFin = NaNToZero(pointFin);
       }
     }
       
@@ -1354,7 +1362,7 @@ export default function TaskSearchForm() {
     //Cap nhat point fin 
     for(let pharse of newEffort) {
       if("PIM_PHS_CDFIN" == pharse.prntPhsCd) {
-          pharse.point  =  pointFin;
+          pharse.point  =  NaNToZero(pointFin);
           pharse.pointACT  = pointFin;
           pharse.pointEST  = pointFin;
         }

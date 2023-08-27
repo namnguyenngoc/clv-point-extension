@@ -284,7 +284,7 @@ export default function PointSuggest(props) {
           subPjtId        : reqDetail.detailReqVO.subPjtId,
           action          : 'REQ_WTC_EFRT',
       };
-      console.log("RO", ro);
+      
       if(cmtCtnt && !cmtCtnt.toUpperCase().includes("UNDEFINED") && !cmtCtnt.toUpperCase().includes("NAN")) {
         // console.log("reqee", req)
         const response = await axios.put(`${url}/save-req-job-detail`, ro).then(async function (response) {
@@ -292,6 +292,8 @@ export default function PointSuggest(props) {
 
           alert(msg);
           if('SAVE_SUCCEED' == msg) {
+            // console.log(" window.opener", " window.opener");
+            // window.opener.searchRequirement();
             window.location.reload(false);
 
           }

@@ -54,22 +54,21 @@ export default function Panel({ onWidthChange, initialEnabled }: { onWidthChange
       className={!enabled ? "absolute bottom-0 z-max bg-[#F5F8FA] ease-in-out duration-300 overflow-hidden grid grid-flow-row gap-1 main-body border-hidden" 
         : "absolute bottom-0 z-max bg-[#F5F8FA] ease-in-out duration-300 overflow-hidden gap-1 main-body"}
     >
-      <div className={!enabled ? 'hidden' : 'pt-4 ml-4 pb-4 h-150'}>
-        <SearchTask />
-      </div>
+      
       <div className='main-layout grid grid-flow-row gap-1'>
         
         <div className={!enabled ? 'hidden' : 'pt-4'}>
           <TaskSearchForm onSearch={handleSearch} />
           
         </div>
-        
-        <div className={!enabled ? 'hidden' : 'pt-4'}>
+      </div>
+      <div className={!enabled ? 'hidden' : 'pt-4 ml-4 pb-4 h-250 mr-4'}>
+        <SearchTask />
+      </div>
+      {/* <div className={!enabled ? 'hidden' : 'pt-4'}>
           <TaskEffortByUser />
           
-        </div>
-      </div>
-      
+        </div> */}
       <div className="absolute bottom-0 left-0 w-[50px] z-10 flex justify-center items-center p-1 custom-button-expand">
         <Button active={enabled} onClick={() => openPanel()}>
           <span>
