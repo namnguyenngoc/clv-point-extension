@@ -181,7 +181,7 @@ export default function SearchTask(props) {
       "pageSize": 200
     };
 
-    if(pharse.value){
+    if(pharse && pharse.value){
       data = {
         "pjtId": pjtId,
         "advFlg": "Y",
@@ -387,6 +387,7 @@ export default function SearchTask(props) {
                   defaultValue={pharse}
                   closeMenuOnSelect={true}
                   hideSelectedOptions={false}
+                  isClearable={true}
                   onChange={(options) => {
                     setPharse(options);
                           
