@@ -75,7 +75,7 @@ export default function SearchTask(props) {
   const pjtId = WEB_INFO.BLUEPRINT.PROJECTS.NEW_FWD.ID;
 
   let [conditionSearch, setConditionSearch] = useState("Team B");
-  let [clickupID, setClickupID] = useState("");
+  let [clkID, setClkID] = useState("");
   let [clickTaskInfo, setClickTaskInfo] = useState(null);
   let [taskList, setTaskList] = React.useState([]);
   let [pharseList, setPharseList] = React.useState([]);
@@ -83,7 +83,17 @@ export default function SearchTask(props) {
   let [reqStsCd, setReqStsCd] =  React.useState(['REQ_STS_CDOPN', 'REQ_STS_CDPRC',]);
   let [seqNo, setSeqNo] = useState("");
   let [splitEffort, setSplitEffort] = useState(false);
-  
+  let [reqDetail, setReqDetail] = useState({});
+  let [sprintNumber, setSprintNumber] = useState("");
+
+  const currentURL = window.location.href // returns the absolute URL of a page
+  let [reqId, setReqID] = useState("");
+  const arr = currentURL.split("/");
+  if(arr && arr.length > 0){
+    // const reqId = arr[arr.length-1];
+    reqId = arr[arr.length-1];
+  }
+
   //   const response = await axios.post(requestURL + "searchRequirement", ro);
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
@@ -163,7 +173,7 @@ export default function SearchTask(props) {
       "beginIdx": 0,
       "endIdx": 200,
       "seqNo": seqNo,
-      "reqNm": reqNm,
+      "reqNm": clkID ? clkID : reqNm,
       "isLoadLast": false,
       "picId": "",
       "pageSize": 200
@@ -285,33 +295,123 @@ export default function SearchTask(props) {
     });
   };
 
+  const reqClickupIinfoSplit = (req) => {
+    let clickupId = "";
+    let sprint:any;
+    if(req){
+      
+      let reqName = req.reqTitNm;
+
+      var chuoi = reqName;
+      var pattern = /\[(.*?)\]/g;
+      var ketQua = chuoi.match(pattern);
+      let newArr:any = [];
+      ketQua.forEach((item) => {
+        let str:any = item.replace(/[\[\]']+/g,'');
+        newArr.push(str);
+      });
+      if (ketQua) {
+        console.log("newArr", ketQua); // ["New US FWD", "Thuan Lai", "Team B", "DEV-TEST:5P-2P", "865cg6601", "Sprint 27"]
+      } else {
+        console.log("Không tìm thấy chuỗi nằm trong dấu [ ] trong đoạn văn bản.");
+      }
+      //Find clickup ID
+      let clickupIDByLength:any = "";
+      newArr.forEach((item) => {
+        if(item.replace(/ /g, "").length == 9) {
+          clickupIDByLength = item.replace(/ /g, "");
+          return;
+        }
+      });
+
+      if(reqName) {
+        if(ketQua && ketQua.length > 4) {
+          let id = newArr[4].replace(/ /g, "");
+          if(id.includes("865")) {
+            clickupId = id;
+
+          } else {
+            if(clickupIDByLength.includes("865")) {
+              clickupId = clickupIDByLength;
+            } else {
+              alert("KHÔNG TÌM DC CLICKUP ID: ", newArr.join("_"));
+            }
+          }
+          
+          // for(let i = 0; i < newArr.length; i ++) {
+          //   if(newArr[i].contains)
+          // }
+          
+          let findSprint = newArr.filter(e => e.includes("Sprint"));
+         
+          if(findSprint && findSprint.length > 0) {
+            let arr = findSprint[0].split(" ");
+            if(arr.length > 1) {
+              sprint = arr[1];
+
+            } else {
+              sprint = findSprint[0].replace(/[^0-9]+/g, '');
+            }
+          }
+          setSprintNumber(sprint);
+          console.log("clickupID", clickupId);
+          if(clickupId) {
+            setClkID(clickupId);
+            defaultPharse.push(
+            {
+              "value": "PIM_PHS_CDFIN",
+              "label": "Finish",
+            })
+          }
+        }
+      }
+      
+      return {
+        clickupId: clickupId,
+        sprint: sprint
+      }
+    }
+  }
+  const getClickupId = async () => {
+    const requirementDetail = await  axios.get(`${url}/searchRequirementDetails?reqId=${reqId}`)
+    .then(async(res) => {
+      console.log("res", res);
+      let detailReqVO = res.data.detailReqVO;
+      let param = reqClickupIinfoSplit(detailReqVO);
+
+    }).catch((error) => {
+      console.log("getClickupId", error);
+
+    });
+  } //End get clickupID
+
   useEffect(()=>{
     //console.log("Request searchRequirement", refresh_token);
     searchReqDefaultCdLst().then((data) => {
-      
+      getClickupId();
     }).then((data) => {
     });
   },[])
   
   return (
     <div className="grid grid-flow-row">
-      <div className="grid grid-flow-col gap-2">
-        <div>
+      <div className="grid grid-flow-col gap-1">
+        <div className="grid grid-flow-col">
           <input
             type="text"
             id="conditionSearch"
             defaultValue={conditionSearch}
             onChange={event => setConditionSearch(event.target.value) }
             onKeyDown={handleKeyDown}
-            className="col-span-1 border border-gray-500 px-4 py-2 rounded-lg"
+            className="col-span-1 border border-gray-500 px-4 py-2 rounded-lg w-300"
           />
         </div>
-        <div className="grid grid-flow-col gap-1">
+        <div className="grid grid-flow-col">
           <input
             type="text"
             id="clickupID"
-            defaultValue={clickupID}
-            onChange={event => setClickupID(event.target.value) }
+            defaultValue={clkID}
+            onChange={event => setClkID(event.target.value) }
             onKeyDown={handleKeyDownClickup}
             className="col-span-1 border border-gray-500 px-4 py-2 rounded-lg w-100"
           />
@@ -322,11 +422,11 @@ export default function SearchTask(props) {
             style={{
               backgroundColor: clickTaskInfo ? clickTaskInfo.status.color : "#FFFFFF"
             }}
-            className="col-span-1 border border-gray-500 px-4 py-2 rounded-lg w-full"
+            className="col-span-1 border border-gray-500 px-4 py-2 rounded-lg w-100"
           />
         </div>
         <div>
-          <label className="pt-3 text-right gap-1 ">
+          <label className="pt-3 text-right">
             <input 
               type="checkbox"
               defaultChecked={splitEffort}
