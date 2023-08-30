@@ -82,7 +82,7 @@ export default function SearchTask(props) {
   let [selectedPharses, setSelectedPharses] = React.useState([]);
   let [reqStsCd, setReqStsCd] =  React.useState(['REQ_STS_CDOPN', 'REQ_STS_CDPRC',]);
   let [seqNo, setSeqNo] = useState("");
-  let [lstReq, setLstReq] = useState([]);
+  let [splitEffort, setSplitEffort] = useState(false);
   
   //   const response = await axios.post(requestURL + "searchRequirement", ro);
   const handleKeyDown = (event) => {
@@ -133,7 +133,7 @@ export default function SearchTask(props) {
    
   }
   const searchRequirement = async () => {
-    setLstReq([]);
+    setTaskList([]);
     let seqNo;
     let reqNm;
     if(conditionSearch != ""  && conditionSearch.length > 0){
@@ -168,27 +168,77 @@ export default function SearchTask(props) {
       "picId": "",
       "pageSize": 200
     };
-    console.log("data", data);
     let requirement = await axios.post(`${url}/uiPim001/searchRequirement`, data
     ).then(res => {
       return res.data;
     });
-    console.log("requirement", requirement);
-    // let newLsReq = [...requirement.lstReq.map(
-    //   function (item){
-    //     let arrTitle = item.reqTitNm.trim().split('][');
-    //     if(arrTitle && arrTitle.length > 1){
-    //       item.PIC = arrTitle[1];
-
-    //     }
-    //     item.link = item.reqId.substr(item.reqId.length - 5); //Get 5 character last
-    //   }
-    // )]
     if(requirement.lstReq && requirement.lstReq.length > 0) {
       let dataTasks = requirement.lstReq.sort(comparePoint);
-      setLstReq(dataTasks);
+      let isSubmit = localStorage.getItem('ONLY_SUBMIT');
+      dataTasks = dataTasks.sort(isSubmit == "true" ? sortDesc : sortAsc);
+      let pms = await splitPointByPharse([...dataTasks], splitEffort).then((itm)=> {
+        setTaskList(itm);
+      });
+      const newList = new Promise((resolve, reject) => {
+        resolve(pms);
+      });
 
     }
+  }
+  const sortDesc  = (a: any, b: any) => {
+    if(a.pntNo < b.pntNo) return 1;
+    else if(a.pntNo > b.pntNo) return -1;
+    else return 0;
+  }
+
+  const sortAsc  = (a: any, b: any) => {
+    if(a.pntNo > b.pntNo) return 1;
+    else if(a.pntNo < b.pntNo) return -1;
+    else return 0;
+  }
+  const splitPointByPharse  = async (taskList: any, isSplit) => {
+    if(taskList && taskList.length > 0) {
+      let newTaskList = await taskList.map(async function (itm, idx) {
+        let newItem = {
+          ...itm,
+          "index": idx + 1,
+          "impl_effort": 0,
+          "test_effort": 0,
+        }
+
+        if(isSplit){
+          const detail = await axios.get(`${url}/searchRequirementDetails?reqId=${itm.reqId}`)
+          .then(async (res) => {
+            return res.data;
+          });
+          let effortLst = await new Promise((resolve, reject) => {
+            resolve(detail.lstSkdUsr);
+          });
+
+          let keyImpl = "PIM_PHS_CDIMP";
+          let keyTest = "PIM_PHS_CDTSD";
+          
+          let impl_effort = effortLst.filter(itm2 => itm2.phsCd == keyImpl);
+          let impl_test = effortLst.filter(itm2 => itm2.phsCd == keyTest);
+
+          console.log("isSplit", effortLst);
+          newItem.impl_effort = impl_effort && impl_effort.length > 0 ? parseFloat(impl_effort[0].efrtNo) : 0;
+          newItem.test_effort =  impl_test && impl_test.length ? parseFloat(impl_test[0].efrtNo) : 0;
+          return newItem;
+        } else {
+          return newItem;
+
+        }
+        
+      })
+
+      const data = await Promise.all([...newTaskList]).then((result) => {
+        return result;
+      });
+      return data;
+      
+    }
+    
   }
   const comparePoint  = (a: any, b: any) => {
     if(a.pntNo > b.pntNo) return 1;
@@ -275,6 +325,16 @@ export default function SearchTask(props) {
             className="col-span-1 border border-gray-500 px-4 py-2 rounded-lg w-full"
           />
         </div>
+        <div>
+          <label className="pt-3 text-right gap-1 ">
+            <input 
+              type="checkbox"
+              defaultChecked={splitEffort}
+              onChange={() => setSplitEffort(!splitEffort) }
+            />
+            Split Eff.
+          </label>
+        </div>
         <div className="grid grid-flow-col gap-1 w-full">
           <Select
               defaultValue={defaultPharse}
@@ -329,10 +389,10 @@ export default function SearchTask(props) {
         </div>
       </div>
       <div className="table-container-search pt-2">
-          <BPTableGrid 
-              taskList = {lstReq}
-              height="190"
-            /> 
+          <BPTableGrid
+            data = {taskList}
+            height="190"
+          /> 
         
       </div>
     </div>
