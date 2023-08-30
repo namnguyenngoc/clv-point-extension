@@ -96,6 +96,23 @@ export default function BPTableGridNew ({ handleClick }) {
         selector: row => row.pntNo,
     },
     {
+      name: 'Imp Eff.',
+      width: "90px",
+      center: "yes",
+      cell: row => (
+        row.impl_effort ? row.impl_effort : 0
+      ),
+    },
+    {
+      name: 'Tester Eff.',
+      width: "90px",
+      center: "yes",
+      cell: row => (
+        row.impl_test ? row.impl_test : 0
+        
+      ),
+    },
+    {
       name: 'Title',
       width: "500px",
       allowOverflow: "no",

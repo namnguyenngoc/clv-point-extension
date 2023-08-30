@@ -237,14 +237,58 @@ export default function SearchTask(props) {
 
       setTotalEffort(formatNumber(sum, 0));
 
-    
-      setLstReq(dataTasks);
+      // let pms = await splitPointByPharse([...dataTasks], true).then((itm)=> {
+      //   setTaskList(itm);
+      // });
+      // setLstReq(dataTasks);
 
       localStorage.setItem('BP_TASK_LIST', JSON.stringify(dataTasks));
 
     }
   }
+  const splitPointByPharse  = async (taskList: any, isSplit) => {
+    if(taskList && taskList.length > 0) {
+      let newTaskList = await taskList.map(async function (itm, idx) {
+        let newItem = {
+          ...itm,
+          "index": idx + 1,
+          "impl_effort": 0,
+          "test_effort": 0,
+        }
 
+        if(isSplit){
+          const detail = await axios.get(`${url}/searchRequirementDetails?reqId=${itm.reqId}`)
+          .then(async (res) => {
+            return res.data;
+          });
+          let effortLst = await new Promise((resolve, reject) => {
+            resolve(detail.lstSkdUsr);
+          });
+
+          let keyImpl = "PIM_PHS_CDIMP";
+          let keyTest = "PIM_PHS_CDTSD";
+          
+          let impl_effort = effortLst.filter(itm2 => itm2.phsCd == keyImpl);
+          let impl_test = effortLst.filter(itm2 => itm2.phsCd == keyTest);
+
+          newItem.impl_effort = impl_effort && impl_effort.length > 0 ? parseFloat(impl_effort[0].efrtNo) : 0;
+          newItem.impl_test =  impl_test && impl_test.length ? parseFloat(impl_test[0].efrtNo) : 0;
+          return newItem;
+        } else {
+          return newItem;
+
+        }
+        
+      })
+
+      const data = await Promise.all([...newTaskList]).then((result) => {
+        return result;
+      });
+      return data;
+      
+    }
+    
+  }
   const formatNumber = (value: any, tofix: any, isInt: boolean) => {
     if (!value)
       return ''
