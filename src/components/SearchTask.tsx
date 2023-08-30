@@ -256,6 +256,20 @@ export default function SearchTask(props) {
     return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   }
   const comparePoint  = (a: any, b: any) => {
+    let isSubmit = localStorage.getItem('ONLY_SUBMIT');
+    if(isSubmit) {
+      return sortDesc(a, b);
+    }
+    return sortAsc(a, b);
+  }
+
+  const sortDesc  = (a: any, b: any) => {
+    if(a.pntNo < b.pntNo) return 1;
+    else if(a.pntNo > b.pntNo) return -1;
+    else return 0;
+  }
+
+  const sortAsc  = (a: any, b: any) => {
     if(a.pntNo > b.pntNo) return 1;
     else if(a.pntNo < b.pntNo) return -1;
     else return 0;

@@ -956,10 +956,11 @@ export default function BPTableGridNew ({ handleClick }) {
   }
 
   const filterOnlySubmit = (onlySubmit) => {
+    const isSubmit = !onlySubmit;
     let data = [...localStorage.getItem('BP_TASK_LIST') ? JSON.parse(localStorage.getItem('BP_TASK_LIST')) : []];
     
     if(data && data.length > 0) {
-      let dataTasks = data.sort(onlySubmit ? sortDesc : sortAsc);
+      let dataTasks = data.sort(onlySubmit ? sortAsc : sortDesc);
       // set index
       let idx = 0;
       dataTasks.map(function(item) {
@@ -970,7 +971,9 @@ export default function BPTableGridNew ({ handleClick }) {
       localStorage.setItem('BP_TASK_LIST',  JSON.stringify(dataTasks));
 
     }
-    setOnlySubmit(!onlySubmit);
+    setOnlySubmit(isSubmit);
+
+    localStorage.setItem('ONLY_SUBMIT',  isSubmit);
   }
 
   const sortDesc  = (a: any, b: any) => {
@@ -996,7 +999,7 @@ export default function BPTableGridNew ({ handleClick }) {
           </label> 
         </div>
         <div>
-          <label className="pt-3">
+          <label className="pt-3 text-right gap-1 ">
             <input 
               type="checkbox"
               defaultChecked={onlySubmit}
