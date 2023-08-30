@@ -65,6 +65,7 @@ export default function BPTableGridNew ({ handleClick }) {
   const taskLevelList = myData.taskLevel;
   const defaultTrongSo = taskLevelList[0];
   const [taskLevel, setTaskLevel] = useState(taskLevelList[0]);
+  const [onlySubmit, setOnlySubmit] = useState(false);
   const columns = [
     {
       name: 'ID',
@@ -953,28 +954,74 @@ export default function BPTableGridNew ({ handleClick }) {
 
     window.open(url, "ADD POINT", "width="+screen.availWidth+",height="+screen.availHeight); //to open new page
   }
+
+  const filterOnlySubmit = (onlySubmit) => {
+    let data = [...localStorage.getItem('BP_TASK_LIST') ? JSON.parse(localStorage.getItem('BP_TASK_LIST')) : []];
+    
+    if(data && data.length > 0) {
+      let dataTasks = data.sort(onlySubmit ? sortDesc : sortAsc);
+      // set index
+      let idx = 0;
+      dataTasks.map(function(item) {
+        item.index = idx++;
+      });
+      
+      localStorage.setItem('BP_TASK_LIST', JSON.stringify([]));
+      localStorage.setItem('BP_TASK_LIST',  JSON.stringify(dataTasks));
+
+    }
+    setOnlySubmit(!onlySubmit);
+  }
+
+  const sortDesc  = (a: any, b: any) => {
+    if(a.pntNo < b.pntNo) return 1;
+    else if(a.pntNo > b.pntNo) return -1;
+    else return 0;
+  }
+
+  const sortAsc  = (a: any, b: any) => {
+    if(a.pntNo > b.pntNo) return 1;
+    else if(a.pntNo < b.pntNo) return -1;
+    else return 0;
+  }
+
   return (
     <div className="grid grid-flow-row gap-1">
-      <label className="pt-3">
-        <h3>
-          Total: {localStorage.getItem('BP_TASK_LIST') ? JSON.parse(localStorage.getItem('BP_TASK_LIST')).length : 0 }
-        </h3>
-      </label>
-        <DataTable
-            columns = {columns}
-            theme="default"
-            fixedHeader
-            fixedHeaderScrollHeight="690px"
-            data = {
-              localStorage.getItem('BP_TASK_LIST') ? JSON.parse(localStorage.getItem('BP_TASK_LIST')) : []
-            }
-            onRowDoubleClicked = { event => onRowDoubleClicked (event)}
-            
-            conditionalRowStyles={conditionalRowStyles}
-            customStyles={customStyles} 
-            selectableRows
-            selectableRowsHighlight
-        />
+      <div className="grid grid-flow-col gap-1">
+        <div>
+          <label className="pt-3">
+            <h3>
+              Total: {localStorage.getItem('BP_TASK_LIST') ? JSON.parse(localStorage.getItem('BP_TASK_LIST')).length : 0 }
+            </h3>
+          </label> 
+        </div>
+        <div>
+          <label className="pt-3">
+            <input 
+              type="checkbox"
+              defaultChecked={onlySubmit}
+              onChange={() => filterOnlySubmit(onlySubmit) }
+            />
+            Only Submit
+          </label>
+        </div>
+        
+      </div>
+      <DataTable
+          columns = {columns}
+          theme="default"
+          fixedHeader
+          fixedHeaderScrollHeight="690px"
+          data = {
+            localStorage.getItem('BP_TASK_LIST') ? JSON.parse(localStorage.getItem('BP_TASK_LIST')) : []
+          }
+          onRowDoubleClicked = { event => onRowDoubleClicked (event)}
+          
+          conditionalRowStyles={conditionalRowStyles}
+          customStyles={customStyles} 
+          selectableRows
+          selectableRowsHighlight
+      />
     </div>
     
   )

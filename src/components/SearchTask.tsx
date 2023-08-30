@@ -407,7 +407,6 @@ export default function SearchTask(props) {
                   hideSelectedOptions={false}
                   onChange={(options) => {
                           if (Array.isArray(options)) {
-                            console.log("Test");
                             var code = options.map(function(item) {
                               return item['value'];
                             });
