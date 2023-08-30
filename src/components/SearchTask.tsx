@@ -223,7 +223,7 @@ export default function SearchTask(props) {
 
           console.log("isSplit", effortLst);
           newItem.impl_effort = impl_effort && impl_effort.length > 0 ? parseFloat(impl_effort[0].efrtNo) : 0;
-          newItem.test_effort =  impl_test && impl_test.length ? parseFloat(impl_test[0].efrtNo) : 0;
+          newItem.impl_test =  impl_test && impl_test.length ? parseFloat(impl_test[0].efrtNo) : 0;
           return newItem;
         } else {
           return newItem;
