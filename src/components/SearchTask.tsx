@@ -359,8 +359,8 @@ export default function SearchTask(props) {
             setClkID(clickupId);
             defaultPharse.push(
             {
-              "value": "PIM_PHS_CDFIN",
-              "label": "Finish",
+              "value": "REQ_STS_CDFIN",
+              "label": "Finished",
             })
           }
         }
