@@ -24,6 +24,8 @@ import {
     const defaultSizeFullNm = { width: 1, minWidth: 400};
     const defaultSizePIC = { width: 1, minWidth: 100};
     const defaultSizeNumber = { width: 1, minWidth: 50};
+    let [totalEffort, setTotalEffort] = useState("");
+
     const columns = [
     //   {
     //     ...keyColumn('active', checkboxColumn),

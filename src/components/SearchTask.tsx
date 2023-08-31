@@ -1,13 +1,16 @@
-import React, { useState,useEffect, useRef } from "react";
+import React, { useState,useEffect, CSSProperties } from "react";
 import axios from "axios";
 import Select, { components } from "react-select";
 import { WEB_INFO } from '../const';
 import BPTableGrid from "./BPTableGrid";
 import BPTableGridNew from "./BPTableGridNew";
+import ScaleLoader from "react-spinners/ScaleLoader";
 
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import TaskEffortByUserTable from "./TaskEffortByUserTable";
+import TaskByUser from "./TaskByUser";
+
 
 let defaultPharse = [
   {
@@ -72,6 +75,20 @@ const InputOption = ({
     </components.Option>
   );
 };
+
+const override: CSSProperties = {
+  display: "block",
+  margin: "0 auto",
+  borderColor: "#36d7b7",
+  position: "absolute",
+  top: "0",
+  left: "0",
+  width: "100%",
+  height: "100%",
+  background: "rgb(255, 255, 255, 0.4)",
+  textAlign: "center",
+  paddingTop: "21%",
+};
 export default function SearchTask(props) {
   const url = WEB_INFO.BLUEPRINT.API;
   const pjtId = WEB_INFO.BLUEPRINT.PROJECTS.NEW_FWD.ID;
@@ -89,6 +106,9 @@ export default function SearchTask(props) {
   let [pic, setPic] = useState("namnnguyen");
   let [pharse, setPharse] = useState({});
   let [lstPhs, setLstPhs] = React.useState([]);
+  let [loading, setLoading] = useState(false);
+  const [modalIsOpen, setIsOpen] = React.useState(false);
+  let [color, setColor] = useState("#0E71CC");
 
   //   const response = await axios.post(requestURL + "searchRequirement", ro);
   const handleKeyDown = (event) => {
@@ -144,6 +164,7 @@ export default function SearchTask(props) {
     await searchRequirement();
   }
   const searchRequirement = async () => {
+    setLoading(true);
     setLstReq([]);
     localStorage.setItem('BP_TASK_LIST', JSON.stringify([]));
     let seqNo;
@@ -211,17 +232,8 @@ export default function SearchTask(props) {
     ).then(res => {
       return res.data;
     });
-    console.log("requirement", requirement);
-    // let newLsReq = [...requirement.lstReq.map(
-    //   function (item){
-    //     let arrTitle = item.reqTitNm.trim().split('][');
-    //     if(arrTitle && arrTitle.length > 1){
-    //       item.PIC = arrTitle[1];
-
-    //     }
-    //     item.link = item.reqId.substr(item.reqId.length - 5); //Get 5 character last
-    //   }
-    // )]
+   
+    
     if(requirement.lstReq && requirement.lstReq.length > 0) {
       //Tinh total effort
       let dataTasks = requirement.lstReq.sort(comparePoint);
@@ -237,12 +249,8 @@ export default function SearchTask(props) {
 
       setTotalEffort(formatNumber(sum, 0));
 
-      // let pms = await splitPointByPharse([...dataTasks], true).then((itm)=> {
-      //   setTaskList(itm);
-      // });
-      // setLstReq(dataTasks);
-
       localStorage.setItem('BP_TASK_LIST', JSON.stringify(dataTasks));
+      setLoading(false);
 
     }
   }
@@ -388,6 +396,7 @@ export default function SearchTask(props) {
       <Tabs>
         <TabList>
           <Tab>Tasks</Tab>
+          <Tab>Task By User</Tab>
           <Tab>Effort Member</Tab>
         </TabList>
 
@@ -502,12 +511,24 @@ export default function SearchTask(props) {
 
               
             </div>
+            <ScaleLoader
+              color={color}
+              loading={loading}
+              cssOverride={override}
+              aria-label="Loading Spinner"
+              data-testid="loader"
+          />
           </div>
         </TabPanel>
         <TabPanel>
           <TaskEffortByUserTable />
         </TabPanel>
+        <TabPanel>
+          <TaskByUser />
+        </TabPanel>
+
       </Tabs>
+      
     </div>
   );
 }

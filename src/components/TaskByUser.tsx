@@ -80,8 +80,10 @@ export default function TaskEffortByUser(props) {
   const SPREADSHEET_ID = "10WPahmoB6Im1PyCdUZ_uda3fYijC8jKtHnRBasnTK3Y";
   let [loading, setLoading] = useState(false);
   let [color, setColor] = useState("#0E71CC");
+  let [totalEffort, setTotalEffort] = useState(0);
+  let [totalEffortFWD, setTotalEffortFWD] = useState(0);
 
-
+  
   const url = 'https://blueprint.cyberlogitec.com.vn/api';
   const DT_FM = 'YYYYMMDD';
   const defaultMem = null;
@@ -105,25 +107,24 @@ export default function TaskEffortByUser(props) {
   
   const [startDate, setStartDate] = useState(firstDayOfMonth._d);
   const [endDate, setEndDate] = useState(new Date());
-  const [effortList, setEffortList] = useState([]);
+  const [taskList, setTaskList] = useState([]);
   const [workday, setWorkday] = useState(0);
   const [monthDay, setMonthDay] = useState(0);
   const columns = [
     {
-        name: 'Name',
+        name: 'pjtNm',
         width: "180px",
-        selector: row => row.fullName,
+        selector: row => row.pjtNm,
     },
     {
-      name: 'Target Level',
-      width: "250px",
-      selector: row => `${row.targetLevel} - ${row.tagartRating}`,
+      name: 'taskNm',
+      selector: row =>row.taskNm,
     },
     {
-      name: 'Task',
+      name: 'efrtNo',
       width: "80px",
       center: "yes",
-      selector: row => row.countTask,
+      selector: row => row.efrtNo,
       conditionalCellStyles: [
         {
           when: row => 1 == 1,
@@ -139,10 +140,10 @@ export default function TaskEffortByUser(props) {
       ]
     },
     {
-      name: 'Current Eff.',
+      name: 'seqNo',
       width: "100px",
       center: "yes",
-      selector: row => formatPrice(row.effortPoint / (monthDay == 0 ? 1: monthDay), 0),
+      selector: row =>row.seqNo,
       conditionalCellStyles: [
         {
           when: row => 1 == 1,
@@ -157,114 +158,7 @@ export default function TaskEffortByUser(props) {
         },
       ]
     },
-    {
-      name: 'Std by Wrk.Days',
-      width: "150px",
-      center: "yes",
-      selector: item => formatPrice(item.pointOnHour.expect * (workday > 22  ? 22 : workday) * 8 ,0),
-      conditionalCellStyles: [
-        {
-          when: row => 1 == 1,
-          style: {
-            backgroundColor: 'rgba(63, 195, 128, 0.3)',
-            color: 'white',
-            '&:hover': {
-              cursor: 'pointer',
-            },
-            'font-weight': 'bold',
-          },
-        },
-      ]
-    },
-    {
-      name: 'Std by Level (month)',
-      width: "150px",
-      center: "yes",
-      selector: item => formatPrice(item.pointOnHour.effortPointByCurrentLevel, 0) ,
-      conditionalCellStyles: [
-        {
-          when: row => 1 == 1,
-          style: {
-            backgroundColor: 'rgba(63, 195, 128, 0.3)',
-            color: 'white',
-            '&:hover': {
-              cursor: 'pointer',
-            },
-            'font-weight': 'bold',
-          },
-        },
-      ]
-    },
-    {
-      name: 'Gap STD',
-      width: "100px",
-      center: "yes",
-      selector: item => formatPrice(item.pointOnHour.effortPointByCurrentLevel - (item.effortPoint / (monthDay == 0 ? 1: monthDay)), 0),
-      
-    },
-    {
-      name: 'Target Eff.',
-      width: "100px",
-      center: "yes",
-      selector: item => formatPrice(item.pointOnHour.effortPointByTargetLevel, 0),
-    },
-    {
-      name: 'Gap Target',
-      width: "100px",
-      center: "yes",
-      selector: item => formatPrice(item.pointOnHour.effortPointByTargetLevel - (item.effortPoint / (monthDay == 0 ? 1: monthDay)), 0),
-     
-    },
-    {
-      name: 'Min',
-      width: "100px",
-      center: "yes",
-      selector: item => formatPrice(item.pointOnHour.minEffortPoint, 0),
-    },
-    {
-      name: 'Mean',
-      width: "100px",
-      center: "yes",
-      selector: item => formatPrice(item.pointOnHour.averageEffortPoint, 0),
-    },
-    {
-      name: 'Max',
-      width: "100px",
-      center: "yes",
-      selector: item => formatPrice(item.pointOnHour.maxEffortPoint, 0),
-    },
-    {
-      name: 'Start Review',
-      width: "100px",
-      center: "yes",
-      selector: item => item.effectDateFrom,
-    },
-    {
-      name: 'End Review',
-      width: "100px",
-      center: "yes",
-      selector: item => item.effectDateTo,
-    },
-    // {
-    //   name: 'workday',
-    //   width: "100px",
-    //   center: "yes",
-    //   selector: item => workday,
-    // },
-
-    // {
-    //   name: 'effortPoint',
-    //   width: "100px",
-    //   center: "yes",
-    //   selector: item => item.effortPoint,
-    // },
-
-    // {
-    //   name: 'expect',
-    //   width: "100px",
-    //   center: "yes",
-    //   selector: item => item.pointOnHour.expect,
-    // },
+   
   
   ]
 
@@ -312,6 +206,32 @@ export default function TaskEffortByUser(props) {
         resolve(response);
     });
   }
+   async function searchTaskOfUser(item:any) {
+    let ro = {
+      "usrId": item.userId,
+      "stDt": moment(startDate).format("YYYYMMDD"),
+      "endDt": moment(endDate).format("YYYYMMDD"),
+      "procFlg":"F",
+      "beginIdx":0,
+      "pageChanged":false,
+      "endIdx":200,
+    };
+  
+    // console.log("RO", ro);
+
+    // console.log("reqee", req)
+    const response = await axios.post(`${url}/uiPim026/searchTaskOfUser`, ro)
+      .then(async function (response) {
+        return response.data;
+    });
+
+  
+    // console.log("response", response);
+    return new Promise((resolve, reject) => {
+        resolve(response);
+    });
+  }
+
 
   async function getDailyTasksByUser(item:any) {
     let ro = {
@@ -469,55 +389,71 @@ export default function TaskEffortByUser(props) {
 
     if(startDate && endDate) {
 
-      // const newList = await getDailyTasksByUser(memberSelect[0]);
-      let sheetMember = await selectMemberList();
-      const lstUserInTeam = await searchUserInTeam();
-    
-      const newList = sheetMember.map(async function (item) {
-        //Get task
-      
-        const res = await getDailyTasksByUser(item);
-        if(res){
+      const newList = await searchTaskOfUser(memSelect).then(result => {
+        let newData =  [...result.lstTaskVO];
+        const sum = newData.reduce((accumulator, object) => {
+          return accumulator + Number(object.efrtNo);
+        }, 0);
+        setTotalEffort(sum);
+        const grouped = groupBy(newData, task => task.pjtNm);
 
-          item.effortPoint = sumEfrtKnt (res.dailyRsrcLst);
-          item.timeWorked = 0;
-          let pointStd = lvlList.filter(itm => itm.code.toUpperCase() == item.lvlCode.toUpperCase());
-          if(pointStd && pointStd.length > 0){
-            item.pointStd = pointStd[0];
+        let groupTotal = grouped.get("New US FWD");
 
-          } else {
-            item.pointStd = {
-              "min": 0,
-              "max": 0,
-              "gap": 0,
-              "taskLevelMax": 0,
-              "agvDay": 0,
-              "agvMonth": 0
-            }
-          }
-          // console.log("lstUserInTeam", lstUserInTeam);
-          let itemTask = lstUserInTeam.filter(itm2 => itm2.usrId == item.userId);
-          item.countTask = 0;
-          if(itemTask && itemTask.length > 0){
-            let _task = itemTask[0];
-            item.countTask = _task.pd_knt +  _task.op_knt +  _task.proc_knt;
-          }
-        }
-        return item;
-      })
-      let newListSrt = await Promise.all(newList).then((response) => {
-        let newData = [...response];
-        if(memSelect != null) {
-          newData = newData.filter(mem => mem.userId == memSelect.userId);
-        }
-        setEffortList(newData);
+        const sumFWD = groupTotal.reduce((accumulator, object) => {
+          return accumulator + Number(object.efrtNo);
+        }, 0);
+        setTotalEffortFWD(sumFWD);
+        
+
+        console.log("groupTotal", groupTotal);
+        setTaskList(result.lstTaskVO);
+        setLoading(false);
+      }).catch(e => {
+        console.log("400", e);
         setLoading(false);
       });
-      
-
+    
+     
     }
   }
-  
+
+  /**
+   * @description
+   * Takes an Array<V>, and a grouping function,
+   * and returns a Map of the array grouped by the grouping function.
+   *
+   * @param list An array of type V.
+   * @param keyGetter A Function that takes the the Array type V as an input, and returns a value of type K.
+   *                  K is generally intended to be a property key of V.
+   *
+   * @returns Map of the array grouped by the grouping function.
+   */
+  //export function groupBy<K, V>(list: Array<V>, keyGetter: (input: V) => K): Map<K, Array<V>> {
+  //    const map = new Map<K, Array<V>>();
+  function groupBy(list, keyGetter) {
+    const map = new Map();
+    list.forEach((item) => {
+        const key = keyGetter(item);
+        const collection = map.get(key);
+        if (!collection) {
+            map.set(key, [item]);
+        } else {
+            collection.push(item);
+        }
+    });
+    return map;
+  }
+
+  const onRowDoubleClicked = (rowData) => {
+    console.log("onRowDoubleClicked", rowData);
+    const url = `https://blueprint.cyberlogitec.com.vn/UI_PIM_001_1/${rowData.reqId}`;
+    let enabledMgmt = false;
+    let enabled = false;
+    window['chrome'].storage?.local.set({enabledMgmt});
+    window['chrome'].storage?.local.set({enabled});
+
+    window.open(url, "ADD POINT", "width="+screen.availWidth+",height="+screen.availHeight); //to open new page
+  }
   const onChangeDate = async (date: any, type: any) => {
     if('START' == type) {
       setStartDate(date);
@@ -539,13 +475,17 @@ export default function TaskEffortByUser(props) {
   }
   //formatPrice(item.pointOnHour.expect * workday * 8 ,0)
   const conditionalRowStyles = [
-    {
-      when: row =>  parseFloat(row.effortPoint) < parseFloat(row.pointOnHour.expect) * (workday > 22  ? 22 : workday)  * 8,
-      style: row => ({ backgroundColor: 'pink' }),
-    },
+   
   ];
   return (
     <div className="grid grid-flow-row gap-2">
+      <div>
+          <label className="pt-3">
+            <h3>
+              Total: {formatPrice(totalEffort, 0)}  | New FWD:  {formatPrice(totalEffortFWD, 0)}
+            </h3>
+          </label> 
+        </div>
       <div className="grid grid-flow-col gap-1 px-2">
         <div className="w-150">
           <Select
@@ -595,12 +535,9 @@ export default function TaskEffortByUser(props) {
             fixedHeader
             fixedHeaderScrollHeight="730px"
             data = {
-              effortList
+              taskList
             }
-            // onRowDoubleClicked = { event => onRowDoubleClicked (event)}
-            
-            conditionalRowStyles={conditionalRowStyles}
-            // customStyles={customStyles} 
+            onRowDoubleClicked = { event => onRowDoubleClicked (event)}
             selectableRows
             selectableRowsHighlight
         />
