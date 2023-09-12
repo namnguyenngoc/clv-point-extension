@@ -148,6 +148,9 @@ export default function TaskSearchForm() {
   const [startDate, setStartDate] = useState(firstDayOfMonth._d);
   const [endDate, setEndDate] = useState(new Date());
   const [memberList, setMemberList] =  useState({});
+  const [capaInfo, setCapaInfo] = useState({
+    background: '#F08080'
+  });
   const onChangeLevel = (option: any) => {
     setTaskLevel(option);
   }
@@ -1429,6 +1432,10 @@ export default function TaskSearchForm() {
     }
   }
 
+  const checkCAPA = async () => {
+
+  }
+
   useEffect(()=>{
     console.log("Request searchRequirement");
     // let apiObject = {
@@ -1538,15 +1545,21 @@ export default function TaskSearchForm() {
                   </div>
                   
                 </th>
-                
                 <th className="px-4 py-2 text-right">
-                  
-                  <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg">
+                  <button type="button" 
+                    style={{
+                      backgroundColor: capaInfo ? capaInfo.background : "#FFFFFF"
+                    }}
+                    className="text-white py-2 px-4 rounded-lg ml-4" 
+                    onClick={checkCAPA}>
+                    CAPA
+                  </button>
+                  <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg ml-4">
                     Calc Point
                   </button>
                   <button type="button" className="bg-green text-white py-2 px-4 rounded-lg ml-4" 
                     onClick={cfmEditPoint}>
-                    Save Point Phase
+                    Insert Point
                   </button>
                 </th>
                 

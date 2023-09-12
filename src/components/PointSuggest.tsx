@@ -403,10 +403,10 @@ export default function PointSuggest(props) {
             <tr className="bg-gray-200">
               <th className="px-4 py-2 text-left w-full">
                 <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg" disabled={props.total == 0}>
-                  Suggest
+                  Suggest Effort
                 </button>
                 <button type="submit" className="bg-green text-white py-2 px-4 rounded-lg ml-4" disabled={totalPoint == 0}  onClick={saveBP}>
-                  Save Point Task
+                  Insert Total Effort Point Task
                 </button>
               </th>
               <th className="px-4 py-2 text-right">
