@@ -126,8 +126,8 @@ export default function TaskEffortByUser(props) {
         selector: row => row.fullName,
     },
     {
-      name: 'Target Level',
-      selector: row => `${row.targetLevel} - ${row.tagartRating}`,
+      name: 'Level',
+      selector: row => `${row.currentLevel} - ${row.levelRating}`,
     },
     {
       name: 'Rate',
