@@ -1,4 +1,4 @@
-import React, { useState,CSSProperties } from "react";
+  import React, { useState, useEffect, CSSProperties } from "react";
 import axios from "axios";
 import myData from '../data.json';
 import moment from 'moment';
@@ -55,7 +55,8 @@ const InputMemberOption = ({
       getStyles={getStyles}
       innerProps={props}
     >
-      {children}
+      <input type="checkbox" checked={isSelected} />
+        <label> </label> {children}
     </components.Option>
   );
 };
@@ -76,7 +77,7 @@ const override: CSSProperties = {
 
 export default function TaskEffortByUser(props) {
   const SHEET_ID = "Member_List";
-  const RANGE_MEMBER_SHEET = 'A1:AT';
+  const RANGE_MEMBER_SHEET = 'A1:AW';
   const SPREADSHEET_ID = "10WPahmoB6Im1PyCdUZ_uda3fYijC8jKtHnRBasnTK3Y";
   let [loading, setLoading] = useState(false);
   let [color, setColor] = useState("#0E71CC");
@@ -84,20 +85,29 @@ export default function TaskEffortByUser(props) {
 
   const url = 'https://blueprint.cyberlogitec.com.vn/api';
   const DT_FM = 'YYYYMMDD';
-  const defaultMem = null;
-  let allMember = [];
-  myData.memList.map(
-    function (item) {
-      // console.log("item", item);
-      if(item.teamLocal.includes("NEWFWD")) {
-        item.label = item.userId, //`${item.fullName}-${item.pointOnHour.expect}(${item.currentLevel})`;
-        item.value = item.userId
-        allMember.push(item);
-        // return item;
-      }
-  });
+ 
+  // let [defaultMem, setDefaultMem] = useState([]);
+  let defaultMem = [];
+  // let memberReviewThisMonth = [];
+  let [lstMember, setLstMember] = useState([]);
+  let [lstDefault, setLstDefault] = useState([]);
+  const [inReview, setInReview] = useState(false);
+  let [memberReviewThisMonth, setMemberReviewThisMonth] = useState([]);
 
-  const [memberSelect, setMemberSelect] = useState(null);
+
+  let allMember = [];
+  // myData.memList.map(
+  //   function (item) {
+  //     // console.log("item", item);
+  //     if(item.teamLocal.includes("NEWFWD")) {
+  //       item.label = item.userId, //`${item.fullName}-${item.pointOnHour.expect}(${item.currentLevel})`;
+  //       item.value = item.userId
+  //       allMember.push(item);
+  //       // return item;
+  //     }
+  // });
+
+  const [memberSelect, setMemberSelect] = useState([]);
   const today = moment(new Date());
   console.log("today", today);
   const firstDayOfMonth = today.clone().startOf("month");
@@ -108,17 +118,24 @@ export default function TaskEffortByUser(props) {
   const [effortList, setEffortList] = useState([]);
   const [workday, setWorkday] = useState(0);
   const [monthDay, setMonthDay] = useState(0);
+  const [isShowAllCol, setShowAllCol] = useState(true);
   const columns = [
     {
         name: 'Name',
-        width: "180px",
+        width: "170px",
         selector: row => row.fullName,
     },
     {
       name: 'Target Level',
-      width: "250px",
       selector: row => `${row.targetLevel} - ${row.tagartRating}`,
     },
+    {
+      name: 'Rate',
+      width: "100px",
+      center: "yes",
+      selector: row => row.currentLvl,
+    },
+    
     {
       name: 'Task',
       width: "80px",
@@ -139,8 +156,8 @@ export default function TaskEffortByUser(props) {
       ]
     },
     {
-      name: 'Current Eff.',
-      width: "100px",
+      name: 'Effort',
+      width: "80px",
       center: "yes",
       selector: row => formatPrice(row.effortPoint / (monthDay == 0 ? 1: monthDay), 0),
       conditionalCellStyles: [
@@ -158,9 +175,10 @@ export default function TaskEffortByUser(props) {
       ]
     },
     {
-      name: 'Std by Wrk.Days',
-      width: "150px",
+      name: 'Std Days',
+      width: "100px",
       center: "yes",
+      omit: isShowAllCol,
       selector: item => formatPrice(item.pointOnHour.expect * (workday > 22  ? 22 : workday) * 8 ,0),
       conditionalCellStyles: [
         {
@@ -177,10 +195,10 @@ export default function TaskEffortByUser(props) {
       ]
     },
     {
-      name: 'Std by Level (month)',
-      width: "150px",
+      name: 'Std Month',
+      width: "100px",
       center: "yes",
-      selector: item => formatPrice(item.pointOnHour.effortPointByCurrentLevel, 0) ,
+      selector: item => formatPrice(item.pointOnHour.effortPointByCurrentLevel * item.workload, 0),
       conditionalCellStyles: [
         {
           when: row => 1 == 1,
@@ -206,6 +224,7 @@ export default function TaskEffortByUser(props) {
       name: 'Target Eff.',
       width: "100px",
       center: "yes",
+      omit: isShowAllCol,
       selector: item => formatPrice(item.pointOnHour.effortPointByTargetLevel, 0),
     },
     {
@@ -219,6 +238,7 @@ export default function TaskEffortByUser(props) {
       name: 'Min',
       width: "100px",
       center: "yes",
+      omit: isShowAllCol,
       selector: item => formatPrice(item.pointOnHour.minEffortPoint, 0),
     },
     {
@@ -231,17 +251,18 @@ export default function TaskEffortByUser(props) {
       name: 'Max',
       width: "100px",
       center: "yes",
+      omit: isShowAllCol,
       selector: item => formatPrice(item.pointOnHour.maxEffortPoint, 0),
     },
     {
       name: 'Start Review',
-      width: "100px",
+      width: "120px",
       center: "yes",
       selector: item => item.effectDateFrom,
     },
     {
       name: 'End Review',
-      width: "100px",
+      width: "120px",
       center: "yes",
       selector: item => item.effectDateTo,
     },
@@ -389,7 +410,7 @@ export default function TaskEffortByUser(props) {
     const range = RANGE_MEMBER_SHEET; //'A1:AB50'
     await sheet.loadCells(range); // loads range of cells into local cache - DOES NOT RETURN THE CELLS
     
-    for(let i = 0; i < 18; i ++) {
+    for(let i = 0; i < 23; i ++) {
       const empCode = sheet.getCell(i, 0); // access cells using a zero-based index
       const userId = sheet.getCell(i, 1); // access cells using a zero-based index
       const fullName = sheet.getCell(i, 2); // access cells using a zero-based index
@@ -441,6 +462,9 @@ export default function TaskEffortByUser(props) {
                 "minPoint"        :sheet.getCell(i, 33).formattedValue,
                 "maxPoint"        :sheet.getCell(i, 34).formattedValue,
                 "target"        :sheet.getCell(i, 36).formattedValue,
+                "currentLvl"        : sheet.getCell(i, 4).formattedValue.concat(" (").concat(sheet.getCell(i, 45).formattedValue).concat(")"),
+                "monthReview" :sheet.getCell(i, 47).formattedValue,
+                "defaultList":sheet.getCell(i, 48).formattedValue.split(","),
             }
             arrMember.push(mem);
       }
@@ -455,7 +479,7 @@ export default function TaskEffortByUser(props) {
     //Sheet End
    
   }
-  const selectTaskByUser = async (memSelect: any) => {
+  const selectTaskByUser = async () => {
     setLoading(true);
 
     const strFrm = moment(startDate);
@@ -472,7 +496,20 @@ export default function TaskEffortByUser(props) {
       // const newList = await getDailyTasksByUser(memberSelect[0]);
       let sheetMember = await selectMemberList();
       const lstUserInTeam = await searchUserInTeam();
-    
+      //Filter Memeber
+      console.log("sheetMember", sheetMember);
+
+      console.log("memSelect", memberSelect);
+      if(memberSelect && memberSelect.length > 0) {
+        // people.filter(person => id_filter.includes(person.id))
+        sheetMember = sheetMember.filter(
+          mem => memberSelect.filter(memSel => memSel.userId == mem.userId).length > 0
+        );
+        console.log("memSelect2", sheetMember);
+
+        // sheetMember = sheetMember.filter(mem => mem.userId == memSelect.userId);
+      }
+
       const newList = sheetMember.map(async function (item) {
         //Get task
       
@@ -507,9 +544,9 @@ export default function TaskEffortByUser(props) {
       })
       let newListSrt = await Promise.all(newList).then((response) => {
         let newData = [...response];
-        if(memSelect != null) {
-          newData = newData.filter(mem => mem.userId == memSelect.userId);
-        }
+        // if(memSelect && memSelect.length > 0) {
+        //   newData = newData.filter(mem => mem.userId == memSelect.userId);
+        // }
         setEffortList(newData);
         setLoading(false);
       });
@@ -528,7 +565,28 @@ export default function TaskEffortByUser(props) {
     }
    
 
-    await selectTaskByUser(memberSelect);
+    // await selectTaskByUser(memberSelect);
+  }
+
+  const filterOnlySubmit = (onlySubmit) => {
+    const isSubmit = !onlySubmit;
+    // let data = [...localStorage.getItem('BP_TASK_LIST') ? JSON.parse(localStorage.getItem('BP_TASK_LIST')) : []];
+    
+    // if(data && data.length > 0) {
+    //   let dataTasks = data.sort(onlySubmit ? sortAsc : sortDesc);
+    //   // set index
+    //   let idx = 0;
+    //   dataTasks.map(function(item) {
+    //     item.index = idx++;
+    //   });
+      
+    //   localStorage.setItem('BP_TASK_LIST', JSON.stringify([]));
+    //   localStorage.setItem('BP_TASK_LIST',  JSON.stringify(dataTasks));
+
+    // }
+    setShowAllCol(isSubmit);
+
+    localStorage.setItem('ONLY_SUBMIT',  isSubmit);
   }
   
   const onChangeMember = async (option: any) => {
@@ -538,27 +596,122 @@ export default function TaskEffortByUser(props) {
 
   }
   //formatPrice(item.pointOnHour.expect * workday * 8 ,0)
+  // selector: item => formatPrice(item.pointOnHour.minEffortPoint, 0),
   const conditionalRowStyles = [
     {
-      when: row =>  parseFloat(row.effortPoint) < parseFloat(row.pointOnHour.expect) * (workday > 22  ? 22 : workday)  * 8,
-      style: row => ({ backgroundColor: 'pink' }),
+      when: row =>  
+        parseFloat(row.effortPoint) < parseFloat(row.pointOnHour.minEffortPoint)
+        || parseFloat(row.effortPoint) > parseFloat(row.pointOnHour.maxEffortPoint),
+      style: row => ({ backgroundColor:'rgba(251, 231, 239,0.6)' }),
+    },
+    {
+      when: row =>  
+        parseFloat(row.effortPoint) < parseFloat(row.pointOnHour.effortPointByCurrentLevel),
+      style: row => ({ backgroundColor: 'rgba(0,255,0,0.3)' }),
     },
   ];
+  const inReviewChange = async (option: any) => {
+    //
+    console.log("setMemberSelect option", option);
+   
+    if(option == true){
+      // const firstDayOfMonth = today.clone().startOf("month");
+      // setStartDate(firstDayOfMonth._d);
+      // setEndDate(new Date());
+      if(memberReviewThisMonth && memberReviewThisMonth.length > 0) {
+        console.log("setMemberSelect option", option);
+        let item = memberReviewThisMonth[0];
+        let _start = moment(item.effectDateFrom);
+        let _end = moment(item.effectDateTo);
+        console.log("setMemberSelect option", _start);
+        console.log("setMemberSelect option", _end);
+        // let start =  moment(moment(item.effectDateFrom)._d);
+        // let end =  moment(moment(item.effectDateTo)._d);
+        const _start_firstDayOfMonth = _start.clone().startOf("month");
+        setStartDate(_start_firstDayOfMonth._d);
+        setEndDate(_end._d);
+         console.log("setEndDate option", option);
+        setMemberSelect(...[memberReviewThisMonth]);
+      }
+     
+    } else {
+      setMemberSelect(...[lstDefault]); 
+    }
+    
+    // console.log("setMemberSelect", memberSelect);
+   
+    setInReview(option);
+  }
+  useEffect(()=>{
+    setLoading(true);
+    // let sheetMember = await selectMemberList();
+    // const lstUserInTeam = await searchUserInTeam(); 
+    setLstMember([]);
+    setMemberSelect([]);
+    selectMemberList().then(async (data) => {
+      console.log("useEffect data", data);
+      let lstInReview = [];
+      let lst = await data.map(
+        function (item) {
+          // console.log("item", item);
+          if(item.teamLocal.includes("NEWFWD")) {
+            if(item.defaultList.includes("Y")) {
+              let defaultItem = {
+                ...item,
+                label: item.userId,
+                value: item.userId
+              };
+
+              defaultMem.push(defaultItem);
+            }
+
+            if(item.defaultList.includes("IN_REVIEW")) {
+              let defaultItem = {
+                ...item,
+                label: item.userId,
+                value: item.userId
+              };
+
+              lstInReview.push(defaultItem);
+            
+            }
+
+
+            return {
+              ...item,
+              label: item.userId,
+              value: item.userId
+            }
+
+          }
+      })
+      console.log("useEffect LST", lst);
+      setMemberSelect(defaultMem);
+      setLstDefault(defaultMem);
+      setMemberReviewThisMonth(lstInReview);
+      setLstMember(lst);
+      setLoading(false);
+    }).catch((err) => {
+      console.log("useEffect", err);
+      setLoading(false);
+    });
+  },[])
   return (
     <div className="grid grid-flow-row gap-2">
       <div className="grid grid-flow-col gap-1 px-2">
-        <div className="w-150">
+        <div className="w-full">
           <Select
-            defaultValue={defaultMem}
+            defaultValue={ inReview ? memberReviewThisMonth : defaultMem }
             closeMenuOnSelect={true}
             hideSelectedOptions={false}
             isClearable={true}
+            isMulti
             onChange={(mem) => {
               setMemberSelect(mem);
-              selectTaskByUser(mem);
+              // selectTaskByUser(mem);
             }
             } 
-            options={allMember}
+            options={lstMember}
             components={{
               Option: InputMemberOption
             }}
@@ -578,11 +731,34 @@ export default function TaskEffortByUser(props) {
             {formatPrice(monthDay,0)} months
           </div>
         </div>
+        <div>
+          <label className="pt-3 text-right gap-1">
+            <input 
+              type="checkbox"
+              defaultChecked={inReview}
+              onChange={() => 
+                inReviewChange(!inReview)
+              }
+              disabled={ !(memberReviewThisMonth && memberReviewThisMonth.length > 0)}
+            />
+             <label></label> In Review
+          </label>
+        </div>
+        <div>
+          <label className="pt-3 text-right gap-1">
+            <input 
+              type="checkbox"
+              defaultChecked={!isShowAllCol}
+              onChange={() => filterOnlySubmit(isShowAllCol) }
+            />
+             <label></label> All Columns
+          </label>
+        </div>
         <div className="w-70">
           <button 
             type="button" 
             className="bg-blue-500 text-white py-2 px-4 rounded-lg ml-4" 
-            onClick={event => selectTaskByUser(memberSelect)}>
+            onClick={event => selectTaskByUser()}>
             Search
           </button>
         </div>

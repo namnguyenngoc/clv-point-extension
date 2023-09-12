@@ -188,6 +188,66 @@
             ]
         },
         {
+            "userId": "hoang.nh",
+            "fullName": "Hoang Huu Nguyen",
+            "pointOnHour": {
+                "standard": 35,
+                "expect": 35,
+                "description": ""
+            },
+            "role": ["lead"],
+            "workload": 1, 
+            "pointStandard": 13,
+            "teamLocal": [
+                "NEWFWD"
+            ]
+        },
+        {
+            "userId": "kham.vu",
+            "fullName": "Kham Vu",
+            "pointOnHour": {
+                "standard": 35,
+                "expect": 35,
+                "description": ""
+            },
+            "role": ["lead"],
+            "workload": 1, 
+            "pointStandard": 13,
+            "teamLocal": [
+                "NEWFWD"
+            ]
+        },
+        {
+            "userId": "toan.nguyendinh",
+            "fullName": "Toan Dinh Nguyen",
+            "pointOnHour": {
+                "standard": 35,
+                "expect": 35,
+                "description": ""
+            },
+            "role": ["lead"],
+            "workload": 1, 
+            "pointStandard": 13,
+            "teamLocal": [
+                "NEWFWD"
+            ]
+        },
+        {
+            "userId": "ky.luong",
+            "fullName": "Ky Luong",
+            "pointOnHour": {
+                "standard": 35,
+                "expect": 35,
+                "description": ""
+            },
+            "role": ["lead"],
+            "workload": 1, 
+            "pointStandard": 13,
+            "teamLocal": [
+                "NEWFWD"
+            ]
+        },  
+        {
             "userId": "namnph",
             "fullName": "Nam Nguyen Phan Hoai",
             "currentLevel": "Jnr 1",

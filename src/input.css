@@ -1029,3 +1029,7 @@ div[id="react-select-2-listbox"],
 div[id="react-select-3-listbox"] {
   z-index: 9999 !important;
 }
+
+.react-datepicker-popper {
+  z-index: 9999 !important;
+}
