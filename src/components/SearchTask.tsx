@@ -361,7 +361,10 @@ export default function SearchTask(props) {
             {
               "value": "REQ_STS_CDFIN",
               "label": "Finished",
-            })
+            });
+            let newReqSts = [...reqStsCd];
+            newReqSts.push("REQ_STS_CDFIN");
+            setReqStsCd(newReqSts);
           }
         }
       }
