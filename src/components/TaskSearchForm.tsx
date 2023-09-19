@@ -1669,7 +1669,7 @@ export default function TaskSearchForm() {
             </thead>
             <tbody>
               {effortWithMember.map((result) => (
-                <tr key={result.usrId} className={result.effortHours > result.estHours ? "border-t bg-misty" : (result.effortHours < result.estHours ? "border-t bg-misty-2" : "border-t")}>
+                <tr key={result.usrId} className={result.effortHours > result.estHours || (result.point - result.efrtNo) != 0 ? "border-t bg-misty" : (result.effortHours < result.estHours ? "border-t bg-misty-2" : "border-t")}>
                   <td className="px-4 py-2">{result.usrNm}</td>
                   <td className="px-4 py-2">{result.phsNm}</td>
                   <td className="px-4 py-2 text-right">{formatTime(result.effortHours)}</td>
