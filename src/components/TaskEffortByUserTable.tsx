@@ -119,6 +119,40 @@ export default function TaskEffortByUser(props) {
   const [workday, setWorkday] = useState(0);
   const [monthDay, setMonthDay] = useState(0);
   const [isShowAllCol, setShowAllCol] = useState(true);
+  const [headerReview, setHeaderReview] = useState(
+      [
+        {
+          label: moment(new Date()).format("YYYY MMM"),
+          value: new Date(),
+          effort: 0,
+        },
+        {
+          label: moment(new Date()).format("YYYY MMM"),
+          value: new Date(),
+          effort: 0,
+        },
+        {
+          label: moment(new Date()).format("YYYY MMM"),
+          value: new Date(),
+          effort: 0,
+        },
+        {
+          label: moment(new Date()).format("YYYY MMM"),
+          value: new Date(),
+          effort: 0,
+        },
+        {
+          label: moment(new Date()).format("YYYY MMM"),
+          value: new Date(),
+          effort: 0,
+        },
+        {
+          label: moment(new Date()).format("YYYY MMM"),
+          value: new Date(),
+          effort: 0,
+        }
+      ]
+    );
   const columns = [
     {
         name: 'Name',
@@ -266,6 +300,48 @@ export default function TaskEffortByUser(props) {
       center: "yes",
       selector: item => item.effectDateTo,
     },
+    {
+      name: headerReview[0].label,
+      width: "100px",
+      center: "yes",
+      omit: isShowAllCol,
+      selector: item => item.effectDateTo,
+    },
+    {
+      name: headerReview[1].label,
+      width: "100px",
+      center: "yes",
+      omit: isShowAllCol,
+      selector: item => item.effectDateTo,
+    },
+    {
+      name: headerReview[2].label,
+      width: "100px",
+      center: "yes",
+      omit: isShowAllCol,
+      selector: item => item.effectDateTo,
+    },
+    {
+      name: headerReview[3].label,
+      width: "100px",
+      center: "yes",
+      omit: isShowAllCol,
+      selector: item => item.effectDateTo,
+    },
+    {
+      name: headerReview[4].label,
+      width: "100px",
+      center: "yes",
+      omit: isShowAllCol,
+      selector: item => item.effectDateTo,
+    },
+    {
+      name: headerReview[5].label,
+      width: "100px",
+      center: "yes",
+      omit: isShowAllCol,
+      selector: item => item.effectDateTo,
+    },
     // {
     //   name: 'workday',
     //   width: "100px",
@@ -334,26 +410,69 @@ export default function TaskEffortByUser(props) {
     });
   }
 
-  async function getDailyTasksByUser(item:any) {
+  async function getDailyTasksByUser(item:any, isSplitByMonth: any) {
     let ro = {
       "usrId": item.userId,
       "fromDt": moment(startDate).format("YYYYMMDD"),
       "toDt": moment(endDate).format("YYYYMMDD")
     };
   
-    // console.log("RO", ro);
-
-    // console.log("reqee", req)
-    const response = await axios.post(`${url}/uiPim026/getDailyTasksByUser`, ro)
+    const resEffortTotal = await axios.post(`${url}/uiPim026/getDailyTasksByUser`, ro)
       .then(async function (response) {
         return response.data;
     });
+    isSplitByMonth = true;
+    if(isSplitByMonth) {
+      let arrEffSplit = [];
 
-  
+      let rvStart = item.effectDateFrom;
+      let rvEnd = item.effectDateTo;
+      if(rvStart && rvEnd) {
+        let tmp = moment(rvStart);
+        let arrRoSplit = [];
+        let roSplit = { 
+          "usrId": item.userId,
+        };
+
+        while(tmp < moment(rvEnd)) {
+          // console.log(`tmp: ${tmp}`);
+          // const startOfMonth = moment().startOf('month').format('YYYY-MM-DD hh:mm');
+          // const endOfMonth   = moment().endOf('month').format('YYYY-MM-DD hh:mm');
+          let startOfMonth = moment(tmp).startOf('month');
+          let endOfMonth   = moment(tmp).endOf('month');
+          roSplit = {
+            ...roSplit,
+            "fromDt": startOfMonth.format("YYYYMMDD").toString(),
+            "toDt": endOfMonth.format("YYYYMMDD").toString()
+          };
+
+          tmp = tmp.add(1, 'M');
+          arrRoSplit.push(roSplit);
+          // console.log(`${item.fullName}: ${roSplit}`);
+          const resEffortSplit = await axios.post(`${url}/uiPim026/getDailyTasksByUser`, roSplit)
+            .then(async function (response) {
+              return response.data;
+          });
+
+          arrEffSplit.push(resEffortSplit);
+        }
+
+        console.log(`arrRoSplit: ${JSON.stringify(arrRoSplit)}`);
+
+      }
+     
+    }
+    // let newListSrt = await Promise.all(newList).then((response) => {
     // console.log("response", response);
-    return new Promise((resolve, reject) => {
-        resolve(response);
+    return await Promise.all([resEffortTotal]).then((response) => {
+      return {
+        effortTotal: response[0],
+        effortSplit: []
+      };
     });
+    // return new Promise((resolve, reject) => {
+    //     resolve(response);
+    // });
   }
   const sumEfrtKnt = (arr) => {
     let sum = 0;
@@ -479,6 +598,33 @@ export default function TaskEffortByUser(props) {
     //Sheet End
    
   }
+
+  const setRangeMonthReview = (start:any, end:any) => {
+    let arr = [];
+    console.log("setRangeMonthReview", start);
+    if(start && end) {
+      if(start < end){
+        let tmp = start;
+        arr.push({
+          label: moment(tmp).format('YYYY MMM'),
+          value: futureMonth,
+          effort: 0,
+        });
+
+        while(tmp < end) {
+          var futureMonth = moment(tmp).add(1, 'M');
+          arr.push({
+            label: futureMonth.format('YYYY MMM'),
+            value: futureMonth,
+            effort: 0,
+          });
+          tmp = futureMonth;
+        }
+        
+        setHeaderReview(arr);
+      }
+    }
+  }
   const selectTaskByUser = async () => {
     setLoading(true);
 
@@ -491,6 +637,8 @@ export default function TaskEffortByUser(props) {
     const diffMonth = moment(endFrm._i).diff(moment(strFrm._i), 'months', true);
     setMonthDay(Math.round(diffMonth));
 
+    console.log("selectTaskByUser", strFrm);
+    // setRangeMonthReview (strFrm._i, endFrm._i);
     if(startDate && endDate) {
 
       // const newList = await getDailyTasksByUser(memberSelect[0]);
@@ -516,7 +664,7 @@ export default function TaskEffortByUser(props) {
         const res = await getDailyTasksByUser(item);
         if(res){
 
-          item.effortPoint = sumEfrtKnt (res.dailyRsrcLst);
+          item.effortPoint = sumEfrtKnt (res.effortTotal.dailyRsrcLst);
           item.timeWorked = 0;
           let pointStd = lvlList.filter(itm => itm.code.toUpperCase() == item.lvlCode.toUpperCase());
           if(pointStd && pointStd.length > 0){
