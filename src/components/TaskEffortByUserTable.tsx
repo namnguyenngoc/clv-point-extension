@@ -122,32 +122,32 @@ export default function TaskEffortByUser(props) {
   const [headerReview, setHeaderReview] = useState(
       [
         {
-          label: moment(new Date()).format("YYYY MMM"),
+          label: moment(new Date()).format("MMM YYYY"),
           value: new Date(),
           effort: 0,
         },
         {
-          label: moment(new Date()).format("YYYY MMM"),
+          label: moment(new Date()).format("MMM YYYY"),
           value: new Date(),
           effort: 0,
         },
         {
-          label: moment(new Date()).format("YYYY MMM"),
+          label: moment(new Date()).format("MMM YYYY"),
           value: new Date(),
           effort: 0,
         },
         {
-          label: moment(new Date()).format("YYYY MMM"),
+          label: moment(new Date()).format("MMM YYYY"),
           value: new Date(),
           effort: 0,
         },
         {
-          label: moment(new Date()).format("YYYY MMM"),
+          label: moment(new Date()).format("MMM YYYY"),
           value: new Date(),
           effort: 0,
         },
         {
-          label: moment(new Date()).format("YYYY MMM"),
+          label: moment(new Date()).format("MMM YYYY"),
           value: new Date(),
           effort: 0,
         }
@@ -305,42 +305,42 @@ export default function TaskEffortByUser(props) {
       width: "100px",
       center: "yes",
       omit: isShowAllCol,
-      selector: item => item.effectDateTo,
+      selector: item => getEffort(item.effortDetailByMonth, headerReview[0].label),
     },
     {
       name: headerReview[1].label,
       width: "100px",
       center: "yes",
       omit: isShowAllCol,
-      selector: item => item.effectDateTo,
+      selector: item => getEffort(item.effortDetailByMonth, headerReview[1].label),
     },
     {
       name: headerReview[2].label,
       width: "100px",
       center: "yes",
       omit: isShowAllCol,
-      selector: item => item.effectDateTo,
+      selector: item => getEffort(item.effortDetailByMonth, headerReview[2].label),
     },
     {
       name: headerReview[3].label,
       width: "100px",
       center: "yes",
       omit: isShowAllCol,
-      selector: item => item.effectDateTo,
+      selector: item => getEffort(item.effortDetailByMonth, headerReview[3].label),
     },
     {
       name: headerReview[4].label,
       width: "100px",
       center: "yes",
       omit: isShowAllCol,
-      selector: item => item.effectDateTo,
+      selector: item => getEffort(item.effortDetailByMonth, headerReview[4].label),
     },
     {
       name: headerReview[5].label,
       width: "100px",
       center: "yes",
       omit: isShowAllCol,
-      selector: item => item.effectDateTo,
+      selector: item => getEffort(item.effortDetailByMonth, headerReview[5].label),
     },
     // {
     //   name: 'workday',
@@ -410,6 +410,17 @@ export default function TaskEffortByUser(props) {
     });
   }
 
+  const getEffort = (effortDetailByMonth: any, month: string) => {
+    console.log("filterEffort", effortDetailByMonth);
+    if(!effortDetailByMonth || effortDetailByMonth.length == 0 || !month) return 0;
+
+    let effort = effortDetailByMonth.filter(itm => itm.key == month);
+
+    if(!effort || effort.length == 0) return 0;
+
+    return formatPrice(effort[0].total, 0);
+
+  }
   async function getDailyTasksByUser(item:any, isSplitByMonth: any) {
     let ro = {
       "usrId": item.userId,
@@ -422,9 +433,10 @@ export default function TaskEffortByUser(props) {
         return response.data;
     });
     isSplitByMonth = true;
+    let arrEffSplit = [];
+    
     if(isSplitByMonth) {
-      let arrEffSplit = [];
-
+      
       let rvStart = item.effectDateFrom;
       let rvEnd = item.effectDateTo;
       if(rvStart && rvEnd) {
@@ -435,39 +447,45 @@ export default function TaskEffortByUser(props) {
         };
 
         while(tmp < moment(rvEnd)) {
-          // console.log(`tmp: ${tmp}`);
+         
           // const startOfMonth = moment().startOf('month').format('YYYY-MM-DD hh:mm');
           // const endOfMonth   = moment().endOf('month').format('YYYY-MM-DD hh:mm');
           let startOfMonth = moment(tmp).startOf('month');
           let endOfMonth   = moment(tmp).endOf('month');
           roSplit = {
             ...roSplit,
-            "fromDt": startOfMonth.format("YYYYMMDD").toString(),
-            "toDt": endOfMonth.format("YYYYMMDD").toString()
+            fromDt: startOfMonth.format("YYYYMMDD").toString(),
+            toDt: endOfMonth.format("YYYYMMDD").toString()
           };
-
+          console.log(`tmp: ${startOfMonth.format("YYYYMMDD").toString()}`);
           tmp = tmp.add(1, 'M');
           arrRoSplit.push(roSplit);
           // console.log(`${item.fullName}: ${roSplit}`);
+          
+
           const resEffortSplit = await axios.post(`${url}/uiPim026/getDailyTasksByUser`, roSplit)
             .then(async function (response) {
-              return response.data;
+              let data = response.data;
+              return {
+                usrId: item.userId,
+                key: startOfMonth.format("MMM YYYY").toString(),
+                total: sumEfrtKnt (data.dailyRsrcLst),
+                list: response.data,
+              }
           });
 
           arrEffSplit.push(resEffortSplit);
+
         }
-
-        console.log(`arrRoSplit: ${JSON.stringify(arrRoSplit)}`);
-
+        
+      
       }
      
     }
-    // let newListSrt = await Promise.all(newList).then((response) => {
-    // console.log("response", response);
-    return await Promise.all([resEffortTotal]).then((response) => {
+    return Promise.all(arrEffSplit).then((response) => {
       return {
         effortTotal: response[0],
-        effortSplit: []
+        effortSplit: arrEffSplit
       };
     });
     // return new Promise((resolve, reject) => {
@@ -476,6 +494,7 @@ export default function TaskEffortByUser(props) {
   }
   const sumEfrtKnt = (arr) => {
     let sum = 0;
+    if(!arr || arr.length == 0) return 0;
     for(let i = 0; i < arr.length; i ++){
       sum += arr[i].efrtKnt;
     }
@@ -497,7 +516,6 @@ export default function TaskEffortByUser(props) {
   const count_holiday = (start, end) => {
     let count = 0;
     while (start <= end) {
-      console.log("start", start.format(DT_FM));
       if(myData.workingDay.holidays.find(({ holidayDate }) => holidayDate == start.format(DT_FM))){
         count++;
       }
@@ -606,7 +624,7 @@ export default function TaskEffortByUser(props) {
       if(start < end){
         let tmp = start;
         arr.push({
-          label: moment(tmp).format('YYYY MMM'),
+          label: moment(tmp).format('MMM YYYY'),
           value: futureMonth,
           effort: 0,
         });
@@ -614,7 +632,7 @@ export default function TaskEffortByUser(props) {
         while(tmp < end) {
           var futureMonth = moment(tmp).add(1, 'M');
           arr.push({
-            label: futureMonth.format('YYYY MMM'),
+            label: futureMonth.format('MMM YYYY'),
             value: futureMonth,
             effort: 0,
           });
@@ -638,7 +656,7 @@ export default function TaskEffortByUser(props) {
     setMonthDay(Math.round(diffMonth));
 
     console.log("selectTaskByUser", strFrm);
-    // setRangeMonthReview (strFrm._i, endFrm._i);
+    setRangeMonthReview (strFrm._i, endFrm._i);
     if(startDate && endDate) {
 
       // const newList = await getDailyTasksByUser(memberSelect[0]);
@@ -653,7 +671,7 @@ export default function TaskEffortByUser(props) {
         sheetMember = sheetMember.filter(
           mem => memberSelect.filter(memSel => memSel.userId == mem.userId).length > 0
         );
-        console.log("memSelect2", sheetMember);
+      
 
         // sheetMember = sheetMember.filter(mem => mem.userId == memSelect.userId);
       }
@@ -663,8 +681,9 @@ export default function TaskEffortByUser(props) {
       
         const res = await getDailyTasksByUser(item);
         if(res){
-
+          
           item.effortPoint = sumEfrtKnt (res.effortTotal.dailyRsrcLst);
+          item.effortDetailByMonth = [...res.effortSplit];
           item.timeWorked = 0;
           let pointStd = lvlList.filter(itm => itm.code.toUpperCase() == item.lvlCode.toUpperCase());
           if(pointStd && pointStd.length > 0){
@@ -687,6 +706,8 @@ export default function TaskEffortByUser(props) {
             let _task = itemTask[0];
             item.countTask = _task.pd_knt +  _task.op_knt +  _task.proc_knt;
           }
+
+          console.log("Item User Full", item);
         }
         return item;
       })
@@ -695,6 +716,7 @@ export default function TaskEffortByUser(props) {
         // if(memSelect && memSelect.length > 0) {
         //   newData = newData.filter(mem => mem.userId == memSelect.userId);
         // }
+        console.log("newData", newData);
         setEffortList(newData);
         setLoading(false);
       });
@@ -767,18 +789,16 @@ export default function TaskEffortByUser(props) {
       // setStartDate(firstDayOfMonth._d);
       // setEndDate(new Date());
       if(memberReviewThisMonth && memberReviewThisMonth.length > 0) {
-        console.log("setMemberSelect option", option);
         let item = memberReviewThisMonth[0];
         let _start = moment(item.effectDateFrom);
         let _end = moment(item.effectDateTo);
-        console.log("setMemberSelect option", _start);
-        console.log("setMemberSelect option", _end);
+
         // let start =  moment(moment(item.effectDateFrom)._d);
         // let end =  moment(moment(item.effectDateTo)._d);
         const _start_firstDayOfMonth = _start.clone().startOf("month");
         setStartDate(_start_firstDayOfMonth._d);
         setEndDate(_end._d);
-         console.log("setEndDate option", option);
+
         setMemberSelect(...[memberReviewThisMonth]);
       }
      
@@ -797,7 +817,6 @@ export default function TaskEffortByUser(props) {
     setLstMember([]);
     setMemberSelect([]);
     selectMemberList().then(async (data) => {
-      console.log("useEffect data", data);
       let lstInReview = [];
       let lst = await data.map(
         function (item) {
@@ -833,7 +852,7 @@ export default function TaskEffortByUser(props) {
 
           }
       })
-      console.log("useEffect LST", lst);
+    
       setMemberSelect(defaultMem);
       setLstDefault(defaultMem);
       setMemberReviewThisMonth(lstInReview);
