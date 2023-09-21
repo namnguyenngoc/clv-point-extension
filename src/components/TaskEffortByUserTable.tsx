@@ -119,6 +119,10 @@ export default function TaskEffortByUser(props) {
   const [workday, setWorkday] = useState(0);
   const [monthDay, setMonthDay] = useState(0);
   const [isShowAllCol, setShowAllCol] = useState(true);
+
+  const [colEffortReview, setColEffortReview] = useState(
+    
+  );
   const [headerReview, setHeaderReview] = useState(
       [
         {
@@ -196,9 +200,9 @@ export default function TaskEffortByUser(props) {
       selector: row => formatPrice(row.effortPoint / (monthDay == 0 ? 1: monthDay), 0),
       conditionalCellStyles: [
         {
-          when: row => 1 == 1,
+          when: row =>  parseFloat(row.effortPoint) < parseFloat(row.pointOnHour.effortPointByCurrentLevel),
           style: {
-            backgroundColor: 'rgba(63, 195, 128, 0.3)',
+            backgroundColor: 'rgba(237, 90, 128, 0.3)',
             color: 'white',
             '&:hover': {
               cursor: 'pointer',
@@ -214,38 +218,38 @@ export default function TaskEffortByUser(props) {
       center: "yes",
       omit: isShowAllCol,
       selector: item => formatPrice(item.pointOnHour.expect * (workday > 22  ? 22 : workday) * 8 ,0),
-      conditionalCellStyles: [
-        {
-          when: row => 1 == 1,
-          style: {
-            backgroundColor: 'rgba(63, 195, 128, 0.3)',
-            color: 'white',
-            '&:hover': {
-              cursor: 'pointer',
-            },
-            'font-weight': 'bold',
-          },
-        },
-      ]
+      // conditionalCellStyles: [
+      //   {
+      //     when: row => 1 == 1,
+      //     style: {
+      //       backgroundColor: 'rgba(63, 195, 128, 0.3)',
+      //       color: 'white',
+      //       '&:hover': {
+      //         cursor: 'pointer',
+      //       },
+      //       'font-weight': 'bold',
+      //     },
+      //   },
+      // ]
     },
     {
       name: 'Std Month',
       width: "100px",
       center: "yes",
       selector: item => formatPrice(item.pointOnHour.effortPointByCurrentLevel * item.workload, 0),
-      conditionalCellStyles: [
-        {
-          when: row => 1 == 1,
-          style: {
-            backgroundColor: 'rgba(63, 195, 128, 0.3)',
-            color: 'white',
-            '&:hover': {
-              cursor: 'pointer',
-            },
-            'font-weight': 'bold',
-          },
-        },
-      ]
+      // conditionalCellStyles: [
+      //   {
+      //     when: row => 1 == 1,
+      //     style: {
+      //       backgroundColor: 'rgba(63, 195, 128, 0.3)',
+      //       color: 'white',
+      //       '&:hover': {
+      //         cursor: 'pointer',
+      //       },
+      //       'font-weight': 'bold',
+      //     },
+      //   },
+      // ]
     },
     {
       name: 'Gap STD',
@@ -289,58 +293,113 @@ export default function TaskEffortByUser(props) {
       selector: item => formatPrice(item.pointOnHour.maxEffortPoint, 0),
     },
     {
+      name: 'Name',
+      width: "210px",
+      right: "yes",
+      selector: row => `${row.blueprint_nm}-${row.currentLvl}`,
+    },
+    {
       name: 'Start Review',
       width: "120px",
       center: "yes",
-      selector: item => item.effectDateFrom,
+      selector: item => moment(item.effectDateFrom).format("MMM YYYY"),
     },
     {
       name: 'End Review',
       width: "120px",
       center: "yes",
-      selector: item => item.effectDateTo,
+      selector: item => moment(item.effectDateTo).format("MMM YYYY"),
     },
     {
       name: headerReview[0].label,
       width: "100px",
       center: "yes",
       omit: isShowAllCol,
-      selector: item => getEffort(item.effortDetailByMonth, headerReview[0].label),
+      // style: {backgroundColor:"rgba(0, 128, 0, 0.1);",},
+      conditionalCellStyles: [
+        {
+          when: row =>  getEffort(row.effortDetailByMonth, headerReview[0].label).value < parseFloat(row.pointOnHour.effortPointByCurrentLevel),
+          style: row => ({ backgroundColor:`rgba(228, 15, 22,${1 - (getEffort(row.effortDetailByMonth, headerReview[0].label).value / parseFloat(row.pointOnHour.effortPointByCurrentLevel))}` }),
+        },
+       
+      ],
+      selector: item => getEffort(item.effortDetailByMonth, headerReview[0].label).label,
     },
     {
       name: headerReview[1].label,
       width: "100px",
       center: "yes",
       omit: isShowAllCol,
-      selector: item => getEffort(item.effortDetailByMonth, headerReview[1].label),
+      // style: {backgroundColor:"rgba(0, 128, 0, 0.1);",},
+      conditionalCellStyles: [
+        {
+          when: row =>  getEffort(row.effortDetailByMonth, headerReview[1].label).value < parseFloat(row.pointOnHour.effortPointByCurrentLevel),
+          style: row => ({ backgroundColor:`rgba(228, 15, 22,${1 - (getEffort(row.effortDetailByMonth, headerReview[1].label).value / parseFloat(row.pointOnHour.effortPointByCurrentLevel))}` }),
+        },
+       
+      ],
+      selector: item => getEffort(item.effortDetailByMonth, headerReview[1].label).label,
     },
     {
       name: headerReview[2].label,
       width: "100px",
       center: "yes",
       omit: isShowAllCol,
-      selector: item => getEffort(item.effortDetailByMonth, headerReview[2].label),
+      // style: {backgroundColor:"rgba(0, 128, 0, 0.1);",},
+      conditionalCellStyles: [
+        {
+          when: row =>  getEffort(row.effortDetailByMonth, headerReview[2].label).value < parseFloat(row.pointOnHour.effortPointByCurrentLevel),
+          style: row => ({ backgroundColor:`rgba(228, 15, 22,${1 - (getEffort(row.effortDetailByMonth, headerReview[2].label).value / parseFloat(row.pointOnHour.effortPointByCurrentLevel))}` }),
+        },
+       
+      ],
+      selector: item => getEffort(item.effortDetailByMonth, headerReview[2].label).label,
     },
     {
       name: headerReview[3].label,
       width: "100px",
       center: "yes",
       omit: isShowAllCol,
-      selector: item => getEffort(item.effortDetailByMonth, headerReview[3].label),
+      // style: {backgroundColor:"rgba(0, 128, 0, 0.1);",},
+      conditionalCellStyles: [
+        {
+          when: row =>  getEffort(row.effortDetailByMonth, headerReview[3].label).value < parseFloat(row.pointOnHour.effortPointByCurrentLevel),
+          style: row => ({ backgroundColor:`rgba(228, 15, 22,${1 - (getEffort(row.effortDetailByMonth, headerReview[3].label).value / parseFloat(row.pointOnHour.effortPointByCurrentLevel))}` }),
+        },
+       
+      ],
+      selector: item => getEffort(item.effortDetailByMonth, headerReview[3].label).label,
     },
     {
       name: headerReview[4].label,
       width: "100px",
       center: "yes",
       omit: isShowAllCol,
-      selector: item => getEffort(item.effortDetailByMonth, headerReview[4].label),
+      // style: {backgroundColor:"rgba(0, 128, 0, 0.1);",},
+      conditionalCellStyles: [
+        {
+          when: row =>  getEffort(row.effortDetailByMonth, headerReview[4].label).value < parseFloat(row.pointOnHour.effortPointByCurrentLevel),
+          style: row => ({ backgroundColor:`rgba(228, 15, 22,${1 - (getEffort(row.effortDetailByMonth, headerReview[4].label).value / parseFloat(row.pointOnHour.effortPointByCurrentLevel))}` }),
+        },
+       
+      ],
+      selector: item => getEffort(item.effortDetailByMonth, headerReview[4].label).label,
     },
     {
       name: headerReview[5].label,
       width: "100px",
       center: "yes",
-      omit: isShowAllCol,
-      selector: item => getEffort(item.effortDetailByMonth, headerReview[5].label),
+      omit: isShowAllCol || headerReview[0].label == "6",
+      style: {backgroundColor:"rgba(0, 128, 0, 0.1);"},
+      conditionalCellStyles: [
+        {
+          when: row =>  getEffort(row.effortDetailByMonth, headerReview[5].label).value < parseFloat(row.pointOnHour.effortPointByCurrentLevel),
+          style: row => ({ backgroundColor:`rgba(228, 15, 22,${1 - (getEffort(row.effortDetailByMonth, headerReview[5].label).value / parseFloat(row.pointOnHour.effortPointByCurrentLevel))}` }),
+        },
+       
+      ],
+      selector: item => getEffort(item.effortDetailByMonth, headerReview[5].label).label,
+      
     },
     // {
     //   name: 'workday',
@@ -410,17 +469,54 @@ export default function TaskEffortByUser(props) {
     });
   }
 
-  const getEffort = (effortDetailByMonth: any, month: string) => {
-    console.log("filterEffort", effortDetailByMonth);
+  const getEffort = (effortDetailByMonth: any, month: string):Object => {
+    
     if(!effortDetailByMonth || effortDetailByMonth.length == 0 || !month) return 0;
 
     let effort = effortDetailByMonth.filter(itm => itm.key == month);
 
     if(!effort || effort.length == 0) return 0;
 
-    return formatPrice(effort[0].total, 0);
+    console.log("filterEffort", 
+      {
+        value: effort[0].total,
+        label: formatPrice(effort[0].total, 0)
+      }
+    );
+    return {
+      value: effort[0].total,
+      label: formatPrice(effort[0].total, 0)
+    };
 
   }
+
+  const getListMonth = (rvStart, rvEnd) => {
+    if(rvStart && rvEnd) {
+      let tmp = moment(rvStart);
+      let arrRoSplit = [];
+      let roSplit = { 
+      };
+
+      while(tmp < moment(rvEnd)) {
+       
+        // const startOfMonth = moment().startOf('month').format('YYYY-MM-DD hh:mm');
+        // const endOfMonth   = moment().endOf('month').format('YYYY-MM-DD hh:mm');
+        let startOfMonth = moment(tmp).startOf('month');
+        let endOfMonth   = moment(tmp).endOf('month');
+        roSplit = {
+          key: startOfMonth.format("YYYYMMDD").toString(),
+          fromDt: startOfMonth.format("YYYYMMDD").toString(),
+          toDt: endOfMonth.format("YYYYMMDD").toString()
+        };
+        tmp = tmp.add(1, 'M');
+        arrRoSplit.push(roSplit);
+      }
+      return arrRoSplit;
+      
+    }
+    return [];
+  }
+
   async function getDailyTasksByUser(item:any, isSplitByMonth: any) {
     let ro = {
       "usrId": item.userId,
@@ -437,8 +533,24 @@ export default function TaskEffortByUser(props) {
     
     if(isSplitByMonth) {
       
-      let rvStart = item.effectDateFrom;
-      let rvEnd = item.effectDateTo;
+
+      const strFrm = moment(startDate);
+      const endFrm = moment(endDate);
+    // const workday = workday_count(strFrm, endFrm);
+    // const lvlList = myData.levelList;
+    // setWorkday(workday);
+
+    // const diffMonth = moment(endFrm._i).diff(moment(strFrm._i), 'months', true);
+    // setMonthDay(Math.round(diffMonth));
+
+    // console.log("selectTaskByUser", strFrm);
+    // setRangeMonthReview (strFrm._i, endFrm._i);
+
+      let rvStart = strFrm._i;
+      let rvEnd = endFrm._i;
+
+      const test = getListMonth(rvStart, rvEnd);
+      console.log(`tmp test: ${test}`);
       if(rvStart && rvEnd) {
         let tmp = moment(rvStart);
         let arrRoSplit = [];
@@ -457,7 +569,7 @@ export default function TaskEffortByUser(props) {
             fromDt: startOfMonth.format("YYYYMMDD").toString(),
             toDt: endOfMonth.format("YYYYMMDD").toString()
           };
-          console.log(`tmp: ${startOfMonth.format("YYYYMMDD").toString()}`);
+        
           tmp = tmp.add(1, 'M');
           arrRoSplit.push(roSplit);
           // console.log(`${item.fullName}: ${roSplit}`);
@@ -482,9 +594,11 @@ export default function TaskEffortByUser(props) {
       }
      
     }
-    return Promise.all(arrEffSplit).then((response) => {
+    return Promise.all([resEffortTotal, arrEffSplit]).then((response) => {
+      console.log("here", response);
       return {
-        effortTotal: response[0],
+        dailyRsrcLst: [...response[0].dailyRsrcLst],
+        effortTotal: response[1],
         effortSplit: arrEffSplit
       };
     });
@@ -639,6 +753,20 @@ export default function TaskEffortByUser(props) {
           tmp = futureMonth;
         }
         
+
+        //Check Lenght 
+
+        let idxLen = arr.length;
+        while(idxLen < 6) {
+          arr.push(
+            {
+            label: idxLen + 1,
+            value: new Date(),
+            effort: 0,
+            }
+          );
+          idxLen = idxLen + 1;
+        }
         setHeaderReview(arr);
       }
     }
@@ -681,8 +809,10 @@ export default function TaskEffortByUser(props) {
       
         const res = await getDailyTasksByUser(item);
         if(res){
-          
-          item.effortPoint = sumEfrtKnt (res.effortTotal.dailyRsrcLst);
+          let sum = sumEfrtKnt (res.dailyRsrcLst);
+          item.effortPoint = sum;
+          item.effortPointAvg = sum / (monthDay == 0 ? 1: monthDay);
+          console.log("item.effortPointAvg", item.effortPointAvg);
           item.effortDetailByMonth = [...res.effortSplit];
           item.timeWorked = 0;
           let pointStd = lvlList.filter(itm => itm.code.toUpperCase() == item.lvlCode.toUpperCase());
@@ -770,15 +900,21 @@ export default function TaskEffortByUser(props) {
   const conditionalRowStyles = [
     {
       when: row =>  
-        parseFloat(row.effortPoint) < parseFloat(row.pointOnHour.minEffortPoint)
-        || parseFloat(row.effortPoint) > parseFloat(row.pointOnHour.maxEffortPoint),
+        parseFloat(row.effortPoint) < parseFloat(row.pointOnHour.expect),
       style: row => ({ backgroundColor:'rgba(251, 231, 239,0.6)' }),
     },
     {
       when: row =>  
-        parseFloat(row.effortPoint) < parseFloat(row.pointOnHour.effortPointByCurrentLevel),
-      style: row => ({ backgroundColor: 'rgba(0,255,0,0.3)' }),
+        parseFloat(row.effortPointAvg) < parseFloat(row.pointOnHour.effortPointByCurrentLevel),
+      style: row => ({ backgroundColor:`rgba(251, 231, 239,${( row.pointOnHour.effortPointByCurrentLevel- row.effortPointAvg) / parseFloat(row.pointOnHour.effortPointByCurrentLevel)}` }),
     },
+
+    // || parseFloat(row.effortPoint) > parseFloat(row.pointOnHour.maxEffortPoint)
+    // {
+    //   when: row =>  
+    //     parseFloat(row.effortPoint) < parseFloat(row.pointOnHour.effortPointByCurrentLevel),
+    //   style: row => ({ backgroundColor: 'rgba(0,255,0,0.3)' }),
+    // },
   ];
   const inReviewChange = async (option: any) => {
     //
@@ -841,6 +977,8 @@ export default function TaskEffortByUser(props) {
 
               lstInReview.push(defaultItem);
             
+            } else {
+
             }
 
 
