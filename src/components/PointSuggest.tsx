@@ -18,7 +18,7 @@ export default function PointSuggest(props) {
   let [suggetPrtList, setSuggetPrtList] = useState([]);
   let [suggestList, setSuggestList] = useState([]);
   let [commentPoint, setCommentPoint] = useState("");
-
+  let [isShowDetailEffortTable, setShowDetailEffortTable] = useState(false);
   const comparePointFn  = (a: any, b: any) => {
     if(a.utPnt > b.utPnt) return -1;
     else if(a.utPnt < b.utPnt) return 1;
@@ -392,6 +392,67 @@ export default function PointSuggest(props) {
     // cfmEditPoint(true, true);
 
   };
+//   {
+//     "reqId": "PRQ20230831000000061",
+//     "pjtId": "PJT20211119000000001",
+//     "subPjtId": "PJT20211119000000001",
+//     "arrUsr": "",
+//     "pjtNm": "New US FWD",
+//     "subjectEmail": "[New US FWD][Sang Nguyen][Team B][Sprint 33][865cxnhdf][DEV:2P] Implement logic for Contact search popup - Testing",
+//     "comment": "Thank for your effort."
+// }
+
+
+
+// 1 requests
+// 375 B transferred
+
+// {"reqId":"PRQ20230919000000077",
+// "pjtId":"PJT20211119000000001",
+// "subPjtId":"PJT20211119000000001",
+// "arrUsr":"",
+// "pjtNm":"New US FWD",
+// "subjectEmail":"[New US FWD][Hieu Nguyen][Team B][Sprint 34][865d2pe5p][DEV-TEST:13P-3P] Column B/L No should be displayed MB/L No. if there is no data HB/L.","comment":"Thank for your effort.","cmtCtnt":"<div class=\"system-comment\"> • Submitted: </div>  Thank for your effort.","ev_cd":"EV_CDMRE"}
+
+//   evaCd
+//   :
+//   "EV_CDMRE"
+  async function submitRequirement(txtSubmit, arrUsr, evaCd = undefined) {
+    let roTask =
+        {
+            reqId: TaskRQ.reqId,
+            pjtId: detailReqVO.pjtId,
+            subPjtId: detailReqVO.subPjtId,
+            arrUsr: arrUsr,
+            pjtNm: detailReqVO.pjtNm,
+            subjectEmail: detailReqVO.reqTitNm,
+            comment: txtSubmit
+        };
+    let comment = buildComment({type: "submit"});
+    roTask.cmtCtnt = comment + txtSubmit;
+
+    //add evalution code at phase finish
+    if (evaCd) {
+        roTask.ev_cd = evaCd;
+        localStorage.setItem("ev_cd", evaCd);
+    }
+
+    let response = await axios.post('/api/submitTask', roTask);
+    let msg = response.data.MSG;
+    const pstId = response.data.pstId;
+    if (response.data.saveFlg === SAVE_FAIL) {
+        if (response.data.msgId) {
+            msg = getMessageCode(response.data.msgId);
+        }
+        showMessage(WARNING_MESSAGE, msg);
+        $$("generalBody").enable();
+        $$("generalBody").hideProgress();
+    } else {
+        if (lstAttachNew.length > 0)
+            uploadFileServer(lstAttachNew, pstId, PIM_POST_FOLDER, PIM_PST, undefined, PIM_PST);
+        closeWindow();
+    }
+}
 
 
   return (
@@ -401,20 +462,38 @@ export default function PointSuggest(props) {
         <table className="w-full border border-gray-500">
           <thead>
             <tr className="bg-gray-200">
-              <th className="px-4 py-2 text-left w-full">
-                <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg" disabled={props.total == 0}>
+              <th className="px-4 py-2 text-left">
+                <button 
+                  type="submit" 
+                  className="bg-blue-500 text-white py-2 px-4 rounded-lg" disabled={props.total == 0}>
                   Suggest Effort
                 </button>
-                <button type="submit" className="bg-green text-white py-2 px-4 rounded-lg ml-4" disabled={totalPoint == 0}  onClick={saveBP}>
-                  Insert Total Effort Point Task
+                <button 
+                  type="submit" 
+                  className="bg-green text-white py-2 px-4 rounded-lg ml-4" 
+                  disabled={totalPoint == 0}
+                  onClick={saveBP}>
+                  Insert Total Effort Point Task ({totalPoint})
                 </button>
               </th>
+              <th className="px-4 py-2 text-right w-300">
+                <div className="grid grid-flow-col">
+                  <label className="ml-4 ">
+                    <input type="checkbox"
+                      defaultChecked={isShowDetailEffortTable}
+                      onChange={() => setShowDetailEffortTable(!isShowDetailEffortTable)}
+                    />
+                      Show Detail
+                  </label>
+                </div>
+              </th>
               <th className="px-4 py-2 text-right">
-                <div className="w-100">
+                <div>
                   Total suggest
 
                 </div>
               </th>
+              
               <th className="px-4 py-2 text-right">
                 <input
                   type="text"
@@ -447,7 +526,7 @@ export default function PointSuggest(props) {
         </table>
       </div>
       <div className="table-container-10">
-        <table className="w-full border border-gray-500 custom-scroll">
+        <table className={`w-full border border-gray-500 custom-scroll ${isShowDetailEffortTable ? "" : "hidden"}`}>
           <thead>
             <tr className="bg-gray-200">
               <th className="px-4 py-2 w-170">Category</th>

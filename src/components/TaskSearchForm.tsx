@@ -1436,6 +1436,21 @@ export default function TaskSearchForm() {
 
   }
 
+  const checkColorTask = () => {
+    if(taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0){
+      let color = "#000000";
+      console.log("TEST", taskInfo);
+      console.log("TEST-a", taskInfo.lstReq[0]);
+      if(!taskInfo || !taskInfo.lstReq) return color;
+    
+      let isTest = taskInfo.lstReq[0].reqTitNm.toUpperCase().indexOf("TEST");
+
+      console.log("TEST-isTest", isTest);
+
+      if(isTest > 0) return "#FF0000";
+      return color;
+    }
+  }
   useEffect(()=>{
     console.log("Request searchRequirement");
     // let apiObject = {
@@ -1478,11 +1493,21 @@ export default function TaskSearchForm() {
       <form className="grid grid-flow-row gap-2" 
             onSubmit={handleSubmit }>
         <div className="grid grid-flow-row gap-1">
-          <div className="grid grid-flow-col gap-1">
-
+          <div
+            className="grid grid-flow-col gap-1 px-2">
+            <label
+              style={{
+                color:  `${ checkColorTask (taskInfo)}`
+              }} 
+            >
+              <h4>
+                { (taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0 ? `(${taskInfo.lstReq[0].seqNo}) ${taskInfo.lstReq[0].reqTitNm}` : "") }
+              </h4>
+            </label>
           </div>
           <table className="w-full border border-gray-500">
             <thead>
+             
               <tr className="bg-gray-200">
                 <th className="px-2 py-2 text-right">
                   <input
@@ -1557,7 +1582,10 @@ export default function TaskSearchForm() {
                   <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg ml-4">
                     Calc Point
                   </button>
-                  <button type="button" className="bg-green text-white py-2 px-4 rounded-lg ml-4" 
+                  <button 
+                    type="button" 
+                    className="bg-green text-white py-2 px-4 rounded-lg ml-4" 
+                    disabled={ (taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0 && taskInfo.lstReq[0].pntNo >= effortInfo.totalPoint) ? false : true}
                     onClick={cfmEditPoint}>
                     Insert Point
                   </button>

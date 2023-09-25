@@ -86,6 +86,11 @@ table.custom-scroll {
 .bg-green {
   background: green !important;
 }
+.bg-green:disabled,
+.bg-light-green:disabled,
+.bg-blue-500:disabled {
+  opacity: 0.5 !important;
+}
 
 .main-layout {
   /* width: 80%;
