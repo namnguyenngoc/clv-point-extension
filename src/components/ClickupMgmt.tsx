@@ -3153,7 +3153,7 @@ function openTaskBP(item) {
                                         config
         ).then(async (res) => {
             const data = res.data.tasks;
-
+            let teamTotalPoint = 0;
             let arrPromise = [];
             //console.log("Selected Member", selectedOptions);
             //console.log("Selected Status", selectedStatus);
@@ -3239,6 +3239,7 @@ function openTaskBP(item) {
                         }
 
                         //Total usp
+                        teamTotalPoint += totalUSP;
                         parent.total_est = totalUSP;
                     }
 
@@ -3266,9 +3267,9 @@ function openTaskBP(item) {
                     
                     //console.log("newLsTaskFinal", newLsTaskFinal);
 
-                    const teamTotalPoint = newLsTaskFinal.reduce((accumulator, object) => {
-                        return accumulator + Number(object.total_est);
-                    }, 0);
+                    // const teamTotalPoint = newLsTaskFinal.reduce((accumulator, object) => {
+                    //     return accumulator + Number(object.total_est);
+                    // }, 0);
 
                     setTotalPoint(teamTotalPoint);
                     setTaskList(newLsTaskFinal);
