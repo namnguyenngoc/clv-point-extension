@@ -1697,24 +1697,6 @@ export default function ClickupMgmt(props) {
       }
     },
     {
-      "value": 49534719,
-      "label": "Pham Vo",
-      "email": "pham.vo@cyberlogitec.com",
-      "color": "#b388ff",
-      "initials": "PV",
-      "profilePicture": "https://attachments.clickup.com/profilePictures/49534719_dvx.jpg",
-      "scope": "TEST",
-      "profileInfo": {
-          "display_profile": true,
-          "verified_ambassador": null,
-          "verified_consultant": null,
-          "top_tier_user": null,
-          "viewed_verified_ambassador": null,
-          "viewed_verified_consultant": null,
-          "viewed_top_tier_user": null
-      }
-    },
-    {
       "value": 49507726,
       "label": "Phuc Nguyen",
       "email": "phuc.nguyenhoang@cyberlogitec.com",
@@ -1783,39 +1765,21 @@ export default function ClickupMgmt(props) {
       }
     },
     {
-      "value": 32193101,
-      "label": "Trinh Le",
-      "email": "trinh.le@cyberlogitec.com",
-      "color": "#ffa727",
-      "initials": "TL",
-      "profilePicture": null,
-      "profileInfo": {
-          "display_profile": null,
-          "verified_ambassador": null,
-          "verified_consultant": null,
-          "top_tier_user": null,
-          "viewed_verified_ambassador": null,
-          "viewed_verified_consultant": null,
-          "viewed_top_tier_user": null
-      }
-    },
-    {
-      "value": 49534669,
-      "label": "Vi Vo",
-      "email": "vi.vo@cyberlogitec.com",
-      "color": "#827718",
-      "initials": "VV",
-      "scope": "TEST",
-      "profilePicture": null,
-      "profileInfo": {
-          "display_profile": null,
-          "verified_ambassador": null,
-          "verified_consultant": null,
-          "top_tier_user": null,
-          "viewed_verified_ambassador": null,
-          "viewed_verified_consultant": null,
-          "viewed_top_tier_user": null
-      }
+        "value": 32314163,
+        "label": "Quách Đại Đức",
+        "email": "duc.quach@cyberlogitec.com",
+        "color": "#27AE60",
+        "initials": "QĐ",
+        "profilePicture": null,
+        "profileInfo": {
+            "display_profile": true,
+            "verified_ambassador": null,
+            "verified_consultant": null,
+            "top_tier_user": null,
+            "viewed_verified_ambassador": null,
+            "viewed_verified_consultant": null,
+            "viewed_top_tier_user": null
+        }
     },
     {
       "value": 32270675,
@@ -1834,6 +1798,42 @@ export default function ClickupMgmt(props) {
           "viewed_top_tier_user": null
       }
     },
+    {
+        "value": 49534466,
+        "label": "Tran My",
+        "email": "my.tran@cyberlogitec.com",
+        "color": "#ffa12f",
+        "initials": "TM",
+        "profilePicture": "https://attachments.clickup.com/profilePictures/49534466_SX0.jpg",
+        "scope": "TEST",
+        "profileInfo": {
+            "display_profile": true,
+            "verified_ambassador": null,
+            "verified_consultant": null,
+            "top_tier_user": null,
+            "viewed_verified_ambassador": null,
+            "viewed_verified_consultant": null,
+            "viewed_top_tier_user": null
+        }
+    },
+    {
+        "value": 49534719,
+        "label": "Pham Vo",
+        "email": "pham.vo@cyberlogitec.com",
+        "color": "#b388ff",
+        "initials": "PV",
+        "profilePicture": "https://attachments.clickup.com/profilePictures/49534719_dvx.jpg",
+        "scope": "TEST",
+        "profileInfo": {
+            "display_profile": true,
+            "verified_ambassador": null,
+            "verified_consultant": null,
+            "top_tier_user": null,
+            "viewed_verified_ambassador": null,
+            "viewed_verified_consultant": null,
+            "viewed_top_tier_user": null
+        }
+      },
     // {
     //   "value": 32193054,
     //   "label": "Nguyen Ngoc Nam",
@@ -1991,6 +1991,7 @@ let defaultSprint = {
 
   const [cookies, setCookie] = useCookies(["CLV_MGMT_TEAM"]);
     const [token, setToken] = useState("");
+    const [totalPoint, setTotalPoint] = useState(0);
 
 //   setSelectedOptions(defaultMem);
 //   setSelectedStatus(defaultStatus);
@@ -2099,7 +2100,7 @@ function openTaskBP(item) {
     //     setSelectedStatus(defaultStatus);
     //     // _url = `${API_CLICKUP}/list/${listId}/task?subtasks=true`;
     // }
-   
+    console.log("getTasks");
     let assignees = selectedOptions.map(item => `assignees=${item.value}`).join('&');
     let status = selectedStatus.map(item => `statuses=${item.label}`).join('&');
     let tags = selectedTags.map(item => `tags=${item.label}`).join('&');
@@ -2180,6 +2181,7 @@ function openTaskBP(item) {
             //console.log("setTaskList", resultTaskList);
             setTaskList(resultTaskList);
             setOriginTaskList(resultTaskList);
+            console.log("resultTaskList", resultTaskList);
             setLoading(false);
         }
     });
@@ -2312,7 +2314,21 @@ function openTaskBP(item) {
 
     }
   } //End GenTask
+  function findNextFibonacci(number) {
+        let a = 0;
+        let b = 1;
+        let nextFib = 1;
 
+        while (true) {
+            nextFib = a + b;
+            a = b;
+            b = nextFib;
+
+            if (nextFib >= number) {
+                return nextFib;
+            }
+        }
+}
   const splitUSP = (item: any) => {
    
     let usp = {
@@ -2321,7 +2337,8 @@ function openTaskBP(item) {
         test_nm: "",
         test_point: 0,
         cross_nm: "",
-        cross_point: 0
+        cross_point: 0,
+        total_est: 0,
     }
 
     if(item && item.name) {
@@ -2370,6 +2387,17 @@ function openTaskBP(item) {
             }
         }
     }
+   
+    // Example usage:
+    if(usp.dev_point > 0 || usp.test_point > 0) {
+        const numberToFindNextFibonacci = usp.dev_point + usp.test_point; // Change this to the number for which you want to find the next Fibonacci number
+        const nextFibonacci = findNextFibonacci(numberToFindNextFibonacci);
+        // console.log(`The next Fibonacci number after ${numberToFindNextFibonacci} is ${nextFibonacci}.`);
+        usp.total_est = nextFibonacci;
+    } else {
+        usp.total_est = 0;
+    }
+    
     return usp;
 
   }
@@ -2563,6 +2591,7 @@ function openTaskBP(item) {
     task.USP_test_nm = task.USP.test_nm;
     task.USP_test_point = task.USP.test_point;
     task.USP_DONE =  parseInt(task.USP.test_point) + parseInt(task.USP.dev_point);
+    task.USP =  parseInt(task.USP.total_est);
     
     if(task.compare_data){
         task.bp_task_endDate = task.compare_data.endDate;
@@ -2573,6 +2602,7 @@ function openTaskBP(item) {
         task.bp_task_startDateObj  = task.compare_data.startDateObj;
         task.bp_task_sumActEfrtMnt = task.compare_data.sumActEfrtMnt;
     }
+    return task;
   }
   const bpSearchRequirement = async (prjId: string, reqTitNm: string) => {
     // API_WORKNG
@@ -3134,26 +3164,7 @@ function openTaskBP(item) {
                     parent: data[i].id
                 }, true);  
                 arrPromise.push(task);
-                
-                // let assignees = task.assignees.map(item => item.username).join(',');
-                // task.assignees_ls = assignees;
-                // task.creator_nm = task.creator.username;
-                // task.status_nm = task.status.status;
-                // task.status_tp = task.status.type;
-                // task.status_color = task.status.color;
-                // task.module = task.tags.length > 0 ? task.tags[0].name : "";
-                // if(task.due_date && task.due_date != null) {
-                //     task.due_date_str = moment(Number(task.due_date)).format("ddd, MMM DD");
-                // } else {
-                //     task.due_date_str = "";
-                // }
-                // task.parent_nm = task.name;
-                // // taskListByParent.push(item); // push parent;
-                // const isExit = parentMissingArr.find(item => item.id == task.id);
-                // if(task && isExit == undefined) {
-                //     parentMissingArr.push(task);
-                // }
-                
+              
             
             }
             await Promise.all([...arrPromise]).then(async (response) => {
@@ -3166,6 +3177,7 @@ function openTaskBP(item) {
                     lsTask.push(parent);
                     if(parent && parent.subtasks && parent.subtasks.length > 0) {
                         let subTask = parent.subtasks;
+                        let totalUSP = 0;
                         let subTaskFormat = subTask?.map(function (item2){
                             //console.log("Assignee", item2.assignees);
                             const itemFm = formatClickup(item2);
@@ -3217,9 +3229,7 @@ function openTaskBP(item) {
                                         // lsTask.push(itemSubTask);
                                         // newSubTask.push()
                                     }
-                                    //console.log("subSubTask", task);
-                                    //console.log("idx", idx);
-                                    // return task;
+                                    totalUSP += itemSubTask.total_est;
                                 });
                                 lsTask = [...lsTask].concat(arrNewSubTask);
 
@@ -3227,6 +3237,9 @@ function openTaskBP(item) {
 
 
                         }
+
+                        //Total usp
+                        parent.total_est = totalUSP;
                     }
 
 
@@ -3252,6 +3265,12 @@ function openTaskBP(item) {
                     });
                     
                     //console.log("newLsTaskFinal", newLsTaskFinal);
+
+                    const teamTotalPoint = newLsTaskFinal.reduce((accumulator, object) => {
+                        return accumulator + Number(object.total_est);
+                    }, 0);
+
+                    setTotalPoint(teamTotalPoint);
                     setTaskList(newLsTaskFinal);
                 }
                 //Filter by Status
@@ -3449,7 +3468,12 @@ function openTaskBP(item) {
                 
                 <div className="flex flex-flow-col gap-1">
                     <div className="w-100 vertical-middle">
-                    Size: {taskList.length}
+                    Size: {taskList.length} 
+                    </div>
+                    <div className="w-100 vertical-middle text-right">
+                        <h3>
+                            {totalPoint} 
+                        </h3>
                     </div>
                     <div className="grid grid-flow-col w-500">
                         <div className="over-due-date"

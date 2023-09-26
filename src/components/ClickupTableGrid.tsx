@@ -111,9 +111,23 @@ import {
 
       // },
       {
-        ...keyColumn('USP', intColumn),
+        ...keyColumn('total_est', intColumn),
         ...defaultSize,
-        title: 'USP DONE',
+        title: 'USP',
+        cellClassName: (data: any, index: any) => {
+          const rowData = data.rowData;
+          if(rowData) {
+            if(rowData.clk_parent_nm){
+              const classNm = "text-bold bg-[#F0FFFF]";
+              return classNm;
+
+            } else {
+              return "";
+            }
+          } else {
+            return "";
+          }
+        },
         
       },
       {
