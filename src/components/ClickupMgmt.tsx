@@ -1657,7 +1657,8 @@ const override: CSSProperties = {
 export default function ClickupMgmt(props) {
   const API_CLICKUP = 'https://api.clickup.com/api/v2';
   const API_WORKNG = 'http://ec2-52-65-10-185.ap-southeast-2.compute.amazonaws.com:9789/api';
-
+  let domainClickup = 'https://prod-ap-southeast-2-2.clickup.com';
+  
   let [taskList, setTaskList] = React.useState([]);
   let [originTaskList, setOriginTaskList] = useState([]);
 
@@ -2952,10 +2953,11 @@ function openTaskBP(item) {
 
     //https://app.clickup.com/view/v1/genericView?fresh_req=false&available_rollups=true&last_view=list-900801844109
     const searchGenericView = async (sprint) => {
+        
         setSelectSprint(sprint);
 
         setLoading(true);
-        let  _url = `https://app.clickup.com/view/v1/genericView?fresh_req=false&available_rollups=true&last_view=list-${sprint.id}`;
+        let  _url = `${domainClickup}/view/v1/genericView?fresh_req=false&available_rollups=true&last_view=list-${sprint.id}`;
         // https://app.clickup.com/view/v1/genericView?fresh_req=false&available_rollups=true&last_view=list-900801844109
         const config = {
             // ...REQ_HEADER.headersBear
@@ -3114,7 +3116,8 @@ function openTaskBP(item) {
     }
     const searchMuitiTask = async () => {
         setLoading(true);
-        let  _url = `https://app.clickup.com/tasks/v2/task`;
+        let  _url = `${domainClickup}/tasks/v2/task`;
+        
         // https://app.clickup.com/view/v1/genericView?fresh_req=false&available_rollups=true&last_view=list-900801844109
         const config = {
             headers: {
@@ -3454,7 +3457,7 @@ function openTaskBP(item) {
                         type="button" 
                         className="bg-blue-500 text-white py-2 px-4 rounded-lg w-150"
                         onClick={ (event) => searchMuitiTask()}>
-                            SYNC BLUEPRINT
+                            Get Task {selectSprint.label}
                     </button>
                     <button 
                         type="button" 
