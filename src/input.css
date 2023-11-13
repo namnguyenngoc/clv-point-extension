@@ -186,3 +186,52 @@ div.ReactModalPortal .ReactModal__Content.ReactModal__Content--after-open {
 .dsg-add-row {
   display: none !important;
 }
+
+.rdt_Table_custom .rdt_Table {
+  width: 100% !important;
+}
+
+.rdt_Table_custom .rdt_Table {
+  height: 800px;
+}
+
+.rdt_Table_custom .rdt_Table div[role='row'] {
+  border: 1px solid #dcdcdc !important;
+  border-image: none !important
+}
+
+.rdt_Table_custom .rdt_Table div[role='row']{
+  border-style: solid !important;
+  border-color: #dcdcdc !important;
+  border-top: none !important;
+
+}
+.rdt_Table_custom .rdt_Table div[role='row'] .rdt_TableCell{
+  border-color: #dcdcdc !important;
+  border-image: none !important;
+  border-style: solid !important;
+  border-width: thin;
+  border-top-width: 0px;
+ 
+
+}
+
+.rdt_Table_custom .rdt_Table div[role='row']:first-child{
+  border-top-width: thin;
+}
+
+.rdt_Table_custom .rdt_Table .rdt_TableHeadRow{
+  font-weight: bold;
+  background-color: green;
+  color: #FFFFFF;
+}
+
+
+/* .ReactModal__Content--after-open[aria-label='document_list'] {
+  background-color: #FFFFFF !important;
+} */
+
+div.ReactModalPortal .ReactModal__Content.ReactModal__Content--after-open {
+  background-color: #ffffff !important;
+  width: 70%;
+}

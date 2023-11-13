@@ -151,6 +151,8 @@ export default function TaskSearchForm() {
   const [capaInfo, setCapaInfo] = useState({
     background: '#F08080'
   });
+  const [prefixID, setPrefixID] = useState("86");
+
   const onChangeLevel = (option: any) => {
     setTaskLevel(option);
   }
@@ -327,12 +329,20 @@ export default function TaskSearchForm() {
                       if(!isCurrentMonth && member.effectDateFrom && member.effectDateTo) {
                         newStart = effectDateFromORG;
                       }
+
+                      // actDueDt "202309251405"
+                      // phsCd: "PIM_PHS_CDIMP"
+                      // prntPhsCd "PIM_PHS_CDIMP"
+                      // usrId: "hieunt"
+                      let act_date_pharse_start = moment(item.actDueDt ? item.actDueDt : item.estmDueDt, 'YYYYMMDDhhmm').startOf('month');
+                      let act_date_pharse_end = moment(item.actDueDt ? item.actDueDt : item.estmDueDt, 'YYYYMMDDhhmm').endOf('month');
+                      let _month =  moment(item.actDueDt ? item.actDueDt : item.estmDueDt, 'YYYYMMDDhhmm').format("MMM");
                       let ro = {
                         "usrId": item.usrId,
-                        "fromDt": moment(newStart).format("YYYYMMDD"),
-                        "toDt": moment(endDate).format("YYYYMMDD"),
-                        "fromDtOrg": moment(newStart),
-                        "toDtOrg": moment(endDate),
+                        "fromDt": moment(act_date_pharse_start).format("YYYYMMDD"),
+                        "toDt": moment(act_date_pharse_end).format("YYYYMMDD"),
+                        "fromDtOrg": moment(act_date_pharse_start),
+                        "toDtOrg": moment(act_date_pharse_end),
                       };
                     
                       const res = await getDailyTasksByUser(ro);
@@ -348,10 +358,16 @@ export default function TaskSearchForm() {
                         item.effortPoint = sumEfrtKnt (res.dailyRsrcLst) / countMonth;
                         item.averageeffortpoint_days = diffDays * item.pointinday * parseFloat(member.workload);
                         item.totalDays = diffDays;
-                      
-                    
+                        item.effortPointPharse = sumEfrtKnt (res.dailyRsrcLst);
+                        item._month = _month;
+                        item.effortpointbycurrentlevel = member.effortpointbycurrentlevel;
+                        item.rangeeffortpointmax = member.rangeeffortpointmax;
+                        item.rangeeffortpointmin = member.rangeeffortpointmin;
+
                       }
-                    }
+
+                    
+                    } //End check effort
                   }
 
                   if(taskSheet && taskSheet.length > 0) { //Check status develop/dev in the sprint
@@ -800,11 +816,11 @@ export default function TaskSearchForm() {
       if(reqName) {
         if(ketQua && ketQua.length > 4) {
           let id = newArr[4].replace(/ /g, "");
-          if(id.includes("865")) {
+          if(id.includes(prefixID)) {
             clickupId = id;
 
           } else {
-            if(clickupIDByLength.includes("865")) {
+            if(clickupIDByLength.includes(prefixID)) {
               clickupId = clickupIDByLength;
             } else {
               alert("KHÔNG TÌM DC CLICKUP ID: ", newArr.join("_"));
@@ -1053,11 +1069,11 @@ export default function TaskSearchForm() {
       if(reqName) {
         if(ketQua && ketQua.length > 4) {
           let id = newArr[4].replace(/ /g, "");
-          if(id.includes("865")) {
+          if(id.includes(prefixID)) {
             clickupId = id;
 
           } else {
-            if(clickupIDByLength.includes("865")) {
+            if(clickupIDByLength.includes(prefixID)) {
               clickupId = clickupIDByLength;
             } else {
               alert("KHÔNG TÌM DC CLICKUP ID: ", newArr.join("_"));
@@ -1436,6 +1452,19 @@ export default function TaskSearchForm() {
 
   }
 
+  const openDOC = async () => {
+    // window['chrome'].storage?.local.set({enabledMgmt});
+    // window['chrome'].storage?.local.set({enabled});
+    const windowFeatures = "left=100,top=100,width=320,height=320";
+    // console.log("CHORME URL", chrome.extension.getURL());
+    // var win = window.open(url, "Document List", "popup"); //to open new page
+    let linkList = `
+    https://blueprint.cyberlogitec.com.vn/UI_PIM_001_1/PRQ20231107000000033
+    `;
+
+    alert(linkList);
+  }
+
   const checkColorTask = () => {
     if(taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0){
       let color = "#000000";
@@ -1691,7 +1720,7 @@ export default function TaskSearchForm() {
                 <th className="px-4 py-2 text-right">Estimate</th>
                 <th className="px-4 py-2 text-right">Min</th>
                 <th className="px-4 py-2 text-right">Max</th>
-                <th className="px-4 py-2 text-right">Eff/Est/AVG(m)</th>
+                <th className="px-4 py-2 text-right">Eff/AVG(m)</th>
                 <th className="px-4 py-2 text-right">Target</th>
               </tr>
             </thead>
@@ -1716,7 +1745,15 @@ export default function TaskSearchForm() {
                   </td>
                   <td className="px-4 py-2 text-right bg-light-green">{formatNumber(result.minPoint, 0)}</td>
                   <td className="px-4 py-2 text-right bg-light-green">{formatNumber(result.maxPoint, 0)}</td>
-                  <td className="px-4 py-2 text-right bg-light-green font-bold">{formatNumber(result.effortPoint, 0)}/{formatNumber(result.averageeffortpoint_days, 0)}/{formatNumber(result.averageeffortpoint_month, 0)} ({formatNumber(result.countMonth, 0)}/{formatNumber(result.totalMonth, 0)} {formatNumber(result.totalDays, 0)} days)</td>
+                  <td 
+                    className={
+                      result.effortPointPharse < parseFloat(result.effortpointbycurrentlevel)
+                        || result.effortPointPharse > parseFloat(result.rangeeffortpointmax)
+                      ? "px-4 py-2 text-right bg-light-green font-bold bg-misty" 
+                      : "px-4 py-2 text-right bg-light-green font-bold"}>
+                    {
+                    formatNumber(result.effortPointPharse, 0)}/{formatNumber(result.effortpointbycurrentlevel, 0)} ({result._month})
+                  </td>
                   <td className="px-4 py-2 text-right bg-light-green">{result.target}</td>
                 </tr>
               ))}
