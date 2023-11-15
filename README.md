@@ -40,3 +40,7 @@ yarn build
 // 6	Principal	250	5500	5300 ~ 5900
 // 7	Technical Architect	275	6050	5800 ~ 6300
 // 8	Senior Manager	300	6600	> 6000
+
+
+
+https://console.cloud.google.com/workspace-api?project=family-297508

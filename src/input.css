@@ -191,9 +191,15 @@ div.ReactModalPortal .ReactModal__Content.ReactModal__Content--after-open {
   width: 100% !important;
 }
 
-.rdt_Table_custom .rdt_Table {
-  height: 800px;
+.rdt_Table_custom .rdt_Table .rdt_Table_custom_task {
+  height: 400px;
 }
+
+.rdt_Table_custom .rdt_Table .rdt_Table_custom_doc {
+  height: 250px;
+}
+
+
 
 .rdt_Table_custom .rdt_Table div[role='row'] {
   border: 1px solid #dcdcdc !important;
