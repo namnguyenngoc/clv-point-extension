@@ -4,6 +4,11 @@
   @tailwind utilities;
 }
 
+.ReactModalPortal {
+  @tailwind base;
+  @tailwind components;
+  @tailwind utilities;
+}
 .table-container {
   height: 20em;
 }
@@ -192,16 +197,21 @@ div.ReactModalPortal .ReactModal__Content.ReactModal__Content--after-open {
 }
 
 .rdt_Table_custom .rdt_Table .rdt_Table_custom_task {
-  height: 400px;
+  height: 300px;
+  max-height: 300px;
+}
+.rdt_Table_custom.rdt_Table_custom_task div:first-child {
+  max-height: 300px !important;
 }
 
 .rdt_Table_custom .rdt_Table .rdt_Table_custom_doc {
   height: 250px;
+  max-height: 300px;
 }
 
 
 
-.rdt_Table_custom .rdt_Table div[role='row'] {
+/* .rdt_Table_custom .rdt_Table div[role='row'] {
   border: 1px solid #dcdcdc !important;
   border-image: none !important
 }
@@ -225,12 +235,12 @@ div.ReactModalPortal .ReactModal__Content.ReactModal__Content--after-open {
 .rdt_Table_custom .rdt_Table div[role='row']:first-child{
   border-top-width: thin;
 }
-
+*/
 .rdt_Table_custom .rdt_Table .rdt_TableHeadRow{
   font-weight: bold;
   background-color: green;
   color: #FFFFFF;
-}
+} 
 
 
 /* .ReactModal__Content--after-open[aria-label='document_list'] {
