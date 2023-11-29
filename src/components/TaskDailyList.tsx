@@ -86,9 +86,9 @@ export default function TaskDailyList (props) {
       cell: row => row.status,
     },
     {
-      name: 'CROSS CHECK',
-      selector: row => row.end_cross_check,
-      cell: row => row.end_cross_check,
+      name: 'EST END',
+      selector: row => row.est_end_date,
+      cell: row => row.est_end_date,
     },
   ];
 

@@ -11,7 +11,8 @@ import moment from 'moment';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { WEB_INFO } from '../const';
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const InputTrongSoOption = ({
   getStyles,
@@ -152,6 +153,8 @@ export default function TaskSearchForm() {
     background: '#F08080'
   });
   const [prefixID, setPrefixID] = useState("86");
+
+  const notify = () => toast("There is no clickup id!");
 
   const onChangeLevel = (option: any) => {
     setTaskLevel(option);
@@ -548,7 +551,8 @@ export default function TaskSearchForm() {
 
           }).catch((error) => {
             console.log("error-314", error);
-            alert(`ERROR: ${error.msg}`);
+            toast("Server error!")
+            // alert(`ERROR: ${error.msg}`);
             closeModal();
           }) //get-actual-effort-point
 
@@ -803,6 +807,7 @@ export default function TaskSearchForm() {
         console.log("newArr", ketQua); // ["New US FWD", "Thuan Lai", "Team B", "DEV-TEST:5P-2P", "865cg6601", "Sprint 27"]
       } else {
         console.log("Không tìm thấy chuỗi nằm trong dấu [ ] trong đoạn văn bản.");
+        toast("Không tìm thấy chuỗi nằm trong dấu [ ] trong đoạn văn bản.");
       }
       //Find clickup ID
       let clickupIDByLength:any = "";
@@ -823,7 +828,9 @@ export default function TaskSearchForm() {
             if(clickupIDByLength.includes(prefixID)) {
               clickupId = clickupIDByLength;
             } else {
-              alert("KHÔNG TÌM DC CLICKUP ID: ", newArr.join("_"));
+              console.log("KHÔNG TÌM DC CLICKUP");
+              toast("KHÔNG TÌM DC CLICKUP");
+              // alert("KHÔNG TÌM DC CLICKUP ID: ", newArr.join("_"));
             }
           }
           
@@ -1076,7 +1083,8 @@ export default function TaskSearchForm() {
             if(clickupIDByLength.includes(prefixID)) {
               clickupId = clickupIDByLength;
             } else {
-              alert("KHÔNG TÌM DC CLICKUP ID: ", newArr.join("_"));
+              console.log("KO CÓ CLICK ID");
+              // alert("KHÔNG TÌM DC CLICKUP ID: ", newArr.join("_"));
             }
           }
           let sprint:any;
@@ -1653,6 +1661,8 @@ export default function TaskSearchForm() {
               aria-label="Loading Spinner"
               data-testid="loader"
           />
+          <button onClick={notify}>Notify!</button>
+          <ToastContainer />
         </div>
         <div>
           <table className="w-full border border-gray-500">
@@ -1775,6 +1785,7 @@ export default function TaskSearchForm() {
           memberList = { memberList }
         />
       </div>
+    
     </div>
   );
 }

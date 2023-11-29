@@ -283,7 +283,9 @@ export default function BPTableGridNew (props) {
             if(clickupIDByLength.includes(prefixID)) {
               clickupId = clickupIDByLength;
             } else {
-              alert("KHÔNG TÌM DC CLICKUP ID: ", newArr.join("_"));
+              console.log("KHÔNG TÌM DC CLICKUP");
+
+              // alert("KHÔNG TÌM DC CLICKUP ID: ", newArr.join("_"));
             }
           }
           
@@ -377,7 +379,9 @@ export default function BPTableGridNew (props) {
             if(clickupIDByLength.includes(prefixID)) {
               clickupId = clickupIDByLength;
             } else {
-              alert("KHÔNG TÌM DC CLICKUP ID: ", newArr.join("_"));
+              console.log("KHÔNG TÌM DC CLICKUP");
+
+              // alert("KHÔNG TÌM DC CLICKUP ID: ", newArr.join("_"));
             }
           }
           let sprint:any;

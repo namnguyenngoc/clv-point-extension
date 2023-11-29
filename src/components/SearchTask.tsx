@@ -104,6 +104,13 @@ const Daily_Report_Info = {
   RANGE_LIMIT: "A1:U200",
 
 }
+const _Tasks_Pharse3 = {
+  SPREADSHEET_ID: "1jsBbrJZ8AYuNTRiBMLfcngHi0f6vCF1XocbvvpJDBAM",
+  SHEET_ID: "Tasks_Pharse3",
+  RANGE_LIMIT: "A2:BB1000",
+
+}
+
 const _CAPA_list = {
   SPREADSHEET_ID: "1qku7AHB9T-xz5GvjgZ7cinDxpldbbJFR8OjmNUVo6YE",
   SHEET_ID: "CAPA list",
@@ -391,7 +398,8 @@ export default function SearchTask(props) {
             if(clickupIDByLength.includes(prefixID)) {
               clickupId = clickupIDByLength;
             } else {
-              alert("KHÔNG TÌM DC CLICKUP ID: ", newArr.join("_"));
+              console.log("KHÔNG TÌM DC CLICKUP");
+              // alert("KHÔNG TÌM DC CLICKUP ID: ", newArr.join("_"));
             }
           }
           
@@ -562,15 +570,15 @@ export default function SearchTask(props) {
   }
 
   const loadTaskList = async () => {
-    let Daily_Report_Filter = localStorage.getItem('Daily_Report_Filter');
-    if(Daily_Report_Filter == undefined || Daily_Report_Filter == null) {
-      localStorage.setItem('Daily_Report_Filter',  JSON.stringify(Daily_Report_Info));
-      Daily_Report_Filter = localStorage.getItem('Daily_Report_Filter');
+    let Tasks_Pharse3 = localStorage.getItem('Tasks_Pharse3');
+    if(Tasks_Pharse3 == undefined || Tasks_Pharse3 == null) {
+      localStorage.setItem('Tasks_Pharse3',  JSON.stringify(_Tasks_Pharse3));
+      Tasks_Pharse3 = localStorage.getItem('Tasks_Pharse3');
       
     } 
     
-    console.log("Daily_Report_Filter", Daily_Report_Filter);
-    let DOC_SHEET_INFO_JSON = JSON.parse(Daily_Report_Filter?.toString());
+    console.log("Tasks_Pharse3", Tasks_Pharse3);
+    let DOC_SHEET_INFO_JSON = JSON.parse(Tasks_Pharse3?.toString());
     console.log("DOC_SHEET_INFO_JSON", DOC_SHEET_INFO_JSON);
     if(DOC_SHEET_INFO_JSON) {
       //Read Sheet 
@@ -602,16 +610,21 @@ export default function SearchTask(props) {
       }
       setTASK_INF_REPORT(TASK_INF_REPORT);
 
-      for(let i = 3; i < INFO_LIST._cells.length; i ++) {
-        console.log("INFO_LIST", INFO_LIST);
-        const id = INFO_LIST.getCell(i, 1).formattedValue; 
-        const name = INFO_LIST.getCell(i, 4).formattedValue; 
+      let arrValidTask = INFO_LIST._cells.filter(item => 
+                                        item[0] != undefined 
+                                        && item[0].formattedValue != null 
+                                        && item[0].formattedValue == "38");
+      console.log("INFO_LIST", arrValidTask);
+      for(let i = 3; i < arrValidTask.length; i ++) {
+        let newItem = arrValidTask[i];
+        const id = newItem[2].formattedValue; 
+        const name = `${newItem[4].formattedValue} ${newItem[5].formattedValue}`; 
 
-        const pic_dev = INFO_LIST.getCell(i, 5).formattedValue; 
-        const dev_test = INFO_LIST.getCell(i, 6).formattedValue; 
-        const tester = INFO_LIST.getCell(i, 7).formattedValue; 
-        const status = INFO_LIST.getCell(i, 8).formattedValue; 
-        const end_cross_check = INFO_LIST.getCell(i, 11).formattedValue; 
+        const pic_dev = newItem[12].formattedValue; 
+        const dev_test = newItem[13].formattedValue; 
+        const tester = newItem[14].formattedValue; 
+        const status = newItem[15].formattedValue; 
+        const est_end_date = newItem[22].formattedValue; 
 
         if(id && name) {
           const object = {
@@ -621,7 +634,7 @@ export default function SearchTask(props) {
             dev_test: dev_test,
             tester: tester,
             status: status,
-            end_cross_check: end_cross_check
+            est_end_date: est_end_date
           }
           arrTask.push(object);
         
