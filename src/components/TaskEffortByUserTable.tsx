@@ -296,6 +296,7 @@ export default function TaskEffortByUser(props) {
       name: 'Name',
       width: "210px",
       right: "yes",
+      omit: isShowAllCol,
       selector: row => `${row.blueprint_nm}-${row.currentLvl}`,
     },
     {
@@ -311,6 +312,14 @@ export default function TaskEffortByUser(props) {
       selector: item => moment(item.effectDateTo).format("MMM YYYY"),
     },
     {
+      name: 'Std Month',
+      width: "100px",
+      center: "yes",
+      omit: isShowAllCol,
+      selector: item => formatPrice(item.pointOnHour.effortPointByCurrentLevel * item.workload, 0),
+       style: {backgroundColor:"rgba(204, 255, 204, 1);",},
+    },
+    {
       name: headerReview[0].label,
       width: "100px",
       center: "yes",
@@ -318,9 +327,15 @@ export default function TaskEffortByUser(props) {
       // style: {backgroundColor:"rgba(0, 128, 0, 0.1);",},
       conditionalCellStyles: [
         {
-          when: row =>  getEffort(row.effortDetailByMonth, headerReview[0].label).value < parseFloat(row.pointOnHour.effortPointByCurrentLevel),
-          style: row => ({ backgroundColor:`rgba(228, 15, 22,${1 - (getEffort(row.effortDetailByMonth, headerReview[0].label).value / parseFloat(row.pointOnHour.effortPointByCurrentLevel))}` }),
+          when: row =>  inReviewPerformance(row, 0),
+          style: row => ({ fontWeight:"bold",	backgroundColor:`rgba(0, 191, 255, 0.3)`}),
         },
+        {
+          when: row =>  validEffort(row, 0).isValid,
+          style: row => ({ color:`${validEffort(row, 0).bgColor}` }),
+        },
+      
+        
        
       ],
       selector: item => getEffort(item.effortDetailByMonth, headerReview[0].label).label,
@@ -330,12 +345,17 @@ export default function TaskEffortByUser(props) {
       width: "100px",
       center: "yes",
       omit: isShowAllCol,
-      // style: {backgroundColor:"rgba(0, 128, 0, 0.1);",},
+      // style: {backgroundColor:"rgba(0, 128, 0, 0.1);", fontweight: 'bold'},
       conditionalCellStyles: [
         {
-          when: row =>  getEffort(row.effortDetailByMonth, headerReview[1].label).value < parseFloat(row.pointOnHour.effortPointByCurrentLevel),
-          style: row => ({ backgroundColor:`rgba(228, 15, 22,${1 - (getEffort(row.effortDetailByMonth, headerReview[1].label).value / parseFloat(row.pointOnHour.effortPointByCurrentLevel))}` }),
+          when: row =>  inReviewPerformance(row, 1),
+          style: row => ({ fontWeight:"bold",	backgroundColor:`rgba(0, 191, 255, 0.3)`}),
         },
+        {
+          when: row =>  validEffort(row, 1).isValid,
+          style: row => ({ backgroundColor:`${validEffort(row, 1).bgColor}` }),
+        },
+       
        
       ],
       selector: item => getEffort(item.effortDetailByMonth, headerReview[1].label).label,
@@ -348,10 +368,15 @@ export default function TaskEffortByUser(props) {
       // style: {backgroundColor:"rgba(0, 128, 0, 0.1);",},
       conditionalCellStyles: [
         {
-          when: row =>  getEffort(row.effortDetailByMonth, headerReview[2].label).value < parseFloat(row.pointOnHour.effortPointByCurrentLevel),
-          style: row => ({ backgroundColor:`rgba(228, 15, 22,${1 - (getEffort(row.effortDetailByMonth, headerReview[2].label).value / parseFloat(row.pointOnHour.effortPointByCurrentLevel))}` }),
+          when: row =>  inReviewPerformance(row, 2),
+          style: row => ({ fontWeight:"bold",	backgroundColor:`rgba(0, 191, 255, 0.3)`}),
         },
-       
+        {
+          when: row =>  validEffort(row, 2).isValid,
+          style: row => ({ backgroundColor:`${validEffort(row, 2).bgColor}` }),
+        },
+        
+        
       ],
       selector: item => getEffort(item.effortDetailByMonth, headerReview[2].label).label,
     },
@@ -363,9 +388,14 @@ export default function TaskEffortByUser(props) {
       // style: {backgroundColor:"rgba(0, 128, 0, 0.1);",},
       conditionalCellStyles: [
         {
-          when: row =>  getEffort(row.effortDetailByMonth, headerReview[3].label).value < parseFloat(row.pointOnHour.effortPointByCurrentLevel),
-          style: row => ({ backgroundColor:`rgba(228, 15, 22,${1 - (getEffort(row.effortDetailByMonth, headerReview[3].label).value / parseFloat(row.pointOnHour.effortPointByCurrentLevel))}` }),
+          when: row =>  inReviewPerformance(row, 3),
+          style: row => ({ fontWeight:"bold",	backgroundColor:`rgba(0, 191, 255, 0.3)`}),
         },
+        {
+          when: row =>  validEffort(row, 3).isValid,
+          style: row => ({ backgroundColor:`${validEffort(row, 3).bgColor}` }),
+        },
+       
        
       ],
       selector: item => getEffort(item.effortDetailByMonth, headerReview[3].label).label,
@@ -378,8 +408,13 @@ export default function TaskEffortByUser(props) {
       // style: {backgroundColor:"rgba(0, 128, 0, 0.1);",},
       conditionalCellStyles: [
         {
-          when: row =>  getEffort(row.effortDetailByMonth, headerReview[4].label).value < parseFloat(row.pointOnHour.effortPointByCurrentLevel),
-          style: row => ({ backgroundColor:`rgba(228, 15, 22,${1 - (getEffort(row.effortDetailByMonth, headerReview[4].label).value / parseFloat(row.pointOnHour.effortPointByCurrentLevel))}` }),
+          when: row =>  inReviewPerformance(row, 4),
+          style: row => ({ fontWeight:"bold",	backgroundColor:`rgba(0, 191, 255, 0.3)`}),
+        },
+        {
+          // when: row =>  getEffort(row.effortDetailByMonth, headerReview[4].label).value < parseFloat(row.pointOnHour.effortPointByCurrentLevel),
+          when: row =>  validEffort(row, 4).isValid,
+          style: row => ({ backgroundColor:`${validEffort(row, 4).bgColor}` }),
         },
        
       ],
@@ -390,12 +425,17 @@ export default function TaskEffortByUser(props) {
       width: "100px",
       center: "yes",
       omit: isShowAllCol || headerReview[0].label == "6",
-      style: {backgroundColor:"rgba(0, 128, 0, 0.1);"},
       conditionalCellStyles: [
         {
-          when: row =>  getEffort(row.effortDetailByMonth, headerReview[5].label).value < parseFloat(row.pointOnHour.effortPointByCurrentLevel),
-          style: row => ({ backgroundColor:`rgba(228, 15, 22,${1 - (getEffort(row.effortDetailByMonth, headerReview[5].label).value / parseFloat(row.pointOnHour.effortPointByCurrentLevel))}` }),
+          when: row =>  inReviewPerformance(row, 5),
+          style: row => ({ fontWeight:"bold",	color:`rgba(0, 191, 255, 0.3)`}),
         },
+        {
+          // when: row =>  getEffort(row.effortDetailByMonth, headerReview[5].label).value < parseFloat(row.pointOnHour.effortPointByCurrentLevel),
+          when: row =>  validEffort(row, 5).isValid,
+          style: row => ({ backgroundColor:`${validEffort(row, 5).bgColor}` }),
+        },
+       
        
       ],
       selector: item => getEffort(item.effortDetailByMonth, headerReview[5].label).label,
@@ -470,7 +510,9 @@ export default function TaskEffortByUser(props) {
   }
 
   const getEffort = (effortDetailByMonth: any, month: string):Object => {
-    
+    console.log("getEffort-effortDetailByMonth", effortDetailByMonth);
+    console.log("getEffort-month", month);
+
     if(!effortDetailByMonth || effortDetailByMonth.length == 0 || !month) return 0;
 
     let effort = effortDetailByMonth.filter(itm => itm.key == month);
@@ -489,6 +531,27 @@ export default function TaskEffortByUser(props) {
     };
 
   }
+  const inReviewPerformance = (row, headerIndex) => {
+   
+    let headerMonth = moment(headerReview[headerIndex].value._d).utc();
+    let startMonth =  moment(row.effectDateFrom).utc();
+    let endMonth =  moment(row.effectDateTo).utc();
+    
+    console.log("------S inReviewPerformance", headerIndex);
+    console.log("------S inReviewPerformance ----------", headerReview[headerIndex].value);
+    console.log('inReviewPerformance-headerMonth', row.effectDateFrom);
+    console.log('inReviewPerformance-startMonth', startMonth);
+    console.log('inReviewPerformance-endMonth', row.effectDateTo);
+
+    let a = moment(headerMonth._d).diff(moment(startMonth._d), 'months', true);
+    let b = moment(headerMonth._d).diff(moment(endMonth._d), 'months', true);
+    if( a >= 0 || b <= 0){
+    
+  }
+    return a >= 0  && b <= 0;
+    // return headerMonth.diff(startMonth) && headerMonth.isBefore(endMonth);
+    // return false;
+  };
 
   const getListMonth = (rvStart, rvEnd) => {
     if(rvStart && rvEnd) {
@@ -737,6 +800,7 @@ export default function TaskEffortByUser(props) {
     if(start && end) {
       if(start < end){
         let tmp = start;
+        var futureMonth = moment(tmp).add(0, 'M');
         arr.push({
           label: moment(tmp).format('MMM YYYY'),
           value: futureMonth,
@@ -744,7 +808,7 @@ export default function TaskEffortByUser(props) {
         });
 
         while(tmp < end) {
-          var futureMonth = moment(tmp).add(1, 'M');
+          futureMonth = moment(tmp).add(1, 'M');
           arr.push({
             label: futureMonth.format('MMM YYYY'),
             value: futureMonth,
@@ -767,6 +831,8 @@ export default function TaskEffortByUser(props) {
           );
           idxLen = idxLen + 1;
         }
+
+        console.log("setHeaderReview", arr);
         setHeaderReview(arr);
       }
     }
@@ -945,7 +1011,37 @@ export default function TaskEffortByUser(props) {
     // console.log("setMemberSelect", memberSelect);
    
     setInReview(option);
+  };
+
+  const validEffort = (row, headerIndex) => {
+    console.log("validEffort", row.blueprint_nm);
+    const actualEffort =  getEffort(row.effortDetailByMonth, headerReview[headerIndex].label).value;
+    const estEffort = parseFloat(row.pointOnHour.effortPointByCurrentLevel);
+    const maxEffort = parseFloat(row.pointOnHour.effortPointByTargetLevel);
+  
+    let isValid = false;
+    let bgColor = "";
+    let opacity = 1;
+    if(actualEffort < estEffort  || actualEffort > maxEffort) {
+      isValid = true;
+      
+      if(actualEffort < estEffort) { //CHƯA ĐỦ TRUNG BÌNH
+        opacity = 1 - actualEffort / estEffort;
+      } else if(maxEffort < actualEffort) { // VƯỢT BRANCH
+        opacity = 1 - maxEffort / actualEffort;
+      }
+    }
+
+    let inReview = inReviewPerformance(row, headerIndex);
+
+    return  {
+      isValid: inReview || isValid,
+      bgColor: `rgba(255, 34, 129, ${opacity})`
+    };
+
+
   }
+
   useEffect(()=>{
     setLoading(true);
     // let sheetMember = await selectMemberList();

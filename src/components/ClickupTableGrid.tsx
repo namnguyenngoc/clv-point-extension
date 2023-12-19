@@ -1,4 +1,5 @@
 import React, { useState, CSSProperties } from "react";
+import moment from 'moment'
 
 import {
     DataSheetGrid,
@@ -31,12 +32,12 @@ import {
     //     ...keyColumn('active', checkboxColumn),
     //     title: 'Active',
     //   },
-      // {
-      //   ...keyColumn('url', textColumn),
-      //   title: 'Link',
-      //   frozen: true,
-      //   ...defaultSize,
-      // },
+      {
+        ...keyColumn('url', textColumn),
+        title: 'Link',
+        frozen: true,
+        ...defaultSize,
+      },
       {
         ...keyColumn('id', textColumn),
         title: 'ID',
@@ -153,6 +154,20 @@ import {
         ...keyColumn('due_date_str', textColumn),
         title: 'Due Date',
         ...defaultSize,
+        cellClassName: (data: any, index: any) => {
+          const rowData = data.rowData;
+          console.log("rowData", rowData);
+          if(rowData && rowData.clk_parent_nm == "" && "in progress" == rowData.status.status) {
+            
+            if (moment(Number(rowData.due_date)).format('YYYY-MM-DD') < moment(new Date()).format('YYYY-MM-DD')) {
+              const classNm = `bg-over-due-date`;
+              return classNm;
+            } else if (moment(Number(rowData.due_date)).format('YYYY-MM-DD') == moment(new Date()).format('YYYY-MM-DD')) {
+              const classNm = `bg-due-date`;
+              return classNm;
+            }
+          }
+        }
       },
       {
         ...keyColumn('bp_task_startDateFm', textColumn),

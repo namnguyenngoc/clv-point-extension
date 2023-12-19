@@ -66,6 +66,8 @@ export default function BPTableGridNew ({ handleClick }) {
   const defaultTrongSo = taskLevelList[0];
   const [taskLevel, setTaskLevel] = useState(taskLevelList[0]);
   const [onlySubmit, setOnlySubmit] = useState(false);
+  const [prefixID, setPrefixID] = useState("86");
+
   const columns = [
     {
       name: 'ID',
@@ -266,11 +268,11 @@ export default function BPTableGridNew ({ handleClick }) {
       if(reqName) {
         if(ketQua && ketQua.length > 4) {
           let id = newArr[4].replace(/ /g, "");
-          if(id.includes("865")) {
+          if(id.includes(prefixID)) {
             clickupId = id;
 
           } else {
-            if(clickupIDByLength.includes("865")) {
+            if(clickupIDByLength.includes(prefixID)) {
               clickupId = clickupIDByLength;
             } else {
               alert("KHÔNG TÌM DC CLICKUP ID: ", newArr.join("_"));
@@ -360,11 +362,11 @@ export default function BPTableGridNew ({ handleClick }) {
       if(reqName) {
         if(ketQua && ketQua.length > 4) {
           let id = newArr[4].replace(/ /g, "");
-          if(id.includes("865")) {
+          if(id.includes(prefixID)) {
             clickupId = id;
 
           } else {
-            if(clickupIDByLength.includes("865")) {
+            if(clickupIDByLength.includes(prefixID)) {
               clickupId = clickupIDByLength;
             } else {
               alert("KHÔNG TÌM DC CLICKUP ID: ", newArr.join("_"));
