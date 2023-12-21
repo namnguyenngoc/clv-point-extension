@@ -185,7 +185,7 @@ export default function TaskEffortByUser(props) {
       "endIdx": 25,
       "pageChanged": false,
       "coCd": "DOU",
-      "lstTeamId": "ATM201705250009,ATM201705150001",
+      "lstTeamId": "ATM201705250009,ATM20170515000,ATM202309170005",
       "stsChanged": "N",
       "tskSts": "PR",
       "rsName": ""

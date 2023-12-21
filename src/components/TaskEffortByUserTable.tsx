@@ -487,11 +487,12 @@ export default function TaskEffortByUser(props) {
       "endIdx": 25,
       "pageChanged": false,
       "coCd": "DOU",
-      "lstTeamId": "ATM201705250009,ATM201705150001",
+      "lstTeamId": "ATM201705250009,ATM201705150001,ATM202309170005",
       "stsChanged": "N",
       "tskSts": "PR",
       "rsName": ""
   };
+  
   
 
     // console.log("RO", ro);
@@ -895,8 +896,8 @@ export default function TaskEffortByUser(props) {
               "agvMonth": 0
             }
           }
-          // console.log("lstUserInTeam", lstUserInTeam);
-          let itemTask = lstUserInTeam.filter(itm2 => itm2.usrId == item.userId);
+          console.log("lstUserInTeam", lstUserInTeam);
+          let itemTask = await lstUserInTeam.filter(itm2 => itm2.usrId == item.userId);
           item.countTask = 0;
           if(itemTask && itemTask.length > 0){
             let _task = itemTask[0];
