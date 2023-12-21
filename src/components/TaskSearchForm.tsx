@@ -91,19 +91,15 @@ const customStyles = {
 
 export default function TaskSearchForm() {
   let [reqId, setReqId] = useState("");
-  let [pointOnHour, setPointOnHour] = useState(25); //Point senior
   let [sprintNumber, setSprintNumber] = useState("");
   let [clickID, setClickID] = useState("");
   let [effortWithMember, setEffortWithMember] = useState([]);
   let [taskInfo, setTaskInfo] = useState({});
-  let [orgTaskInfo, setOrgTaskInfo] = useState({});
   let [effortInfo, setEffortInfo] = useState({});
 
-  let [taskInfoSheet, setTaskInfoSheet] = useState({});
   let [reqDetail, setReqDetail] = useState({});
   let [memberTaskList, setMemberTaskList] = useState({});
   
-  let [suggetList, setSuggetList] = useState([]);
   let [comment, setComment] = useState("");
   let [config, setConfig] = useState({
     isLoadGoogleSheet: true,
@@ -169,9 +165,6 @@ export default function TaskSearchForm() {
     setReqId(event.target.value);
   };
 
-  const handlePointOnHourChange = (event) => {
-    setPointOnHour(event.target.value);
-  };
   async function getDailyTasksByUser(ro) {
     
     console.log("RO", ro);
@@ -250,6 +243,8 @@ export default function TaskSearchForm() {
       ).then(async (res) => {
         let requirementRP = res.data;
         console.log("----------------lsMember");
+        const lstUserInTeam = await searchUserInTeam();
+        // console.log("lstUserInTeam", lstUserInTeam);
         const detail = await axios.get(`${url}/task-details/get-actual-effort-point?reqId=${reqId}`)
           .then(async (res) => {
             let arrReq = [];
@@ -261,17 +256,6 @@ export default function TaskSearchForm() {
               let taskSheet = result.taskList;
               let lsMember = result.arrMember;
              
-              //         arrMember: [],
-              // taskList: []
-              // let taskGoogleSheet = await selectTaskList("A");
-              // let newTask: any;
-              // if(taskInfo && taskGoogleSheet.length > 0){
-              //   newTask = {
-              //     sheetTask: taskGoogleSheet[0]
-              //   };
-          
-              // }
-              // await Promise.resolve(selectMember_TaskList);
               let lsReq = res.data;
               let tmpResult = new Array();
               if(lsReq.lstActEfrtPnt != undefined && lsReq.lstActEfrtPnt != null && lsReq.lstActEfrtPnt.length > 0) {
@@ -308,6 +292,7 @@ export default function TaskSearchForm() {
                   let isDevelopInSprint = false;
                   let isTestInSprint = false;
                   console.log("member", member);
+                  
                   if(member){
                     expectPoint = member.pointOnHour.expect;
                     standardPoint = member.pointOnHour.standard;
@@ -382,11 +367,6 @@ export default function TaskSearchForm() {
                   item.standardPoint = standardPoint;
                   item.expectPoint = expectPoint;
               
-                  // console.log("ITEM_MEMBER", item);
-                  // console.log("taskSheet", taskSheet);
-                  // console.log("isDevelopInSprint", isDevelopInSprint);
-                  // console.log("isTestInSprint", isTestInSprint);
-
                   if("PIM_PHS_CDREG" == phsCd){ 
                     //Check Neu la point default
                     item.effortHours =  parseInt(pointDefaultByPharse.timeStandard); //12min = 5 point
@@ -498,6 +478,17 @@ export default function TaskSearchForm() {
                   //set effort
                   item.isBurnPointEstimate = isBurnPointEstimate;
                   tmpResult.effortPoint = NaNToZero(item.effortPoint);
+
+                 
+                  item.countTask = 0;
+                  if(lstUserInTeam) {
+                    let itemTask = lstUserInTeam.filter(itm2 => itm2.usrId == item.usrId);
+                    console.log("TESTER itemTask",itemTask);
+                    if(itemTask && itemTask.length > 0){
+                      let _task = itemTask[0];
+                      item.countTask = _task.pd_knt +  _task.op_knt +  _task.proc_knt;
+                    }
+                  }
                   tmpResult.push(item);
 
                 }
@@ -1488,6 +1479,38 @@ export default function TaskSearchForm() {
       return color;
     }
   }
+
+  async function searchUserInTeam() {
+    console.log("hearr");
+    const today = moment(new Date());
+    const firstDayOfMonth = today.clone().startOf("month");
+    const startDate= firstDayOfMonth._d;
+    const endDate = new Date();
+    let ro = {
+      "stDt": moment(startDate).format("YYYYMMDD"),
+      "endDt": moment(endDate).format("YYYYMMDD"),
+      "procFlg": "DF",
+      "beginIdx": 0,
+      "endIdx": 25,
+      "pageChanged": false,
+      "coCd": "DOU",
+      "lstTeamId": "ATM201705250009,ATM201705150001,ATM202309170005",
+      "stsChanged": "N",
+      "tskSts": "PR",
+      "rsName": ""
+    };
+  
+    const response = await axios.post(`${url}/uiPim026/searchUserInTeam`, ro)
+      .then(async function (response) {
+        return response.data.lstUserInTeam ;
+    });
+
+    // console.log("response", response);
+    return new Promise((resolve, reject) => {
+        resolve(response);
+    });
+  }
+
   useEffect(()=>{
     console.log("Request searchRequirement");
     // let apiObject = {
@@ -1728,10 +1751,10 @@ export default function TaskSearchForm() {
                 <th className="px-4 py-2 text-right">Effort Point</th>
                 <th className="px-4 py-2 text-right">BP Point</th>
                 <th className="px-4 py-2 text-right">Estimate</th>
-                <th className="px-4 py-2 text-right">Min</th>
-                <th className="px-4 py-2 text-right">Max</th>
+                <th className="px-4 py-2 text-right">Tasks</th>
                 <th className="px-4 py-2 text-right">Eff/AVG(m)</th>
                 <th className="px-4 py-2 text-right">Target</th>
+
               </tr>
             </thead>
             <tbody>
@@ -1741,7 +1764,7 @@ export default function TaskSearchForm() {
                   <td className="px-4 py-2">{result.phsNm}</td>
                   <td className="px-4 py-2 text-right">{formatTime(result.effortHours)}</td>
                   <td className="px-4 py-2 text-right">{formatTime(result.estHours)}</td>
-                  <td className="px-4 py-2 text-right">{result.expectPoint}</td>
+                  <td className="px-4 py-2 text-right">{formatNumber(result.expectPoint,1)}</td>
                   <td className="px-4 py-2 text-right bg-misty">{result.point}</td>
                   <td className="px-4 py-2 text-right text-blue-600">{result.efrtNo /** BP Point*/ }</td>  
                   <td className="px-4 py-2 text-right text-blue-600">
@@ -1753,8 +1776,7 @@ export default function TaskSearchForm() {
                     </label>
                   
                   </td>
-                  <td className="px-4 py-2 text-right bg-light-green">{formatNumber(result.minPoint, 0)}</td>
-                  <td className="px-4 py-2 text-right bg-light-green">{formatNumber(result.maxPoint, 0)}</td>
+                  <td className="px-4 py-2 text-right bg-light-green">{result.countTask}</td>
                   <td 
                     className={
                       result.effortPointPharse < parseFloat(result.effortpointbycurrentlevel)
@@ -1765,6 +1787,8 @@ export default function TaskSearchForm() {
                     formatNumber(result.effortPointPharse, 0)}/{formatNumber(result.effortpointbycurrentlevel, 0)} ({result._month})
                   </td>
                   <td className="px-4 py-2 text-right bg-light-green">{result.target}</td>
+                 
+
                 </tr>
               ))}
              
