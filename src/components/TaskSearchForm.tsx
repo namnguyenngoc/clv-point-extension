@@ -339,13 +339,8 @@ export default function TaskSearchForm() {
                       lstUserInTeam = await searchUserInTeam(ro.fromDt, ro.toDt, item.usrId);
                       console.log("lstUserInTeam", lstUserInTeam);
                       if(lstUserInTeam) {
-                        let itemTask = lstUserInTeam.filter(itm2 => itm2.usrId == item.usrId);
-                        console.log("TESTER itemTask",itemTask);
-                        if(itemTask && itemTask.length > 0){
-                          let _task = itemTask[0];
-                          item.taskInprocess = _task.pd_knt +  _task.op_knt +  _task.proc_knt;
-                          item.taskFshKnt = _task.fin_knt
-                        }
+                        item.taskInprocess = lstUserInTeam.in_task + lstUserInTeam.op_task;
+                        item.taskFshKnt = lstUserInTeam.fin_task;
                       }
                       item.effortPoint = 0; // Waiting API
                       if(res){
@@ -1517,10 +1512,23 @@ export default function TaskSearchForm() {
           "usrId": userId,
           "pageChanged":false
         }
-        const searchTaskOfUser = await axios.post(`${url}/uiPim026/searchTaskOfUserm`, newRO)
+        const searchTaskOfUser = await axios.post(`${url}/uiPim026/searchTaskOfUser`, newRO)
           .then(async function (res) {
             //Get searchTaskOfUser
-            return res.data.taskOfUser ;
+            let data = res.data;
+          
+            if(data && data.lstTaskVO && data.lstTaskVO.length > 0) {
+              let finish = data.lstTaskVO.filter(itm => itm.reqStsNm == "Finished");
+              let open = data.lstTaskVO.filter(itm => itm.reqStsNm == "Open");
+              let process = data.lstTaskVO.filter(itm => itm.reqStsNm == "In Processing");
+              data.fin_task = finish.length;
+              data.op_task = open.length;
+              data.in_task = process.length;
+              return data;
+
+            }
+            
+            return data;
         });
         let newReponse = response.data.taskOfUser = searchTaskOfUser;
         return newReponse;
