@@ -243,7 +243,7 @@ export default function TaskSearchForm() {
       ).then(async (res) => {
         let requirementRP = res.data;
         console.log("----------------lsMember");
-        const lstUserInTeam = await searchUserInTeam();
+       
         // console.log("lstUserInTeam", lstUserInTeam);
         const detail = await axios.get(`${url}/task-details/get-actual-effort-point?reqId=${reqId}`)
           .then(async (res) => {
@@ -278,7 +278,7 @@ export default function TaskSearchForm() {
                       "description": ""
                   }
                   
-                
+                  item.countTask = 0;
                   if(member) {
                     pointDefaultByPharse =  member.pointOnHour;
                   }
@@ -292,7 +292,7 @@ export default function TaskSearchForm() {
                   let isDevelopInSprint = false;
                   let isTestInSprint = false;
                   console.log("member", member);
-                  
+                  let lstUserInTeam = null;
                   if(member){
                     expectPoint = member.pointOnHour.expect;
                     standardPoint = member.pointOnHour.standard;
@@ -335,6 +335,18 @@ export default function TaskSearchForm() {
                     
                       const res = await getDailyTasksByUser(ro);
                       console.log("RES", res);
+
+                      lstUserInTeam = await searchUserInTeam(ro.fromDt, ro.toDt, item.usrId);
+                      console.log("lstUserInTeam", lstUserInTeam);
+                      if(lstUserInTeam) {
+                        let itemTask = lstUserInTeam.filter(itm2 => itm2.usrId == item.usrId);
+                        console.log("TESTER itemTask",itemTask);
+                        if(itemTask && itemTask.length > 0){
+                          let _task = itemTask[0];
+                          item.taskInprocess = _task.pd_knt +  _task.op_knt +  _task.proc_knt;
+                          item.taskFshKnt = _task.fin_knt
+                        }
+                      }
                       item.effortPoint = 0; // Waiting API
                       if(res){
                         const diffDays = workday_count (ro.fromDtOrg, ro.toDtOrg);
@@ -480,15 +492,6 @@ export default function TaskSearchForm() {
                   tmpResult.effortPoint = NaNToZero(item.effortPoint);
 
                  
-                  item.countTask = 0;
-                  if(lstUserInTeam) {
-                    let itemTask = lstUserInTeam.filter(itm2 => itm2.usrId == item.usrId);
-                    console.log("TESTER itemTask",itemTask);
-                    if(itemTask && itemTask.length > 0){
-                      let _task = itemTask[0];
-                      item.countTask = _task.pd_knt +  _task.op_knt +  _task.proc_knt;
-                    }
-                  }
                   tmpResult.push(item);
 
                 }
@@ -1480,12 +1483,14 @@ export default function TaskSearchForm() {
     }
   }
 
-  async function searchUserInTeam() {
+  async function searchUserInTeam(startDate, endDate, userId) {
     console.log("hearr");
-    const today = moment(new Date());
-    const firstDayOfMonth = today.clone().startOf("month");
-    const startDate= firstDayOfMonth._d;
-    const endDate = new Date();
+    // const today = moment(new Date());
+    // const firstDayOfMonth = today.clone().startOf("month");
+    // const startDate= firstDayOfMonth._d;
+    // const endDate = new Date();
+    // localStorage.setItem("ev_cd", evaCd);
+
     let ro = {
       "stDt": moment(startDate).format("YYYYMMDD"),
       "endDt": moment(endDate).format("YYYYMMDD"),
@@ -1502,7 +1507,23 @@ export default function TaskSearchForm() {
   
     const response = await axios.post(`${url}/uiPim026/searchUserInTeam`, ro)
       .then(async function (response) {
-        return response.data.lstUserInTeam ;
+        //Get searchTaskOfUser
+        let newRO = {
+          "stDt": moment(startDate).format("YYYYMMDD"),
+          "endDt": moment(endDate).format("YYYYMMDD"),
+          "procFlg":"F",
+          "beginIdx":0,
+          "endIdx":100,
+          "usrId": userId,
+          "pageChanged":false
+        }
+        const searchTaskOfUser = await axios.post(`${url}/uiPim026/searchTaskOfUserm`, newRO)
+          .then(async function (res) {
+            //Get searchTaskOfUser
+            return res.data.taskOfUser ;
+        });
+        let newReponse = response.data.taskOfUser = searchTaskOfUser;
+        return newReponse;
     });
 
     // console.log("response", response);
@@ -1751,7 +1772,7 @@ export default function TaskSearchForm() {
                 <th className="px-4 py-2 text-right">Effort Point</th>
                 <th className="px-4 py-2 text-right">BP Point</th>
                 <th className="px-4 py-2 text-right">Estimate</th>
-                <th className="px-4 py-2 text-right">Tasks</th>
+                <th className="px-4 py-2 text-right">Fin/In</th>
                 <th className="px-4 py-2 text-right">Eff/AVG(m)</th>
                 <th className="px-4 py-2 text-right">Target</th>
 
@@ -1776,7 +1797,7 @@ export default function TaskSearchForm() {
                     </label>
                   
                   </td>
-                  <td className="px-4 py-2 text-right bg-light-green">{result.countTask}</td>
+                  <td className="px-4 py-2 text-right bg-light-green">{result.taskFshKnt}/{result.taskInprocess}</td>
                   <td 
                     className={
                       result.effortPointPharse < parseFloat(result.effortpointbycurrentlevel)
