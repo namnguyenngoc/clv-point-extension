@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import myData from '../data.json';
 
@@ -452,7 +452,21 @@ export default function PointSuggest(props) {
             uploadFileServer(lstAttachNew, pstId, PIM_POST_FOLDER, PIM_PST, undefined, PIM_PST);
         closeWindow();
     }
-}
+  };
+
+  useEffect(()=>{
+    let increasePointStorage = localStorage.getItem('INCREASE_POINT_FINSH');
+    if(increasePointStorage){
+      setIncreasePoint(parseFloat(increasePointStorage));
+
+      
+    } else {
+      if(increasePoint) {
+        localStorage.setItem('INCREASE_POINT_FINSH', increasePoint);
+
+      }
+    }
+  });
 
 
   return (
