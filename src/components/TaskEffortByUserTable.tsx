@@ -294,10 +294,46 @@ export default function TaskEffortByUser(props) {
     },
     {
       name: 'Name',
-      width: "210px",
+      width: "310px",
       right: "yes",
       omit: isShowAllCol,
-      selector: row => `${row.blueprint_nm}-${row.currentLvl}`,
+      selector: row => {
+        let name = `${row.blueprint_nm}-${row.currentLvl}`;
+
+        console.log("Name-303", row);
+        let blueprint_nm = row.blueprint_nm;
+        let currentLvl = row.lvlCode;
+        let shortCurrentLvl = currentLvl;
+        if(currentLvl){
+          const last = currentLvl.slice(-1);
+          const first = currentLvl.slice(0, 1);
+          shortCurrentLvl = `${first}${last}`
+        }
+
+        let targetLevel = row.targetLevel;
+        let shortTargetLevel = targetLevel;
+        if(targetLevel){
+          const last = targetLevel.slice(-1);
+          const first = targetLevel.slice(0, 1);
+          shortTargetLevel = `${first}${last}`
+        }
+        
+        let shortName = `${blueprint_nm} ${shortCurrentLvl}(${row.levelRatingType}) - ${shortTargetLevel}(${row.targetLevelType})`
+        return shortName; 
+      },
+      conditionalCellStyles: [
+        {
+          when: row =>  row.lvlCode != row.targetLevel,
+          style: {
+            backgroundColor: 'rgba(237, 90, 128, 0.3)',
+            color: 'white',
+            '&:hover': {
+              cursor: 'pointer',
+            },
+            'font-weight': 'bold',
+          },
+        },
+      ]
     },
     {
       name: 'Start Review',
@@ -326,10 +362,10 @@ export default function TaskEffortByUser(props) {
       omit: isShowAllCol,
       // style: {backgroundColor:"rgba(0, 128, 0, 0.1);",},
       conditionalCellStyles: [
-        {
-          when: row =>  inReviewPerformance(row, 0),
-          style: row => ({ fontWeight:"bold",	backgroundColor:`rgba(0, 191, 255, 0.3)`}),
-        },
+        // {
+        //   when: row =>  inReviewPerformance(row, 0),
+        //   style: row => ({ fontWeight:"bold",	backgroundColor:`rgba(0, 191, 255, 0.3)`}),
+        // },
         {
           when: row =>  validEffort(row, 0).isValid,
           style: row => ({ color:`${validEffort(row, 0).bgColor}` }),
@@ -347,10 +383,10 @@ export default function TaskEffortByUser(props) {
       omit: isShowAllCol,
       // style: {backgroundColor:"rgba(0, 128, 0, 0.1);", fontweight: 'bold'},
       conditionalCellStyles: [
-        {
-          when: row =>  inReviewPerformance(row, 1),
-          style: row => ({ fontWeight:"bold",	backgroundColor:`rgba(0, 191, 255, 0.3)`}),
-        },
+        // {
+        //   when: row =>  inReviewPerformance(row, 1),
+        //   style: row => ({ fontWeight:"bold",	backgroundColor:`rgba(0, 191, 255, 0.3)`}),
+        // },
         {
           when: row =>  validEffort(row, 1).isValid,
           style: row => ({ backgroundColor:`${validEffort(row, 1).bgColor}` }),
@@ -367,10 +403,10 @@ export default function TaskEffortByUser(props) {
       omit: isShowAllCol,
       // style: {backgroundColor:"rgba(0, 128, 0, 0.1);",},
       conditionalCellStyles: [
-        {
-          when: row =>  inReviewPerformance(row, 2),
-          style: row => ({ fontWeight:"bold",	backgroundColor:`rgba(0, 191, 255, 0.3)`}),
-        },
+        // {
+        //   when: row =>  inReviewPerformance(row, 2),
+        //   style: row => ({ fontWeight:"bold",	backgroundColor:`rgba(0, 191, 255, 0.3)`}),
+        // },
         {
           when: row =>  validEffort(row, 2).isValid,
           style: row => ({ backgroundColor:`${validEffort(row, 2).bgColor}` }),
@@ -387,10 +423,10 @@ export default function TaskEffortByUser(props) {
       omit: isShowAllCol,
       // style: {backgroundColor:"rgba(0, 128, 0, 0.1);",},
       conditionalCellStyles: [
-        {
-          when: row =>  inReviewPerformance(row, 3),
-          style: row => ({ fontWeight:"bold",	backgroundColor:`rgba(0, 191, 255, 0.3)`}),
-        },
+        // {
+        //   when: row =>  inReviewPerformance(row, 3),
+        //   style: row => ({ fontWeight:"bold",	backgroundColor:`rgba(0, 191, 255, 0.3)`}),
+        // },
         {
           when: row =>  validEffort(row, 3).isValid,
           style: row => ({ backgroundColor:`${validEffort(row, 3).bgColor}` }),
@@ -407,10 +443,10 @@ export default function TaskEffortByUser(props) {
       omit: isShowAllCol,
       // style: {backgroundColor:"rgba(0, 128, 0, 0.1);",},
       conditionalCellStyles: [
-        {
-          when: row =>  inReviewPerformance(row, 4),
-          style: row => ({ fontWeight:"bold",	backgroundColor:`rgba(0, 191, 255, 0.3)`}),
-        },
+        // {
+        //   when: row =>  inReviewPerformance(row, 4),
+        //   style: row => ({ fontWeight:"bold",	backgroundColor:`rgba(0, 191, 255, 0.3)`}),
+        // },
         {
           // when: row =>  getEffort(row.effortDetailByMonth, headerReview[4].label).value < parseFloat(row.pointOnHour.effortPointByCurrentLevel),
           when: row =>  validEffort(row, 4).isValid,
@@ -426,10 +462,10 @@ export default function TaskEffortByUser(props) {
       center: "yes",
       omit: isShowAllCol || headerReview[0].label == "6",
       conditionalCellStyles: [
-        {
-          when: row =>  inReviewPerformance(row, 5),
-          style: row => ({ fontWeight:"bold",	color:`rgba(0, 191, 255, 0.3)`}),
-        },
+        // {
+        //   when: row =>  inReviewPerformance(row, 5),
+        //   style: row => ({ fontWeight:"bold",	color:`rgba(0, 191, 255, 0.3)`}),
+        // },
         {
           // when: row =>  getEffort(row.effortDetailByMonth, headerReview[5].label).value < parseFloat(row.pointOnHour.effortPointByCurrentLevel),
           when: row =>  validEffort(row, 5).isValid,
@@ -537,18 +573,14 @@ export default function TaskEffortByUser(props) {
     let headerMonth = moment(headerReview[headerIndex].value._d).utc();
     let startMonth =  moment(row.effectDateFrom).utc();
     let endMonth =  moment(row.effectDateTo).utc();
-    
-    console.log("------S inReviewPerformance", headerIndex);
-    console.log("------S inReviewPerformance ----------", headerReview[headerIndex].value);
-    console.log('inReviewPerformance-headerMonth', row.effectDateFrom);
-    console.log('inReviewPerformance-startMonth', startMonth);
-    console.log('inReviewPerformance-endMonth', row.effectDateTo);
-
+ 
     let a = moment(headerMonth._d).diff(moment(startMonth._d), 'months', true);
     let b = moment(headerMonth._d).diff(moment(endMonth._d), 'months', true);
     if( a >= 0 || b <= 0){
     
-  }
+    }
+    console.log("a", a);
+    console.log("b", b);
     return a >= 0  && b <= 0;
     // return headerMonth.diff(startMonth) && headerMonth.isBefore(endMonth);
     // return false;
@@ -780,6 +812,8 @@ export default function TaskEffortByUser(props) {
                 "currentLvl"        : sheet.getCell(i, 4).formattedValue.concat(" (").concat(sheet.getCell(i, 45).formattedValue).concat(")"),
                 "monthReview" :sheet.getCell(i, 47).formattedValue,
                 "defaultList":sheet.getCell(i, 48).formattedValue.split(","),
+                "levelRatingType":sheet.getCell(i, 45).formattedValue,
+                "targetLevelType":sheet.getCell(i, 46).formattedValue,
             }
             arrMember.push(mem);
       }
@@ -1016,30 +1050,50 @@ export default function TaskEffortByUser(props) {
 
   const validEffort = (row, headerIndex) => {
     console.log("validEffort", row.blueprint_nm);
+    let result = {
+      isValid: false,
+      bgColor: `rgba(0, 0, 0, ${1})`
+    }
     const actualEffort =  getEffort(row.effortDetailByMonth, headerReview[headerIndex].label).value;
-    const estEffort = parseFloat(row.pointOnHour.effortPointByCurrentLevel);
+    const estMinEffort = parseFloat(row.pointOnHour.effortPointByCurrentLevel);
     const maxEffort = parseFloat(row.pointOnHour.effortPointByTargetLevel);
   
-    let isValid = false;
+    let outOfEffort = false;
     let bgColor = "";
     let opacity = 1;
-    if(actualEffort < estEffort  || actualEffort > maxEffort) {
-      isValid = true;
+    if(actualEffort < estMinEffort  || actualEffort > maxEffort) {
+      outOfEffort = true;
       
-      if(actualEffort < estEffort) { //CHƯA ĐỦ TRUNG BÌNH
-        opacity = 1 - actualEffort / estEffort;
+    }
+
+    if(outOfEffort) {
+      if(actualEffort < estMinEffort) { //CHƯA ĐỦ TRUNG BÌNH
+        opacity = 1 - actualEffort / estMinEffort;
       } else if(maxEffort < actualEffort) { // VƯỢT BRANCH
         opacity = 1 - maxEffort / actualEffort;
       }
     }
 
     let inReview = inReviewPerformance(row, headerIndex);
+    console.log("----------EFFORT-actualEffort < estMinEffort----------", headerIndex);
+    console.log("----------EFFORT-inReview || outOfEffort----------", inReview);
+    console.log("----------EFFORT-inReview----------", inReview);
+    console.log("----------EFFORT-name----------", row.userId);
 
-    return  {
-      isValid: inReview || isValid,
-      bgColor: `rgba(255, 34, 129, ${opacity})`
-    };
-
+    console.log("----------EFFORT-actualEffort", actualEffort);
+    console.log("----------EFFORT-estMinEffort", estMinEffort);
+    console.log("----------EFFORT-maxEffort", maxEffort);
+    if(outOfEffort) {
+      result.isValid =  true;
+      result.bgColor = `rgba(255, 34, 129, ${opacity})`;
+      
+    } else if(inReview) {
+      result.isValid =  true;
+      result.bgColor = `rgba(238, 232, 170, ${opacity})`;
+      
+    }
+    return result;
+   
 
   }
 

@@ -396,8 +396,8 @@ export default function SearchTask(props) {
       <Tabs>
         <TabList>
           <Tab>Tasks</Tab>
-          <Tab>Task By User</Tab>
-          <Tab>Effort Member</Tab>
+          <Tab>Check Effort Review</Tab>
+          <Tab>Effort Of Task</Tab>
         </TabList>
 
         <TabPanel>
