@@ -301,7 +301,11 @@ export default function TaskSearchForm() {
                     item.target = member.target;
                     item.averageeffortpoint_month = member.averageeffortpoint_month * parseFloat(member.workload);
                     item.pointinday = member.pointinday ? parseInt(member.pointinday) : 200;
-
+                    let _month_obj =  moment(item.actDueDt ? item.actDueDt : item.estmDueDt, 'YYYYMMDDhhmm');
+                    let _month =  moment(item.actDueDt ? item.actDueDt : item.estmDueDt, 'YYYYMMDDhhmm').format("MMM");
+                    item._month_obj = _month_obj;
+                    item._month_full = _month_obj.format("YYYY MMM");
+                    console.log("_month_obj", _month_obj);
                     if(isCheckEffort) {
                       // let reqParam = {
                       //   usrId: item.usrId,
@@ -324,7 +328,6 @@ export default function TaskSearchForm() {
                       // usrId: "hieunt"
                       let act_date_pharse_start = moment(item.actDueDt ? item.actDueDt : item.estmDueDt, 'YYYYMMDDhhmm').startOf('month');
                       let act_date_pharse_end = moment(item.actDueDt ? item.actDueDt : item.estmDueDt, 'YYYYMMDDhhmm').endOf('month');
-                      let _month =  moment(item.actDueDt ? item.actDueDt : item.estmDueDt, 'YYYYMMDDhhmm').format("MMM");
                       let ro = {
                         "usrId": item.usrId,
                         "fromDt": moment(act_date_pharse_start).format("YYYYMMDD"),
@@ -1780,6 +1783,7 @@ export default function TaskSearchForm() {
                 <th className="px-4 py-2 text-right">Effort Point</th>
                 <th className="px-4 py-2 text-right">BP Point</th>
                 <th className="px-4 py-2 text-right">Estimate</th>
+                <th className="px-4 py-2 text-right">Eff Month</th>
                 <th className="px-4 py-2 text-right">Fin/In</th>
                 <th className="px-4 py-2 text-right">Eff/AVG(m)</th>
                 <th className="px-4 py-2 text-right">Target</th>
@@ -1805,6 +1809,7 @@ export default function TaskSearchForm() {
                     </label>
                   
                   </td>
+                  <td className="px-4 py-2 text-right bg-light-green">{result._month_full}</td>
                   <td className="px-4 py-2 text-right bg-light-green">{result.taskFshKnt}/{result.taskInprocess}</td>
                   <td 
                     className={

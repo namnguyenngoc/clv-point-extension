@@ -1,7 +1,7 @@
 {
   "short_name": "clv-add-effort-point",
-  "name": "CLV ADD EFFORT POINT",
-  "version": "0.2.0",
+  "name": "ADD EFFORT POINT (CLV)",
+  "version": "0.2.1",
   "manifest_version": 3,
   "background": {
     "service_worker": "background.js"
