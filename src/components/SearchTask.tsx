@@ -10,7 +10,7 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import TaskEffortByUserTable from "./TaskEffortByUserTable";
 import TaskByUser from "./TaskByUser";
-
+import PerformanceReview from "./PerformanceReview";
 
 let defaultPharse = [
   {
@@ -398,6 +398,7 @@ export default function SearchTask(props) {
           <Tab>Tasks</Tab>
           <Tab>Check Effort Review</Tab>
           <Tab>Effort Of Task</Tab>
+          <Tab>Perfomance Review</Tab>
         </TabList>
 
         <TabPanel>
@@ -526,7 +527,9 @@ export default function SearchTask(props) {
         <TabPanel>
           <TaskByUser />
         </TabPanel>
-
+        <TabPanel>
+          <PerformanceReview />
+        </TabPanel>
       </Tabs>
       
     </div>

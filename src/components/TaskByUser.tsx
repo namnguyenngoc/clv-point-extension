@@ -1,4 +1,4 @@
-import React, { useState,CSSProperties } from "react";
+import React, { useState,CSSProperties,useEffect } from "react";
 import axios from "axios";
 import myData from '../data.json';
 import moment from 'moment';
@@ -88,16 +88,17 @@ export default function TaskEffortByUser(props) {
   const DT_FM = 'YYYYMMDD';
   const defaultMem = null;
   let allMember = [];
-  myData.memList.map(
-    function (item) {
-      // console.log("item", item);
-      if(item.teamLocal.includes("NEWFWD")) {
-        item.label = item.userId, //`${item.fullName}-${item.pointOnHour.expect}(${item.currentLevel})`;
-        item.value = item.userId
-        allMember.push(item);
-        // return item;
-      }
-  });
+  // myData.memList.map(
+  //   function (item) {
+  //     // console.log("item", item);
+  //     if(item.teamLocal.includes("NEWFWD")) {
+  //       item.label = item.userId, //`${item.fullName}-${item.pointOnHour.expect}(${item.currentLevel})`;
+  //       item.value = item.userId
+  //       allMember.push(item);
+  //       // return item;
+  //     }
+  // });
+  let [lstMember, setLstMember] = useState([]);
 
   const [memberSelect, setMemberSelect] = useState(null);
   const today = moment(new Date());
@@ -474,9 +475,33 @@ export default function TaskEffortByUser(props) {
 
   }
   //formatPrice(item.pointOnHour.expect * workday * 8 ,0)
-  const conditionalRowStyles = [
-   
-  ];
+  useEffect(()=>{
+    setLoading(true);
+    // let sheetMember = await selectMemberList();
+    // const lstUserInTeam = await searchUserInTeam(); 
+    setLstMember([]);
+    setMemberSelect([]);
+    selectMemberList().then(async (data) => {
+      let lst = await data.map(
+        function (item) {
+          // console.log("item", item);
+          if(item.teamLocal.includes("NEWFWD")) {
+            return {
+              ...item,
+              label: item.userId,
+              value: item.userId
+            }
+
+          }
+      })
+    
+      setLstMember(lst);
+      setLoading(false);
+    }).catch((err) => {
+      console.log("useEffect", err);
+      setLoading(false);
+    });
+  },[])
   return (
     <div className="grid grid-flow-row gap-2">
       <div>
@@ -498,7 +523,7 @@ export default function TaskEffortByUser(props) {
               selectTaskByUser(mem);
             }
             } 
-            options={allMember}
+            options={lstMember}
             components={{
               Option: InputMemberOption
             }}
