@@ -1,4 +1,5 @@
-import moment from 'moment';
+import moment from 'moment'; 
+import axios from "axios";
 
 export const URLS = [
   {
@@ -127,3 +128,54 @@ export const GET_LST_MONTH = function (rvStart, rvEnd) {
   }
   return [];
 }
+
+
+export const USER_IN_TEAM = async function (startDate, endDate, lstTeamId) {
+  if(startDate && endDate) {
+    if(!lstTeamId) {
+      lstTeamId = "ATM201705250009,ATM201705150001,ATM202309170005";
+    }
+    let ro = {
+      "stDt": moment(startDate).format("YYYYMMDD"),
+      "endDt": moment(endDate).format("YYYYMMDD"),
+      "procFlg": "DF",
+      "beginIdx": 0,
+      "endIdx": 25,
+      "pageChanged": false,
+      "coCd": "DOU",
+      "lstTeamId": lstTeamId,
+      "stsChanged": "N",
+      "tskSts": "PR",
+      "rsName": ""
+    };
+
+
+
+    // console.log("RO", ro);
+
+    // console.log("reqee", req)
+    const response = await axios.post(`${WEB_INFO.BLUEPRINT.API}/uiPim026/searchUserInTeam`, ro)
+      .then(async function (response) {
+        return response.data.lstUserInTeam ;
+    });
+
+
+    // console.log("response", response);
+    return new Promise((resolve, reject) => {
+        resolve(response);
+    });
+  }
+
+}
+
+export const FORMAT_NUMBER = function (value, tofix) {
+  if (!value) {
+    return ''
+  }
+  const val = (value / 1).toFixed(tofix).replace(',', '.')
+  if (!val) {
+    return ''
+  }
+
+  return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+};
