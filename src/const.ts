@@ -1,8 +1,10 @@
+import moment from 'moment';
+
 export const URLS = [
   {
     name: 'Vince Amaziong',
     url: '/index.html',
-    image: 'https://blueprint.cyberlogitec.com.vn/style/images/default/logo-menu-3.png'
+    image: ''
   },
   // {
   //   name: 'Wikipedia',
@@ -50,7 +52,6 @@ export const REQ_HEADER = {
 }
 
 
-
 export const WEB_INFO = {
   BLUEPRINT: {
     API: 'https://blueprint.cyberlogitec.com.vn/api',
@@ -68,4 +69,61 @@ export const WEB_INFO = {
     SPACE_ID: 26265831,
     
   }
+}
+
+export const COMMON_HEALTH = function() {
+  return "WORKING_GOOD"
+};
+
+export const WORKDAY = function (start: any, end: any) {
+  var first = start.clone().endOf("week"); // end of first week
+  var last = end.clone().startOf("week"); // start of last week
+  var days = (last.diff(first, "days") * 5) / 7; // this will always multiply of 7
+  var wfirst = first.day() - start.day(); // check first week
+  if (start.day() == 0) --wfirst; // -1 if start with sunday
+  var wlast = end.day() - last.day(); // check last week
+  if (end.day() == 6) --wlast; // -1 if end with saturday
+  var holidays = 0;
+  return wfirst + Math.floor(days) + wlast - holidays; // get the total
+};   
+
+
+
+export const SUM_EFF_KNT = function (arr) {
+  let sum = 0;
+  if(!arr || arr.length == 0) return 0;
+  for(let i = 0; i < arr.length; i ++){
+    sum += arr[i].efrtKnt;
+  }
+  return sum;
+}
+
+export const GET_LST_MONTH = function (rvStart, rvEnd) {
+  if(rvStart && rvEnd) {
+    let tmp = moment(rvStart);
+    let arrRoSplit = [];
+    let roSplit = { 
+    };
+
+    while(tmp < moment(rvEnd)) {
+     
+      // const startOfMonth = moment().startOf('month').format('YYYY-MM-DD hh:mm');
+      // const endOfMonth   = moment().endOf('month').format('YYYY-MM-DD hh:mm');
+      let startOfMonth = moment(tmp).startOf('month');
+      let endOfMonth   = moment(tmp).endOf('month');
+      roSplit = {
+        key: startOfMonth.format("YYYYMMDD").toString(),
+        fromDt: startOfMonth.format("YYYYMMDD").toString(),
+        toDt: endOfMonth.format("YYYYMMDD").toString()
+      };
+      tmp = tmp.add(1, 'M');
+      if(roSplit){
+        arrRoSplit.push(roSplit);
+
+      }
+    }
+    return arrRoSplit;
+    
+  }
+  return [];
 }
