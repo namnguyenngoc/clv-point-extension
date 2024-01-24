@@ -7,7 +7,10 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import ScaleLoader from "react-spinners/ScaleLoader";
 import Chart from 'react-apexcharts';
-import { COMMON_HEALTH, WORKDAY, SUM_EFF_KNT, GET_LST_MONTH, USER_IN_TEAM,FORMAT_NUMBER } from '../const';
+import ReactJson from 'react-json-view'
+
+import { COMMON_HEALTH, WORKDAY, SUM_EFF_KNT, GET_LST_MONTH, USER_IN_TEAM,FORMAT_NUMBER,
+   APP_EXTEND_MGMT_HEIGHT, APP_COLLAPSE_MGMT_HEIGHT } from '../const';
 
 
 const InputMemberOption = ({
@@ -76,12 +79,12 @@ const override: CSSProperties = {
 
 export default function PerformanceReview(props) {
  
-  const [effortChartData, setEffortChartData] = useState([2.3, 3.1, 4.0, 10.1, 4.0, 3.6, 3.2, 2.3, 1.4, 0.8, 0.5, 0.2]);
-  const [effortChartCategories, setEffortChartCategories] = useState([  "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]);
-
+  const [effortChartData, setEffortChartData] = useState([]);
+  const [effortChartCategories, setEffortChartCategories] = useState([ ]);
+  const [memberInfoJSON, setMemberInfoJSON] = useState({});
   let chartObject = {
     series: [{
-      name: 'Actual',
+      name: 'Blueprint',
       data: effortChartData
     }],
     options: {
@@ -96,14 +99,31 @@ export default function PerformanceReview(props) {
       },
       colors: ['#00E396'],
       dataLabels: {
-        enabled: true
+        enabled: true,
+        formatter: function (value) {
+          return FORMAT_NUMBER(value, 0);
+        }
       },
       legend: {
         show: true,
         showForSingleSeries: true,
-        customLegendItems: ['Actual', 'Expected'],
+        customLegendItems: ['Blueprint', 'Expected Target Level'],
         markers: {
           fillColors: ['#00E396', '#775DD0']
+        }
+      },
+      yaxis: {
+        labels: {
+          formatter: function (value) {
+            return FORMAT_NUMBER(value, 0);
+          }
+        },
+      },
+      xaxis: {
+        labels: {
+          formatter: function (value) {
+            return value;
+          }
         }
       }
     },
@@ -246,6 +266,7 @@ export default function PerformanceReview(props) {
 
   async function refeshChart (memItemFull) {
     console.log("memItemFull", memItemFull);
+    // customLegendItems: ['Blueprint', 'Expected Target Level'],
     if(memItemFull){
       let newData = [];
       let newCategory = [];
@@ -258,15 +279,27 @@ export default function PerformanceReview(props) {
           y: item.total,
           goals: [
             {
-              name: 'Expected',
-              value: parseInt(memItemFull.effortPointAvg),
-              strokeHeight: 5,
-              strokeColor: '#775DD0'
+              name: 'Expected Target Level',
+              value: parseInt(memItemFull.pointOnHour.effortPointByTargetLevel),
+              strokeColor: '#775DD0',
+              dataLabels: {
+                enabled: true,
+                formatter: function (value) {
+                  return FORMAT_NUMBER(value, 0);
+                }
+              }
             }
           ]
         }
         newData.push(newItem);
       })
+      try {
+        let jsonStr = JSON.stringify(memItemFull);
+        setMemberInfoJSON(JSON.parse(jsonStr));
+      } catch (error) {
+        
+      }
+      
       console.log("newData", newData  );
     
       setEffortChartData(newData);
@@ -469,16 +502,32 @@ export default function PerformanceReview(props) {
         
       </div>
       <div className="grid grid-flow-col gap-1 px-2">
-        PERFORMANCE REVIEW
+         EMPLOYEE ID | FULL NAME | REVEVIEW DATE: FROM - TO 
       </div>
-      <div className="grid grid-flow-row gap-1 px-2">
-        <div>
+      <div className="grid grid-flow-col gap-1 px-2">
+        <div className="grid grid-flow-row gap-1 px-2">
           <div id="chart">
             <Chart options={chartObject.options} series={chartObject.series} type="bar" height={350} />
           </div>
           <div id="html-dist"></div>
         </div>
+        <div className="grid grid-flow-row gap-1 px-2">
+          <div id="json"
+            style={{
+              height: APP_EXTEND_MGMT_HEIGHT - 200,
+              overflow: "auto"
+            }}
+            >
+            <ReactJson
+              src={memberInfoJSON}
+              collapsed= {true}
+              displayDataTypes = {false}
+            />
+          </div>
+          
+        </div>
       </div>
+      
       <ScaleLoader
           color={color}
           loading={loading}
