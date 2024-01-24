@@ -520,7 +520,6 @@ export default function PerformanceReview(props) {
             >
             <ReactJson
               src={memberInfoJSON}
-              collapsed= {true}
               displayDataTypes = {false}
             />
           </div>
