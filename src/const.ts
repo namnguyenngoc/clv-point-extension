@@ -179,3 +179,37 @@ export const FORMAT_NUMBER = function (value, tofix) {
 
   return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 };
+
+export const GET_START_END_PREVIEW = function (MEMBER_LIST: any, _START, _END) {
+  console.log("MEMBER_LIST", MEMBER_LIST);
+  console.log("_START", _START);
+  console.log("_END", _END);
+
+  let result = {
+    startDate: _START, 
+    endDate: _END
+  }
+
+  if(!MEMBER_LIST) {
+    return result;
+  } else {
+    result.startDate = moment(MEMBER_LIST[0].effectDateFrom)._d;
+
+    result.endDate = moment(MEMBER_LIST[0].effectDateFrom)._d;
+
+  }
+
+  MEMBER_LIST.map(function(item) {
+    if(moment(item.effectDateFrom, 'MMMM-YYYY') < moment(result.startDate)) {
+      result.startDate = moment(item.effectDateFrom)._d;
+
+    }
+
+    if(moment(item.effectDateTo, 'MMMM-YYYY') > moment(result.endDate)) {
+      result.endDate = moment(item.effectDateTo)._d;
+
+    }
+  });
+
+  return result;
+};

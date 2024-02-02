@@ -10,7 +10,7 @@ import Chart from 'react-apexcharts';
 import ReactJson from 'react-json-view'
 
 import { COMMON_HEALTH, WORKDAY, SUM_EFF_KNT, GET_LST_MONTH, USER_IN_TEAM,FORMAT_NUMBER,
-   APP_EXTEND_MGMT_HEIGHT, APP_COLLAPSE_MGMT_HEIGHT } from '../const';
+   APP_EXTEND_MGMT_HEIGHT, GET_START_END_PREVIEW } from '../const';
 
 
 const InputMemberOption = ({
@@ -81,6 +81,7 @@ export default function PerformanceReview(props) {
  
   const [effortChartData, setEffortChartData] = useState([]);
   const [serialChartData, setSerialChartData] = useState([{data: [1,2]},{data: [3,5]},{data: [6,9]}]);
+  const [taskData, setTaskData] = useState([]);
 
   const [effortChartCategories, setEffortChartCategories] = useState(["Jan", "Feb"]);
   const [memberInfoJSON, setMemberInfoJSON] = useState({});
@@ -154,197 +155,32 @@ export default function PerformanceReview(props) {
   }
 
   const calcEffort = async () => {
-    console.log("calcEffort");
-    console.log("common", COMMON_HEALTH());
-    // setSerialChartData([]);
-    // setEffortChartData([]);
-    // setEffortChartCategories([]);
-    const initialState = [];
-    setLoading(true);
-    let response =  await selectTaskByUser()
-    //   arr.reduce(function(p, item) {
-    //     return p.then(function() {
-    //         return saveInDatabase(item).then((myResult) => ... );
-    //     });
-    // }, Promise.resolve()).then(function() {
-    //     // all done here
-    // }).catch(function(err) {
-    //     // error here
-    // });
-    
-    await Promise.all([response]).then(function (data) {
-      console.log("Promise_all;", data);
-      let memItemFull = data[0];
-
-      let lstEffortByMember = memItemFull;
-      console.log("Promise", lstEffortByMember);
-      // console.log("Promise-len", lstEffortByMember && lstEffortByMember.length > 0);
-      // console.log("Promise-len", lstEffortByMember.length > 0) ;
-
-      //Format to chart
-      if(lstEffortByMember && lstEffortByMember.length > 0){
-        console.log("_month_chart_lstEffortByMember", lstEffortByMember);
-        let _month_chart = lstEffortByMember[0].effortDetailByMonth;
-        console.log("_month_chart", _month_chart);
-
-        if(_month_chart){
-          let newCategory = [];
-          _month_chart.map(function(itm: any){
-            newCategory.push(itm.key);
-          }); 
-          console.log("newCategory", newCategory);
-          setEffortChartCategories(newCategory);
-          if(newCategory) {
-            let effortOfMember = []; //[Member1, Member2];
-            let effortOfMonth = []; //[{data: effortOfMember1}, {data: effortOfMember2}];
-            // let series = [];
-            lstEffortByMember.map(function (itmMem) {
-              effortOfMember = [];
-              console.log("lstEffortByMember", lstEffortByMember);
-              newCategory.map(function (itmCat) {
-                if(itmMem) {
-                  let effortMonth = itmMem.effortDetailByMonth.filter(item2=> item2.key == itmCat);
-                  console.log("effortMonth", effortMonth);
-                  if(effortMonth && effortMonth.length > 0) {
-                    let newItem = {
-                      x: itmCat,
-                      y: effortMonth[0].total,
-                      goals: [{
-                          name: 'Expected Target Level',
-                          value: parseInt(itmMem.pointOnHour.effortPointByTargetLevel),
-                          strokeColor: '#775DD0',
-                          dataLabels: {
-                            enabled: true,
-                            formatter: function (value: any) {
-                              return FORMAT_NUMBER(value, 0);
-                            }
-                          }
-                        }
-                      ]
-                    }
-                    effortOfMember.push(newItem);
-  
-                  }
-                }
-                
-              })
-
-              effortOfMonth.push({
-                name: itmMem.blueprint_nm,
-                data: [...effortOfMember]});
-            });
-
-
-            console.log("effortOfMonth", effortOfMonth);
-            setSerialChartData(effortOfMonth);
-            setLoading(false);
-
-          }
-        }
-        
-      }
-    
-      //Format to chart end
-      // console.log("Promise-s", serialChartData);
-      // // console.log("Promise-c", effortChartCategories);
-      // // const [serialChartData, setSerialChartData] = useState([{data: [1,2]},{data: [3,5]},{data: [6,9]}]);
-      // // const [effortChartCategories, setEffortChartCategories] = useState(["Jan", "Feb"]);
-      // if(memItemFull){
-        
-      //   let newCategory = [];
-      //   let isAddCategory = false;
-      //   let _month = memItemFull[0].effortDetailByMonth;
-      //   for(let k  = 0; k < _month.length; k ++){
-      //     newCategory.push(_month[k].key);
-      //   }
-        
-      //   // memItemFull.effortDetailByMonth.map((item) => {
-      //   //   newCategory.push(item.key);
-      //   // });
-      //   let arry_item = [];
-      
-      //     let effortOfMember = []; //[Member1, Member2];
-      //     let effortOfMonth = []; //[{data: effortOfMember1}, {data: effortOfMember2}];
-      //     // let series = [];
-      //     for(let i = 0; i < newCategory.length; i ++) {
-      //       effortOfMember = [];
-      //       for(let k = 0; k < memItemFull.length; k ++){
-      //         let memberItem = memItemFull[k];
-      //         let effortMonth = memberItem.filter(item2=> item2.key == newCategory[i]);
-      //         effortOfMember.push(effortMonth.total);
-      //       };
-      //       effortOfMonth.push({data: [...effortOfMember]});
-      //     }
-
-      //     setSerialChartData(effortOfMonth);
-      //     setEffortChartCategories(newCategory);
-
-      //      console.log("effortOfMonth", effortOfMonth  );
-      //     console.log("newCategory", newCategory  );
-      //     // console.log("memberItemxxx", memberItem);
-          
-      //     // if(!memberItem.effortDetailByMonth) return;
-      //     // const _item = memberItem.effortDetailByMonth.map((item) => {
-      //     //   let newData = [];
-      //     //   if(!isAddCategory){
-      //     //     newCategory.push(item.key);
-  
-      //     //   }
-      //     //   // markert start
-      //     //   // let newItem = {
-      //     //   //   // ...item,
-      //     //   //   x: item.key,
-      //     //   //   y: item.total,
-      //     //   //   goals: [
-      //     //   //     {
-      //     //   //       name: 'Expected Target Level',
-      //     //   //       value: parseInt(memItemFull.pointOnHour.effortPointByTargetLevel),
-      //     //   //       strokeColor: '#775DD0',
-      //     //   //       dataLabels: {
-      //     //   //         enabled: true,
-      //     //   //         formatter: function (value) {
-      //     //   //           return FORMAT_NUMBER(value, 0);
-      //     //   //         }
-      //     //   //       }
-      //     //   //     }
-      //     //   //   ]
-      //     //   // }
-            
-      //     //   // newData.push(newItem);
-      //     //   // markert end
-      //     //   newData.push(item.total);
-      //     // })
-      //     // isAddCategory = true;
-      //     // series.push({data: [..._item]});
-        
-      //   // }); //memItemFull
-
-      //   // await Promise.all(arry_item).then(async (data) => {
-      //   //   console.log("data", data);
-      //   // });
-      
-      
-        try {
-          let jsonStr = JSON.stringify(memItemFull);
-          setMemberInfoJSON(JSON.parse(jsonStr));
-        } catch (error) {
-          setLoading(false);
-        }
-      // }
-        setLoading(false);
+    let __task = await selectTaskByUser();
+    await Promise.all([__task]).then((data) => {
+      console.log("data___1", data);
     });
+    console.log("data___", __task);
+    // refeshChart(__task_1);
+    setLoading(false);
+    
+    // console.log("task", task);
+    // if(task && task)
+    // await refeshChart(task).then((item) => {
+    //   setLoading(false);
+    // });
     
   }
   const selectTaskByUser = async () => {
-    let newListMember = [...memberSelect];
+    let newListMember = [];
+    let _newTask = [...taskData];
     if(!memberSelect){
       return;
     }
-   
+    let TASK_USER_ARR = [];
     try {
       // setRangeMonthReview (strFrm._i, endFrm._i);
       if (startDate && endDate) {
-        const TASK_USER_ARR = [];
+        
         // const newList = await getDailyTasksByUser(memberSelect[0]);
         let sheetMember = localStorage.getItem('CLV_MEMBER_LIST');
         if (sheetMember) {
@@ -354,15 +190,12 @@ export default function PerformanceReview(props) {
           //   mem => memberSelect.filter(memSel => memSel.userId == mem.userId).length > 0
           // );
           const lvlList = myData.levelList;
-         
+          const lstUserInTeam: any = USER_IN_TEAM(startDate, endDate, undefined);
           if (newListMember) {
-            
-            const lstUserInTeam: any = await USER_IN_TEAM(startDate, endDate, undefined);
             let newCategory = [];
             let isAddCategory = false;
             let series = [];
-            newListMember.map(async (itemMember) => {
-              const newMemberSelect: object = itemMember;
+            let _PMS = await memberSelect.map((itemMember: any) => {
               // let memberEffortItem = arrMember
               //   //Get task
               const effectDateFrom = moment(startDate);
@@ -373,10 +206,12 @@ export default function PerformanceReview(props) {
 
               const diffMonth =  moment(effectDateTo._i).diff(moment(effectDateFrom._i), 'months', true);
               setMonthDay(Math.round(diffMonth));
-              const TASK_USER = await getDailyTasksByUser(itemMember, undefined).then(async (dailyTaskRes) => {
+              const TASK_USER = getDailyTasksByUser(itemMember, undefined).then(async (dailyTaskRes) => {
                 //START
                 console.log("getDailyTasksByUser-2", dailyTaskRes);
                 if (dailyTaskRes) {
+                  console.log("getDailyTasksByUser-3", dailyTaskRes);
+
                   let sum = SUM_EFF_KNT(dailyTaskRes.dailyRsrcLst);
                   itemMember.effortPoint = sum;
                   itemMember.effortPointAvg = sum / (monthDay == 0 ? 1 : monthDay);
@@ -398,7 +233,14 @@ export default function PerformanceReview(props) {
                       "agvMonth": 0
                     }
                   }
-                  let itemTask = lstUserInTeam.filter(itm2 => itm2.usrId == itemMember.userId);
+                  let _itemTask = USER_IN_TEAM(startDate, endDate, undefined).then((response:any) => {
+                    return  response.filter(itm2 => itm2.usrId == itemMember.userId);
+                  })
+
+                  let itemTask = await Promise.resolve(_itemTask);
+                  console.log("itemTask", itemTask);
+
+                  // let itemTask = lstUserInTeam.filter(itm2 => itm2.usrId == itemMember.userId);
                   itemMember.countTask = 0;
                   if (itemTask && itemTask.length > 0) {
                     let _task = itemTask[0];
@@ -408,115 +250,136 @@ export default function PerformanceReview(props) {
                   // Chart info
                   let newData = [];
                   isAddCategory = true;
-                  console.log("Item User Full", itemMember);
-                  return itemMember;
+                  console.log("itemMember", itemMember);
+                  _newTask.push(itemMember);
                  
+                  
                 }
                 // //END
               });
-
+              return TASK_USER;
+              
+              // newListMember.push (itemMember);
+              // console.log("getDailyTasksByUser-6", itemMember);
+              // console.log("newListMember_", newListMember);
+              // TASK_USER_ARR.push(itemMember);
+              
               // TASK_USER_ARR.push(TASK_USER);
-              
+              // let item_Mem = new Promise((resolve, reject) => {
+              //   resolve(newListMember);
+              // });
+            
             });
+            console.log("PMS", _PMS);
+       
 
-           
-
-            // let newListSrt = await Promise.all(TASK_USER_ARR).then(async (response) => {
-            //   let newData = [...response];
-            //   // if(memSelect && memSelect.length > 0) {
-            //   //   newData = newData.filter(mem => mem.userId == memSelect.userId);
-            //   // }
-            //   let newItem = {
-            //     ...newMemberSelect, 
-            //     effort: [...newData]
-            //   }
-            //   console.log("newData", newItem);
-              
-            //   // setEffortList(newData);
-
-
+            // await Promise.all([lstUserInTeam, ...TASK_USER_ARR]).then(async (_response) => {
+            //     console.log("TASK_USER_ARR", _response);
             // });
+            // setMemberSelect(newListMember);
+            // let _ALL_DATA = await Promise.all(TASK_USER_ARR).then(async (item) => {
+            //   console.log("A", item);
+            // })
+            // // console.log("newListMember_2", _ALL_DATA);
+            // // return await Promise.resolve(newListMember);
+            // return _ALL_DATA;
+            return _PMS;
+            
           }
         }
 
-        return new Promise((resolve, reject) => {
-          resolve(newListMember);
-        });
       }
+      setTaskData(_newTask);
+      console.log("getDailyTasksByUser-5", taskData);
+     
     } catch (error) {
-      setLoading(false);
+      console.log("ERROR", error)
+      // setLoading(false);
     }
-    return new Promise((resolve, reject) => {
-      resolve(newListMember);
-    });
+    return null;
   }
 
-  async function refeshChart (memItemFull) {
-    console.log("memItemFull", memItemFull);
-    // customLegendItems: ['Blueprint', 'Expected Target Level'],
-    if(memItemFull){
-      setSerialChartData([]);
-      setEffortChartData([]);
-      setEffortChartCategories([]);
-      
-      let newCategory = [];
-      let isAddCategory = false;
-      let series = [];
+  function refeshChart(memItemFull) {
+    setLoading(true);
+    console.log("task_da2;", taskData);
 
-      // memItemFull.effortDetailByMonth.map((item) => {
-      //   newCategory.push(item.key);
-      // });
-      await memItemFull.forEach(async (memberItem) => {
-        let newData = [];
-        console.log("memberItemxxx", memberItem);
-        if(!memberItem.effortDetailByMonth) return;
-        await memberItem.effortDetailByMonth.forEach((item) => {
-          if(!isAddCategory){
-            newCategory.push(item.key);
+    let lstEffortByMember = [...memItemFull];
+    console.log("Promise_all;", JSON.stringify(memItemFull));
+    console.log("Promise_all;-1", lstEffortByMember && lstEffortByMember.length > 0);
 
-          }
-          // markert start
-          // let newItem = {
-          //   // ...item,
-          //   x: item.key,
-          //   y: item.total,
-          //   goals: [
-          //     {
-          //       name: 'Expected Target Level',
-          //       value: parseInt(memItemFull.pointOnHour.effortPointByTargetLevel),
-          //       strokeColor: '#775DD0',
-          //       dataLabels: {
-          //         enabled: true,
-          //         formatter: function (value) {
-          //           return FORMAT_NUMBER(value, 0);
-          //         }
-          //       }
-          //     }
-          //   ]
-          // }
-          
-          // newData.push(newItem);
-          // markert end
-          newData.push(item.total);
-        })
-        isAddCategory = true;
-        series.push({data: [...newData]});
-      }); //memItemFull
-      setSerialChartData(series);
-      setEffortChartCategories(newCategory);
+    
+    console.log("Promise", lstEffortByMember);
+    // console.log("Promise-len", lstEffortByMember && lstEffortByMember.length > 0);
+    // console.log("Promise-len", lstEffortByMember.length > 0) ;
+
+    //Format to chart
+    if(memItemFull && memItemFull.length > 0){
+      console.log("_month_chart_lstEffortByMember", memItemFull);
+      let _month_chart = memItemFull[0].effortDetailByMonth;
      
-      try {
-        let jsonStr = JSON.stringify(memItemFull);
-        setMemberInfoJSON(JSON.parse(jsonStr));
-      } catch (error) {
-        
+      if(!_month_chart) {
+        setLoading(false);
       }
-      
-      console.log("series1", series  );
-      console.log("newCategory1", newCategory  );
+      console.log("_month_chart", _month_chart);
 
-     
-    }
+      if(_month_chart){
+        let newCategory = [];
+        memItemFull[0].effortDetailByMonth.map(function(itm: any){
+          newCategory.push(itm.key);
+        }); 
+        console.log("newCategory", newCategory);
+        setEffortChartCategories(newCategory);
+        if(newCategory) {
+          let effortOfMember = []; //[Member1, Member2];
+          let effortOfMonth = []; //[{data: effortOfMember1}, {data: effortOfMember2}];
+          // let series = [];
+          memItemFull.map(function (itmMem) {
+            effortOfMember = [];
+            console.log("lstEffortByMember", memItemFull);
+            newCategory.map(function (itmCat) {
+              if(itmMem) {
+                let effortMonth = itmMem.effortDetailByMonth.filter(item2=> item2.key == itmCat);
+                console.log("effortMonth", effortMonth);
+                if(effortMonth && effortMonth.length > 0) {
+                  let newItem = {
+                    x: itmCat,
+                    y: effortMonth[0].total,
+                    goals: [{
+                        name: 'Expected Target Level',
+                        value: parseInt(itmMem.pointOnHour.effortPointByTargetLevel),
+                        strokeColor: '#775DD0',
+                        dataLabels: {
+                          enabled: true,
+                          formatter: function (value: any) {
+                            return FORMAT_NUMBER(value, 0);
+                          }
+                        }
+                      }
+                    ]
+                  }
+                  effortOfMember.push(newItem);
+
+                }
+              }
+              
+            })
+
+            effortOfMonth.push({
+              name: itmMem.blueprint_nm,
+              data: [...effortOfMember]});
+          }).then(item => {
+            console.log("DONE mAP");
+            // setLoading(false);
+          });
+
+
+          console.log("effortOfMonth", effortOfMonth);
+          setSerialChartData(effortOfMonth);
+          setLoading(false);
+
+        }
+      }
+    } 
    
   }
 
@@ -602,29 +465,43 @@ export default function PerformanceReview(props) {
      
     }
   }
+
+  
   const memberOnChange = async (member) => {
     setMemberSelect(member);
     if(member){
-      // effectDateFrom
-      // : 
-      // "March-2023"
-      // effectDateTo
-      // : 
-      // "February-2024"
+     
       const effectDateFrom = moment(member[0].effectDateFrom, 'MMMM-YYYY');
       const effectDateTo = moment(member[0].effectDateTo, 'MMMM-YYYY').endOf('month');
 
       console.log("Effort from", member[0].effectDateFrom) ;
       console.log("Effort from", member[0].effectDateTo);
 
-      setStartDate(effectDateFrom._d);
-      setEndDate(effectDateTo._d);
+      console.log("Effort from_", moment(member[0].effectDateFrom));
+      console.log("Effort from__",  moment(startDate));
 
-      const workday = WORKDAY(effectDateFrom, effectDateTo);
+      // if(moment(member[0].effectDateFrom) < moment(startDate)) {
+      //   setStartDate(effectDateFrom._d);
+
+      // }
+      // if(moment(member[0].effectDateTo) > moment(endDate)) {
+      //   setEndDate(effectDateTo._d);
+
+      // }
+
+      let _start_end = GET_START_END_PREVIEW(member, startDate, endDate);
+      console.log("_start_end", _start_end);
+
+      if(_start_end) {
+        setStartDate(_start_end.startDate);
+        setEndDate(_start_end.endDate);
+
+      }
+      const workday = WORKDAY(moment(startDate), moment(endDate));
       // const lvlList = myData.levelList;
       setWorkday(workday);
   
-      const diffMonth = effectDateTo.diff(effectDateFrom, 'months', true);
+      const diffMonth =  moment(endDate).diff(moment(startDate), 'months', true);
       setMonthDay(Math.round(diffMonth));
 
     }
@@ -708,7 +585,7 @@ export default function PerformanceReview(props) {
           <button 
             type="button" 
             className="bg-blue-500 text-white py-2 px-4 rounded-lg ml-4" 
-            onClick={event => calcEffort()}>
+            onClick={async(event) => await calcEffort()}>
             Search
           </button>
         </div>
