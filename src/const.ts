@@ -57,8 +57,8 @@ export const WEB_INFO = {
         KEY: 'MTIyNDMxMTAyNjI3OohOmIh7OgKKkQiZ05XNXU/7iHvy',
       },
       headers: {
-        // Authorization: 'Bearer MTIyNDMxMTAyNjI3OohOmIh7OgKKkQiZ05XNXU/7iHvy',
-        'Authorization': 'Basic bmFtLm5ndXllbm5nb2M6cXdlckAxMjM=',
+        Authorization: 'Bearer MTIyNDMxMTAyNjI3OohOmIh7OgKKkQiZ05XNXU/7iHvy',
+        // 'Authorization': 'Basic bmFtLm5ndXllbm5nb2M6cXdlckAxMjM=',
       }
       
     }
