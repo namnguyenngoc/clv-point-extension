@@ -1699,14 +1699,14 @@ export default function TaskSearchForm() {
                     id="clickID"
                     value={clickID}
                     style={{
-                      backgroundColor: taskServer.includes("CLICKUP") ?  (clickTaskInfo ? clickTaskInfo.status.color : "#FFFFFF") : (pimTaskInfo ? pimTaskInfo.fields.status.statusCategory.colorName : "#FFFFFF")
+                      backgroundColor: taskServer.includes("CLICKUP") ?  (clickTaskInfo ? clickTaskInfo.data.status.color : "#FFFFFF") : (pimTaskInfo ? pimTaskInfo.fields.status.statusCategory.colorName : "#FFFFFF")
                     }}
                     onClick={handleKeyDownClickup}
                     className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-150"
                   />
                   <label>
                       <div onClick={evnet=>openClickUp(clickTaskInfo, pimTaskInfo)}>
-                        { taskServer.includes("CLICKUP") ? (clickTaskInfo ? clickTaskInfo.status.status : "" ) : (pimTaskInfo ? pimTaskInfo.fields.status.name : "" ) }
+                        { taskServer.includes("CLICKUP") ? (clickTaskInfo ? clickTaskInfo.data.status.status : "" ) : (pimTaskInfo ? pimTaskInfo.fields.status.name : "" ) }
 
                       </div>
                   </label>
