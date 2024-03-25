@@ -93,6 +93,7 @@ export default function TaskSearchForm() {
   let [reqId, setReqId] = useState("");
   let [sprintNumber, setSprintNumber] = useState("");
   let [clickID, setClickID] = useState("");
+  let [taskServer, setTaskServer] = useState(["CLICKUP"]);
   let [effortWithMember, setEffortWithMember] = useState([]);
   let [taskInfo, setTaskInfo] = useState({});
   let [effortInfo, setEffortInfo] = useState({});
@@ -139,6 +140,8 @@ export default function TaskSearchForm() {
   
   const [logWorkDate, setLogWorkDate] = useState(new Date());
   let [clickTaskInfo, setClickTaskInfo] = useState(null);
+  let [pimTaskInfo, setPimTaskInfo] = useState(null);
+
   let [isOpenConfirm, setIsOpenConfirm] = useState(false);
   const today = moment(new Date());
   const firstDayOfMonth = today.clone().startOf("month");
@@ -149,6 +152,7 @@ export default function TaskSearchForm() {
     background: '#F08080'
   });
   const [prefixID, setPrefixID] = useState("86");
+  const [preBPID, setPreBPID] = useState("CARISDO");
 
   const notify = () => toast("There is no clickup id!");
 
@@ -786,6 +790,8 @@ export default function TaskSearchForm() {
 
   const reqClickupIinfoSplit = (req) => {
     let clickupId = "";
+    let _taskServer = ["PIM"];
+    setTaskServer([]);
     let sprint:any;
     if(req && req.lstReq && req.lstReq.length > 0){
       
@@ -817,11 +823,16 @@ export default function TaskSearchForm() {
       if(reqName) {
         if(ketQua && ketQua.length > 4) {
           let id = newArr[4].replace(/ /g, "");
-          if(id.includes(prefixID)) {
+
+          if(id.includes(prefixID) || id.includes(preBPID)) {
             clickupId = id;
+            if(id.includes(prefixID)) {
+              _taskServer = ["CLICKUP"];
+            }
+          
 
           } else {
-            if(clickupIDByLength.includes(prefixID)) {
+            if(clickupIDByLength.includes(prefixID) || clickupIDByLength.includes(preBPID)) {
               clickupId = clickupIDByLength;
             } else {
               console.log("KHÔNG TÌM DC CLICKUP");
@@ -847,6 +858,7 @@ export default function TaskSearchForm() {
           }
           setSprintNumber(sprint);
           setClickID(clickupId);
+          setTaskServer(_taskServer);
          
         }
       }
@@ -1395,13 +1407,21 @@ export default function TaskSearchForm() {
  
   }
 
-  const openClickUp = (item) => {
-    if(item && item.id) {
-      const url = `https://app.clickup.com/t/${item.id}`;
-      window.open(url, "_blank"); //to open new page
+  const openClickUp = (clickup, pim) => {
+    if(taskServer.includes("CLICKUP")) {
+      if(clickup && clickup.id) {
+        const url = `https://app.clickup.com/t/${item.id}`;
+        window.open(url, "_blank"); //to open new page
 
+      }
+    } else if (taskServer.includes("PIM")) {
+      if(pim && pim.key) {
+        const url = `https://pim.cyberlogitec.com/jira/browse/${pim.key}`;
+        window.open(url, "_blank"); //to open new page
+
+      }
     }
-    console.log("item-", item);
+
   }
   const checkEstimateTask = async () => {
     // setIsOpen(true);
@@ -1436,20 +1456,81 @@ export default function TaskSearchForm() {
     setLogWorkDate(date);
   }
   
-  const handleKeyDownClickup = (event) => {
-    clickupGetTask();
+  const handleKeyDownClickup = async (event) => {
+    await clickupGetTask();
   }
 
-  const clickupGetTask = async () => {
-    if(clickID){
-      
-      let response = await axios.get(`${config.WORKING_API}/clickup/getTask/${clickID}`)
+  const getTaskInfo = async (server, id) =>  {
+    console.log("getTaskInfo");
+    if(server.includes("CLICKUP")){
+      let data = await axios.get(`${config.WORKING_API}/clickup/getTask/${id}`)
       .then(async function (response) {
-        const data =  response.data
-        console.log("Data", data);
-        setClickTaskInfo(data.data);
+        const data =  response.data;
+        return data;
       });
+      return new Promise((resolve, reject) => {
+        resolve(data);
+      });
+
+    } else if(server.includes("PIM")){
+      
+      let url = `${config.WORKING_API}/pim/issue/${id}`;
+      let data = await axios.get(url).then(async function (response) {
+        const data =  response.data;
+        return data.data;
+      });
+      return new Promise((resolve, reject) => {
+        resolve(data);
+      });
+    } else {
+      return null;
     }
+  }
+  const clickupGetTask = async () => {
+    if(clickID) {
+      let data = await getTaskInfo(taskServer, clickID);
+      console.log("datadatadatadata-Data", data);
+
+      if(taskServer.includes("CLICKUP")){
+        setClickTaskInfo(data);
+      
+      } else if(taskServer.includes("PIM")){
+        setPimTaskInfo(data);
+
+      } else {
+        alert(`There is no server:${taskServer}`)
+      }
+            
+    
+    }
+    // if(clickID){
+    //   if(taskServer.includes("CLICKUP")){
+    //     console.log(`Clickup: ${clickID}`);
+    //     await axios.get(`${config.WORKING_API}/clickup/getTask/${clickID}`)
+    //     .then(async function (response) {
+    //       const data =  response.data
+    //       console.log("Clickup-Data", data);
+    //       setClickTaskInfo(data.data);
+    //     });
+    //   } else if(taskServer.includes("PIM")){
+    //     console.log(`PIM: ${clickID}`);
+    //     let axiosConfig = {
+    //       headers: {
+    //         ...WEB_INFO.PIM.CARIS.headers,
+    //       }
+    //     };
+    //     let url = `${config.WORKING_API}/pim/issue/${clickID}`;
+    //     await axios.get(url).then(async function (response) {
+    //       const data =  response.data
+    //       console.log("PIM-Data", data);
+    //       setPimTaskInfo(data.data);
+    //     });
+
+    //   } else {
+    //     alert(`There is no server:${taskServer}`)
+    //   }
+      
+    // }
   }
 
   const checkCAPA = async () => {
@@ -1603,9 +1684,8 @@ export default function TaskSearchForm() {
           </div>
           <table className="w-full border border-gray-500">
             <thead>
-             
               <tr className="bg-gray-200">
-                <th className="px-2 py-2 text-right">
+                <th className="px-2 py-2 text-left">
                   <input
                     type="text"
                     id="reqId"
@@ -1619,14 +1699,14 @@ export default function TaskSearchForm() {
                     id="clickID"
                     value={clickID}
                     style={{
-                      backgroundColor: clickTaskInfo ? clickTaskInfo.status.color : "#FFFFFF"
+                      backgroundColor: taskServer.includes("CLICKUP") ?  (clickTaskInfo ? clickTaskInfo.status.color : "#FFFFFF") : (pimTaskInfo ? pimTaskInfo.fields.status.statusCategory.colorName : "#FFFFFF")
                     }}
                     onClick={handleKeyDownClickup}
-                    className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-100"
+                    className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-150"
                   />
                   <label>
-                      <div onClick={evnet=>openClickUp(clickTaskInfo)}>
-                        { clickTaskInfo ? clickTaskInfo.status.status : "" }
+                      <div onClick={evnet=>openClickUp(clickTaskInfo, pimTaskInfo)}>
+                        { taskServer.includes("CLICKUP") ? (clickTaskInfo ? clickTaskInfo.status.status : "" ) : (pimTaskInfo ? pimTaskInfo.fields.status.name : "" ) }
 
                       </div>
                   </label>
@@ -1636,7 +1716,7 @@ export default function TaskSearchForm() {
                     type="text"
                     id="sprintNumber"
                     value={sprintNumber}
-                    className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-100"
+                    className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-50 text-right"
                   />
                 </th>
                 <th className="px-2 py-2 text-right">
@@ -1666,30 +1746,48 @@ export default function TaskSearchForm() {
                   </div>
                   
                 </th>
+                
+              </tr>
+            </thead>
+          </table>
+          <table className="border-gray-500">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="px-4 py-2 text-blue-600">
+                  Assignee: { taskServer.includes("CLICKUP") ?  "" : (pimTaskInfo ? pimTaskInfo.fields.assignee.displayName : "Unassigned")}
+                </th>
+
+                <th className="px-4 py-2 text-blue-600">
+                  Reporter (PO):  { taskServer.includes("CLICKUP") ?  "" : (pimTaskInfo ? pimTaskInfo.fields.reporter.displayName : "")}
+
+                </th>
+                <th className="px-4 py-2 text-right">
+                  Priority: { taskServer.includes("CLICKUP") ?  "" : (pimTaskInfo ? pimTaskInfo.fields.priority.name : "")}
+                </th>
                 <th className="px-4 py-2 text-right">
                   <button type="button" 
                     style={{
                       backgroundColor: capaInfo ? capaInfo.background : "#FFFFFF"
                     }}
-                    className="text-white py-2 px-4 rounded-lg ml-4" 
+                    className="text-white py-2 px-4 rounded-lg ml-1" 
                     onClick={checkCAPA}>
                     CAPA
                   </button>
-                  <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg ml-4">
+                  <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg ml-1">
                     Calc Point
                   </button>
                   <button 
                     type="button" 
-                    className="bg-green text-white py-2 px-4 rounded-lg ml-4" 
+                    className="bg-green text-white py-2 px-4 rounded-lg ml-1" 
                     disabled={ (taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0 && taskInfo.lstReq[0].pntNo >= effortInfo.totalPoint) ? false : true}
                     onClick={cfmEditPoint}>
                     Insert Point
                   </button>
                 </th>
-                
               </tr>
             </thead>
           </table>
+          
         </div>
         <div>
           <Modal

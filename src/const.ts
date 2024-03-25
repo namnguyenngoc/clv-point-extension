@@ -37,8 +37,30 @@ export const WEB_INFO = {
     PROJECTS: {
       NEW_FWD: {
         ID: 'PJT20211119000000001',
-        NAME: 'NEW FWD',
+        Name: 'CARIS_Enhance_PRD [Internal]',
+        Category: "Logistics (CARIS)",
       }
+    }
+    
+   
+  },
+  PIM: {
+    CARIS: {
+      API: 'https://pim.cyberlogitec.com',
+      INFO: {
+        ID: 'CARISDO',
+        NAME: 'NEW FWD',
+      },
+      PER_ACCESS_KEY: {
+        NAME: 'CARIS',
+        DATE: 'Mar 25, 2024, 11:42:34 AM GMT+7',
+        KEY: 'MTIyNDMxMTAyNjI3OohOmIh7OgKKkQiZ05XNXU/7iHvy',
+      },
+      headers: {
+        // Authorization: 'Bearer MTIyNDMxMTAyNjI3OohOmIh7OgKKkQiZ05XNXU/7iHvy',
+        'Authorization': 'Basic bmFtLm5ndXllbm5nb2M6cXdlckAxMjM=',
+      }
+      
     }
    
   },
