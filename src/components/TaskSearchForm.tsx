@@ -1753,16 +1753,19 @@ export default function TaskSearchForm() {
           <table className="border-gray-500">
             <thead>
               <tr className="bg-gray-200">
+              <th className="px-4 py-2 text-blue-600">
+                  Versions: { taskServer.includes("CLICKUP") ?  "" : ((pimTaskInfo && pimTaskInfo.fields.fixVersions) ? `${pimTaskInfo.fields.fixVersions.map(u => u.name).join(', ')} ${pimTaskInfo.fields.fixVersions.map(u => u.releaseDate).join(', ')}` : "TEST")}
+                </th>
                 <th className="px-4 py-2 text-blue-600">
-                  Assignee: { taskServer.includes("CLICKUP") ?  "" : (pimTaskInfo ? pimTaskInfo.fields.assignee.displayName : "Unassigned")}
+                  Assignee: { taskServer.includes("CLICKUP") ?  "" : ((pimTaskInfo && pimTaskInfo.fields.assignee) ? pimTaskInfo.fields.assignee.displayName : "Unassigned")}
                 </th>
 
                 <th className="px-4 py-2 text-blue-600">
-                  Reporter (PO):  { taskServer.includes("CLICKUP") ?  "" : (pimTaskInfo ? pimTaskInfo.fields.reporter.displayName : "")}
+                  Reporter (PO):  { taskServer.includes("CLICKUP") ?  "" : ((pimTaskInfo && pimTaskInfo.fields.reporter) ? pimTaskInfo.fields.reporter.displayName : "")}
 
                 </th>
                 <th className="px-4 py-2 text-right">
-                  Priority: { taskServer.includes("CLICKUP") ?  "" : (pimTaskInfo ? pimTaskInfo.fields.priority.name : "")}
+                  Priority: { taskServer.includes("CLICKUP") ?  "" : ((pimTaskInfo && pimTaskInfo.fields.priority) ? pimTaskInfo.fields.priority.name : "")}
                 </th>
                 <th className="px-4 py-2 text-right">
                   <button type="button" 
