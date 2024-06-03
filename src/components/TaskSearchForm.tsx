@@ -105,7 +105,8 @@ export default function TaskSearchForm() {
   let [config, setConfig] = useState({
     isLoadGoogleSheet: true,
     WORKING_API: WEB_INFO.WORKING_API,
-    TASK_MEMBER_API: WEB_INFO.TASK_MEMBER_API
+    TASK_MEMBER_API: WEB_INFO.TASK_MEMBER_API,
+    TASK_MEMBER_API_BIZ: WEB_INFO.TASK_MEMBER_API_BIZ
   });
 
   let [isShowDetailEffortTable, setIsShowDetailEffortTable] = useState(true);
@@ -148,6 +149,7 @@ export default function TaskSearchForm() {
   const [startDate, setStartDate] = useState(firstDayOfMonth._d);
   const [endDate, setEndDate] = useState(new Date());
   const [memberList, setMemberList] =  useState({});
+  const [isLiveServer, setIsLiveServer] = useState(false);
   const [capaInfo, setCapaInfo] = useState({
     background: '#F08080'
   });
@@ -661,7 +663,8 @@ export default function TaskSearchForm() {
     // Req
     // {"usrId":"namnnguyen","wrkDt":"20230621","reqId":"PRQ20230607000000031","pjtId":"PJT20211119000000001","subPjtId":"PJT20211119000000001","cmt":"Done task.","jbId":"JOB20211125000000001","phsCd":"PIM_PHS_CDFIN","phsNm":"Finish","jbNm":"Skill","wrkTm":" 20 Minute","dt":"Jun 21, 2023","addSts":true,"type":"actual","actEfrtMnt":20,"cmtCtnt":"<div class=\"system-comment\">Added time worked:</div><div style=\"margin-left: 10px\"> <b><i> &nbsp; Phase Name: </i></b>Finish</div><div style=\"margin-left: 10px\"> <b><i> &nbsp; Job Category: </i></b>Skill</div><div style=\"margin-left: 10px\"> <b><i> &nbsp; Time Worked : </i></b> 20 Minute</div><div style=\"margin-left: 10px\"> <b><i> &nbsp; Date: </i></b>Jun 21, 2023</div>","pstTpCd":"PST_TP_CDACT"}
     let w_date_log = moment(logWorkDate).format("ll");
-    let memberResponse = await axios.get(`${config.TASK_MEMBER_API}/memberList`)
+    let url = `${isLiveServer ? config.TASK_MEMBER_API_BIZ : config.TASK_MEMBER_API}/memberList`;
+    let memberResponse = await axios.get(url)
       .then(async function (response) {
         let data =  response.data.data;
         
@@ -872,7 +875,8 @@ export default function TaskSearchForm() {
   const selectMember_TaskList = async (requirementRP) => {
     if(1 == 1) {
       //Call API
-      let memberResponse = await axios.get(`${config.TASK_MEMBER_API}/memberList`)
+      let url = `${isLiveServer ? config.TASK_MEMBER_API_BIZ : config.TASK_MEMBER_API}/memberList`;
+      let memberResponse = await axios.get(url)
       .then(async function (response) {
         let data =  response.data.data;
         
@@ -886,7 +890,8 @@ export default function TaskSearchForm() {
       let taskList: any;
       let memberPromise: any;
       if(param && param.clickupId) {
-        let taskListResponse = await axios.get(`${config.TASK_MEMBER_API}/taskList/${param?.clickupId}/${param?.sprint}`)
+        let url = `${isLiveServer ? config.TASK_MEMBER_API_BIZ : config.TASK_MEMBER_API}/taskList/${param?.clickupId}/${param?.sprint}`;
+        let taskListResponse = await axios.get(url)
         .then(async function (response) {
           const data =  response.data.data;
           return data;
@@ -1767,6 +1772,18 @@ export default function TaskSearchForm() {
                 <th className="px-4 py-2 text-right">
                   Priority: { taskServer.includes("CLICKUP") ?  "" : ((pimTaskInfo && pimTaskInfo.fields.priority) ? pimTaskInfo.fields.priority.name : "")}
                 </th>
+               
+                <th className="px-2 py-2 text-right">
+                  <label className="ml-4 ">
+                    <input type="checkbox"
+                      defaultChecked={isLiveServer}
+                      onChange={() => setIsLiveServer(!isLiveServer)}
+                    />
+                      Live
+                  </label>
+                </th>
+
+
                 <th className="px-4 py-2 text-right">
                   <button type="button" 
                     style={{

@@ -66,6 +66,8 @@ export const WEB_INFO = {
   },
   WORKING_API: "http://localhost:81/workingapi/api",
   TASK_MEMBER_API: "http://localhost:81/fapi/working",
+  TASK_MEMBER_API_BIZ: "http://anvatchibeo.ddns.net:81/workingapi",
+
   CLICKUP: {
     SPACE_ID: 26265831,
     
