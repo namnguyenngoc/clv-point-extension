@@ -43,7 +43,7 @@ table.custom-scroll thead th {
 }
 table.custom-scroll tbody tr td {
   border-right: 1px solid !important;
-  border-color: rgb(229, 231, 235) !important;
+  border-color: rgb(229, 231, 235) !important; 
 }
 .w-170 {
   width: 170px;
