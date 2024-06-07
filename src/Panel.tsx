@@ -1,10 +1,7 @@
 import React, { ReactElement, useEffect, useState } from 'react';
 import { APP_COLLAPSE_WIDTH, APP_EXTEND_WIDTH, APP_EXTEND_HEIGHT, APP_COLLAPSE_HEIGHT} from './const';
 import Button from './components/Button';
-import TaskSearchForm from './components/TaskSearchForm';
-import TaskEffortByUser from './components/TaskEffortByUser';
-import SearchTask from './components/SearchTask';
-
+import JiraTaskLogtime from './components/JiraTaskLogtime';
 
 export default function Panel({ onWidthChange, initialEnabled }: { onWidthChange: (value: number) => void, initialEnabled: boolean }): ReactElement {
   const [enabled, setEnabled] = useState(initialEnabled);
@@ -58,12 +55,12 @@ export default function Panel({ onWidthChange, initialEnabled }: { onWidthChange
       <div className='main-layout grid grid-flow-row gap-1'>
         
         <div className={!enabled ? 'hidden' : 'pt-4'}>
-          <TaskSearchForm onSearch={handleSearch} />
+          JIRA
+          <JiraTaskLogtime onSearch={handleSearch} />
           
         </div>
       </div>
       <div className={!enabled ? 'hidden' : 'pt-4 ml-4 pb-4 h-250 mr-4'}>
-        <SearchTask />
       </div>
       {/* <div className={!enabled ? 'hidden' : 'pt-4'}>
           <TaskEffortByUser />

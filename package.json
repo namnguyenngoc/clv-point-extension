@@ -6,13 +6,14 @@
   "browserslist": "> 0.5%, last 2 versions, not dead",
   "scripts": {
     "prestart": "yarn style",
-    "start": "parce --dist-dir ./public/dist",
-    "prebuild": "yarn style && rm -rf ./public/dist",
-    "build": "parcel build --dist-dir ./public/dist --no-content-hash",
+    "start": "parce --dist-dir ./public-jira/dist",
+    "prebuild": "yarn style && rm -rf ./public-jira/dist",
+    "build": "parcel build --dist-dir ./public-jira/dist --no-content-hash",
     "style": "npx tailwindcss -i ./src/input.css -o ./src/tailwindcss-output.css",
     "style:watch": "yarn style -- --watch"
   },
   "dependencies": {
+    "apexcharts": "^3.49.1",
     "axios": "^1.3.3",
     "classnames": "^2.3.1",
     "fs": "^0.0.1-security",
@@ -20,6 +21,7 @@
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.40",
     "react": "^18.2.0",
+    "react-apexcharts": "^1.4.1",
     "react-app-polyfill": "^3.0.0",
     "react-data-table-component": "^7.5.4",
     "react-datasheet-grid": "^4.11.2",
@@ -27,6 +29,7 @@
     "react-dom": "^18.2.0",
     "react-frame-component": "^5.2.3",
     "react-google-sheets": "^0.4.0",
+    "react-json-view": "^1.21.3",
     "react-modal": "^3.16.1",
     "react-moment": "^1.1.3",
     "react-select": "^5.7.0",

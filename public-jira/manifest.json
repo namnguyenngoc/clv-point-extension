@@ -9,8 +9,8 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "css": ["dist/index.4eeece91.css"],
-      "js": ["dist/index.6099912e.js"]
+      "css": ["dist/index.f00b4936.css"],
+      "js": ["dist/index.7655bd0e.js"]
     }
   ],
   "permissions": ["storage", "scripting", "tabs"],
