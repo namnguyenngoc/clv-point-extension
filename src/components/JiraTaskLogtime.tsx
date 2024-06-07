@@ -15,6 +15,7 @@ import {
   GET_SPRINT_LIST,
   FORMAT_NUMBER,
   GET_BOARD_LIST } from '../commonPIM';
+import { CSVLink, CSVDownload } from "react-csv";
 
 
 const InputMemberOption = ({
@@ -88,8 +89,10 @@ export default function JiraTaskLogtime(props) {
   let [loading, setLoading] = useState(false);
   let [color, setColor] = useState("#0E71CC");
   let [totalEffort, setTotalEffort] = useState(0);
-  let [totalEffortFWD, setTotalEffortFWD] = useState(0);
-
+  let [REWORK_RATE, setREWORK_RATE] = useState(0);
+  let [BUG_RATE, setBUG_RATE] = useState(0);
+  let [STORY_POINT, setSTORY_POINT] = useState(0);
+  
   
   const url = 'https://blueprint.cyberlogitec.com.vn/api';
   const DT_FM = 'YYYYMMDD';
@@ -121,22 +124,38 @@ export default function JiraTaskLogtime(props) {
   const [startDate, setStartDate] = useState(firstDayOfMonth._d);
   const [endDate, setEndDate] = useState(new Date());
   const [taskList, setTaskList] = useState([]);
+  const [defectList, setDefectList] = useState([]);
+
+  const [excelData, setExcelData] = useState<{ name: string }[]>([]);
+
   const [workday, setWorkday] = useState(0);
   const [monthDay, setMonthDay] = useState(0);
+
   const columns = [
     {
         name: 'key',
         width: "180px",
-        selector: row => row.key,
+        selector: row => row.Key,
     },
-    // {
-    //   name: 'taskNm',
-    //   selector: row =>row.taskNm,
-    // },
+    {
+      name: 'USP',
+      width: "80px",
+      right: "yes",
+      selector: row => row.fields.customfield_10106,
+  },
+    
+    {
+      name: 'Progress',
+      selector: row =>row.Progress,
+    },
+    {
+      name: 'Assignee',
+      selector: row =>row.Assignee
+    },
     {
       name: 'Estimate',
       right: "yes",
-      selector: row => row.fields.aggregatetimespent,
+      selector: row => row.Aggregatetimespent,
       cell: row => (
         convertNumberToTimeString(row.fields.aggregatetimespent)
       )
@@ -167,18 +186,73 @@ export default function JiraTaskLogtime(props) {
       ),
     },
     
+   
+  
+  ]
+  const columnsDefect = [
     {
-      name: 'Count Rework Task',
+        name: 'key',
+        width: "180px",
+        selector: row => row.Key,
+    },
+    {
+      name: 'USP',
+      width: "80px",
       right: "yes",
-      selector: row => row.fields.subtasks.length,
-      // cell: row => (
-      //   // TOTAL_WORKLOG_VIA_TICKET(row.key)
-      // ),
+      selector: row => row.fields.customfield_10106,
+  },
+    
+    {
+      name: 'Progress',
+      selector: row =>row.Progress,
+    },
+    {
+      name: 'Assignee',
+      selector: row =>row.Assignee
+    },
+    {
+      name: 'Estimate',
+      right: "yes",
+      selector: row => row.Aggregatetimespent,
+      cell: row => (
+        convertNumberToTimeString(row.fields.aggregatetimespent)
+      )
+     
+    },
+    {
+      name: 'Total Log',
+      right: "yes",
+      // selector: row => row.fields.worklog,
+      cell: row => (
+        row.fields.worklog ? convertNumberToTimeString(row.fields.worklog.worklogs.reduce((n, {timeSpentSeconds}) => n + timeSpentSeconds, 0)) : 0
+      ),
+      
+    },
+    {
+      name: 'Total Rework Time',
+      right: "yes",
+      selector: row => row.total_rework_time,
+      cell: row => (
+        convertNumberToTimeString(row.total_rework_time)
+      )
+    },
+    {
+      name: 'Reward Rate',
+      right: "yes",
+      cell: row => (
+        row.fields.worklog && row.fields.worklog.worklogs.reduce((n, {timeSpentSeconds}) => n + timeSpentSeconds, 0) > 0 ? FORMAT_NUMBER(row.total_rework_time/row.fields.worklog.worklogs.reduce((n, {timeSpentSeconds}) => n + timeSpentSeconds, 0), 2) : 0
+      ),
+    },
+    {
+      name: 'Parent',
+      center: "yes",
+      cell: row => (
+        row.fields.parent.key
+      ),
     },
    
   
   ]
-
  
   const formatPrice = (value, tofix) => {
     if (!value) {
@@ -514,7 +588,8 @@ export default function JiraTaskLogtime(props) {
   },[])
   return (
     <div className="grid grid-flow-row gap-2">
-      <div className="grid grid-flow-col gap-1 px-2">
+      
+      <div className="grid grid-flow-col gap-1 px-2 pt-1 pb-2">
         <div>
           <Select
             closeMenuOnSelect={true}
@@ -524,7 +599,8 @@ export default function JiraTaskLogtime(props) {
               setBOARD(mem);
               console.log("SPRINT_LIST mem", mem);
               if (mem) {
-                GET_SPRINT_LIST(mem.value, 'state=active').then((_data) => {
+                // GET_SPRINT_LIST(mem.value, 'state=active').then((_data) => {
+                GET_SPRINT_LIST(mem.value).then((_data) => {
                   console.log("SPRINT_LIST", _data);
                   setSprintList(_data);
                   // return _data;
@@ -546,17 +622,8 @@ export default function JiraTaskLogtime(props) {
             hideSelectedOptions={false}
             isClearable={true}
             onChange={(sprint) => {
-              setLoading(true);
-              GET_STORY_VIA_SPRINT(sprint.value).then((_data) => {
-                return Promise.all([..._data]).then(item => {
-                  setTaskList(item);
-                  setLoading(false);
-          
-                }).catch(e => {
-                  setLoading(false);
-                });
-                
-              });
+              setSPRINT(sprint);
+              
             }
             } 
             options={sprintList}
@@ -565,27 +632,98 @@ export default function JiraTaskLogtime(props) {
             }}
           />
         </div>
-        <div>
-          <DatePicker selected={startDate} onChange={(date) => onChangeDate(date, "START")} className="w-150"/>
-
-        </div>
-        <div>
-          <DatePicker selected={endDate} onChange={(date) => onChangeDate(date, "END")} className="w-150"/>
-
-        </div>
-        <div>
-          <div> { workday } days </div>
-          <div>
-            {formatPrice(monthDay,0)} months
-          </div>
-        </div>
-        <div className="w-70">
+        <div  className="grid grid-flow-col gap-1 px-2">
+          <button 
+            className="bg-blue-500 text-white py-2 px-4 rounded-lg ml-4">
+            {STORY_POINT}
+          </button>
+          <button 
+            className="bg-blue-500 text-white py-2 px-4 rounded-lg ml-4">
+            Bug Rate: {BUG_RATE}
+          </button>
+          <button 
+            className="bg-blue-500 text-white py-2 px-4 rounded-lg ml-4">
+            Rework Rate: {REWORK_RATE}
+          </button>
+       
+          <CSVLink data={excelData}  className="bg-blue-500 text-white py-2 px-4 rounded-lg ml-4" >Excel</CSVLink>
           <button 
             type="button" 
             className="bg-blue-500 text-white py-2 px-4 rounded-lg ml-4" 
-            onClick={event => selectTaskByUser(memberSelect)}>
+            onClick={event => {
+              setLoading(true);
+              setTaskList([]);
+              setExcelData([]);
+              if(SPRINT != undefined && SPRINT.value != undefined) {
+                let ARR_DEFECT = [];
+                
+                GET_STORY_VIA_SPRINT(SPRINT.value).then((_data) => {
+                  return Promise.all([..._data]).then(_item => {
+                    // setDefectList
+                    // update excel list
+                    let _excelData: Array<{ name: string }> = [..._item.map((item: any) => {
+                      let __item = {
+                        "Key": item.key
+                        ,"Progress": item.fields.status.name
+                        ,"Assignee": item.fields.assignee ? item.fields.assignee.displayName : ""
+                        ,"Aggregatetimespent": convertNumberToTimeString(item.fields.aggregatetimespent)
+                        ,"TotaLogRow": item.fields.worklog ? convertNumberToTimeString(item.fields.worklog.worklogs.reduce((n, {timeSpentSeconds}) => n + timeSpentSeconds, 0)) : 0
+                        ,"TotaLogRowValue": item.fields.worklog ? item.fields.worklog.worklogs.reduce((n, {timeSpentSeconds}) => n + timeSpentSeconds, 0) : 0
+                        ,"TotalReworkRate": convertNumberToTimeString(item.total_rework_time)
+                        ,"RatioRework":  item.fields.worklog && item.fields.worklog.worklogs.reduce((n, {timeSpentSeconds}) => n + timeSpentSeconds, 0) > 0 ? FORMAT_NUMBER(item.total_rework_time/item.fields.worklog.worklogs.reduce((n, {timeSpentSeconds}) => n + timeSpentSeconds, 0), 2) : 0
+                        ,"RatioReworkValue": item.fields.worklog && item.fields.worklog.worklogs.reduce((n, {timeSpentSeconds}) => n + timeSpentSeconds, 0) > 0 ? item.total_rework_time/item.fields.worklog.worklogs.reduce((n, {timeSpentSeconds}) => n + timeSpentSeconds, 0) : 0
+                        ,...item
+                      };
+                      if(item.fields.issuetype?.subtask == true) {
+                        ARR_DEFECT.push({...__item});
+                      }
+                      return  __item;
+                    })
+                    ];
+
+                    let totalLog = _excelData.reduce((n, {TotaLogRowValue}) => n + TotaLogRowValue, 0);
+                    let totalDefect = _excelData.reduce((n, {total_rework_time}) => n + total_rework_time, 0);
+                  
+
+                    let totalPoint = _excelData.reduce((accumulator, current) => {
+                        return accumulator + current.fields.customfield_10106;
+                    }, 0);
+                    
+                    let RATIO = totalDefect/totalLog;
+                    setREWORK_RATE(FORMAT_NUMBER(RATIO, 2));
+
+                    let totalPointSub = _excelData.reduce((accumulator, current) => {
+                      if (current.issuetype?.subtask == true) {
+                        return accumulator + current.fields.customfield_10106;
+                      } else {
+                          return accumulator;
+                      }
+                    }, 0);
+                    let countSubTask = _excelData.reduce((accumulator, current) => {
+                      return accumulator + current.fields.subtasks?.length;
+                    }, 0);
+
+                    setBUG_RATE(countSubTask);
+
+                    console.log("ARR_DEFECT", ARR_DEFECT);
+
+                    setDefectList(ARR_DEFECT);
+                    setSTORY_POINT(totalPoint);
+                    setTaskList(_excelData);
+                    setExcelData(_excelData);
+
+                    setLoading(false);
+            
+                  }).catch(e => {
+                    setLoading(false);
+                  });
+                  
+                });
+              }
+            }}>
             Search
           </button>
+          
         </div>
         
       </div>
@@ -594,9 +732,23 @@ export default function JiraTaskLogtime(props) {
             columns = {columns}
             theme="default"
             fixedHeader
-            fixedHeaderScrollHeight="730px"
+            fixedHeaderScrollHeight="410px"
             data = {
               taskList
+            }
+            onRowDoubleClicked = { event => onRowDoubleClicked (event)}
+            selectableRows
+            selectableRowsHighlight
+        />
+      </div>
+      <div className="grid grid-flow-row gap-1 px-2">
+        <DataTable
+            columns = {columnsDefect}
+            theme="default"
+            fixedHeader
+            fixedHeaderScrollHeight="210px"
+            data = {
+              defectList
             }
             onRowDoubleClicked = { event => onRowDoubleClicked (event)}
             selectableRows

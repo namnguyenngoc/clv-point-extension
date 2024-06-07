@@ -53,9 +53,8 @@ export default function Panel({ onWidthChange, initialEnabled }: { onWidthChange
     >
       
       <div className='main-layout grid grid-flow-row gap-1'>
-        
+        <h2>Sprint PIM Data</h2>
         <div className={!enabled ? 'hidden' : 'pt-4'}>
-          JIRA
           <JiraTaskLogtime onSearch={handleSearch} />
           
         </div>

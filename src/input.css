@@ -251,3 +251,8 @@ div.ReactModalPortal .ReactModal__Content.ReactModal__Content--after-open {
   background-color: #ffffff !important;
   width: 70%;
 }
+
+
+div[class*="-container"] div[id*="listbox"]  {
+  z-index: 9999;
+}
