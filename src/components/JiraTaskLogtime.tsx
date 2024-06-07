@@ -493,7 +493,15 @@ export default function JiraTaskLogtime(props) {
                       }
                     }, 0);
                     let countSubTask = _excelData.reduce((accumulator, current) => {
-                      return accumulator + current.fields.subtasks?.length;
+                      let countSubTask = 0;
+                      
+                      current.fields.subtasks?.forEach(element => {
+                        if(element.fields.summary.toUpperCase().includes("[DEFECT]")){
+                          countSubTask ++;
+                        }
+                      });
+
+                      return accumulator +  countSubTask;
                     }, 0);
 
                     setBUG_RATE(countSubTask);
