@@ -83,9 +83,6 @@ const override: CSSProperties = {
 };
 
 export default function JiraTaskLogtime(props) {
-  const SHEET_ID = "Member_List";
-  const RANGE_MEMBER_SHEET = 'A1:AT';
-  const SPREADSHEET_ID = "10WPahmoB6Im1PyCdUZ_uda3fYijC8jKtHnRBasnTK3Y";
   let [loading, setLoading] = useState(false);
   let [color, setColor] = useState("#0E71CC");
   let [totalEffort, setTotalEffort] = useState(0);
@@ -96,24 +93,11 @@ export default function JiraTaskLogtime(props) {
   
   const url = 'https://blueprint.cyberlogitec.com.vn/api';
   const DT_FM = 'YYYYMMDD';
-  const defaultMem = null;
-  let allMember = [];
-  // myData.memList.map(
-  //   function (item) {
-  //     // console.log("item", item);
-  //     if(item.teamLocal.includes("NEWFWD")) {
-  //       item.label = item.userId, //`${item.fullName}-${item.pointOnHour.expect}(${item.currentLevel})`;
-  //       item.value = item.userId
-  //       allMember.push(item);
-  //       // return item;
-  //     }
-  // });
-  let [lstMember, setLstMember] = useState(null);
-
   const [memberSelect, setMemberSelect] = useState(null);
   const [sprintList, setSprintList] = useState([]);
   const [boardList, setBoardList] = useState([]);
-  const [BOARD, setBOARD] = useState(null);
+  const [BOARD, setBOARD] = useState([]);
+  
   const [SPRINT, setSPRINT] = useState(null);
 
   const today = moment(new Date());
@@ -127,9 +111,6 @@ export default function JiraTaskLogtime(props) {
   const [defectList, setDefectList] = useState([]);
 
   const [excelData, setExcelData] = useState<{ name: string }[]>([]);
-
-  const [workday, setWorkday] = useState(0);
-  const [monthDay, setMonthDay] = useState(0);
 
   const columns = [
     {
@@ -171,7 +152,7 @@ export default function JiraTaskLogtime(props) {
       
     },
     {
-      name: 'Total Rework Time',
+      name: 'Rework Time',
       right: "yes",
       selector: row => row.total_rework_time,
       cell: row => (
@@ -185,8 +166,14 @@ export default function JiraTaskLogtime(props) {
         row.fields.worklog && row.fields.worklog.worklogs.reduce((n, {timeSpentSeconds}) => n + timeSpentSeconds, 0) > 0 ? FORMAT_NUMBER(row.total_rework_time/row.fields.worklog.worklogs.reduce((n, {timeSpentSeconds}) => n + timeSpentSeconds, 0), 2) : 0
       ),
     },
+    {
+      name: 'Parent',
+      center: "yes",
+      cell: row => (
+        row.fields.parent?.key
+      ),
+    },
     
-   
   
   ]
   const columnsDefect = [
@@ -229,7 +216,7 @@ export default function JiraTaskLogtime(props) {
       
     },
     {
-      name: 'Total Rework Time',
+      name: 'Rework Time',
       right: "yes",
       selector: row => row.total_rework_time,
       cell: row => (
@@ -253,51 +240,7 @@ export default function JiraTaskLogtime(props) {
    
   
   ]
- 
-  const formatPrice = (value, tofix) => {
-    if (!value) {
-      return ''
-    }
-    const val = (value / 1).toFixed(tofix).replace(',', '.')
-    if (!val) {
-      return ''
-    }
 
-    return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-  };
-  
-
-  // https://blueprint.cyberlogitec.com.vn/api/uiPim026/searchUserInTeam
-  async function searchUserInTeam() {
-    let ro = {
-      "stDt": moment(startDate).format("YYYYMMDD"),
-      "endDt": moment(endDate).format("YYYYMMDD"),
-      "procFlg": "DF",
-      "beginIdx": 0,
-      "endIdx": 25,
-      "pageChanged": false,
-      "coCd": "DOU",
-      "lstTeamId": "ATM201705250009,ATM20170515000,ATM202309170005",
-      "stsChanged": "N",
-      "tskSts": "PR",
-      "rsName": ""
-  };
-  
-
-    // console.log("RO", ro);
-
-    // console.log("reqee", req)
-    const response = await axios.post(`${url}/uiPim026/searchUserInTeam`, ro)
-      .then(async function (response) {
-        return response.data.lstUserInTeam ;
-    });
-
-  
-    // console.log("response", response);
-    return new Promise((resolve, reject) => {
-        resolve(response);
-    });
-  }
    async function searchTaskOfUser(item:any) {
     let ro = {
       "usrId": item.userId,
@@ -323,38 +266,6 @@ export default function JiraTaskLogtime(props) {
         resolve(response);
     });
   }
-  
-
-
-  async function getDailyTasksByUser(item:any) {
-    let ro = {
-      "usrId": item.userId,
-      "fromDt": moment(startDate).format("YYYYMMDD"),
-      "toDt": moment(endDate).format("YYYYMMDD")
-    };
-  
-    // console.log("RO", ro);
-
-    // console.log("reqee", req)
-    const response = await axios.post(`${url}/uiPim026/getDailyTasksByUser`, ro)
-      .then(async function (response) {
-        return response.data;
-    });
-
-  
-    // console.log("response", response);
-    return new Promise((resolve, reject) => {
-        resolve(response);
-    });
-  }
-  const sumEfrtKnt = (arr) => {
-    let sum = 0;
-    for(let i = 0; i < arr.length; i ++){
-      sum += arr[i].efrtKnt;
-    }
-    return sum;
-  }
-
   const workday_count = (start, end) => {
     var first = start.clone().endOf("week"); // end of first week
     var last = end.clone().startOf("week"); // start of last week
@@ -379,95 +290,7 @@ export default function JiraTaskLogtime(props) {
     }
     return count;
   };
-  const selectMemberList = async () => {
-    let arrMember = [];
-    //Sheet Start
-    // Initialize the sheet - doc ID is the long id in the sheets URL
-    const doc = new GoogleSpreadsheet(SPREADSHEET_ID); //script data
-    // const doc = new GoogleSpreadsheet('16S2LDwOP3xkkGqXLBb30Pcvvnfui-IPJTXeTOMGCOjk');
   
-    
-    
-    // Initialize Auth - see https://theoephraim.github.io/node-google-spreadsheet/#/getting-started/authentication
-    await doc.useServiceAccountAuth({
-      // env var values are copied from service account credentials generated by google
-      // see "Authentication" section in docs for more info
-      client_email:  ACC_SHEET_API.client_id,
-      private_key: ACC_SHEET_API.private_key,
-    });
-    await doc.loadInfo(); // loads document properties and worksheets
-    console.log("LOAD", doc.title);
-    const sheet = doc.sheetsByTitle[SHEET_ID]; // or use doc.sheetsById[id] or doc.sheetsByTitle[title]
-    
-    const range = RANGE_MEMBER_SHEET; //'A1:AB50'
-    await sheet.loadCells(range); // loads range of cells into local cache - DOES NOT RETURN THE CELLS
-    
-    for(let i = 0; i < 18; i ++) {
-      const empCode = sheet.getCell(i, 0); // access cells using a zero-based index
-      const userId = sheet.getCell(i, 1); // access cells using a zero-based index
-      const fullName = sheet.getCell(i, 2); // access cells using a zero-based index
-      const leaveTeam = sheet.getCell(i, 26); // access cells using a zero-based index = sheet.getCell(i, 2); // access cells using a zero-based index
-      // console.log("leaveTeam.formattedValue", leaveTeam.formattedValue);
-      if(empCode.formattedValue != "" 
-        && userId.formattedValue != "" 
-        && fullName.formattedValue != ""
-        && leaveTeam.formattedValue == "N") {
-            let mem = {
-                "empCode":        sheet.getCell(i, 0).formattedValue,
-                "userId":         sheet.getCell(i, 1).formattedValue,
-                "fullName":       sheet.getCell(i, 2).formattedValue,
-                "currentLevel":   sheet.getCell(i, 3).formattedValue,
-                "lvlCode":        sheet.getCell(i, 4).formattedValue,
-                "levelRating":    sheet.getCell(i, 5).formattedValue,
-                "targetLevel":    sheet.getCell(i, 6).formattedValue,
-                "tagartRating":   sheet.getCell(i, 7).formattedValue,
-                "pointOnHour": {
-                  "standard":   sheet.getCell(i, 38).formattedValue,
-                  "timeStandard":   sheet.getCell(i, 39).formattedValue,
-                  "expect":     sheet.getCell(i, 9).formattedValue,
-                  "description": sheet.getCell(i, 10).formattedValue,
-                  "averageEffortPoint":sheet.getCell(i, 39).formattedValue,
-                  "minEffortPoint":sheet.getCell(i, 40).formattedValue,
-                  "maxEffortPoint":sheet.getCell(i, 41).formattedValue,
-                  "effortPointByCurrentLevel":sheet.getCell(i, 42).formattedValue,
-                  "effortPointByTargetLevel":sheet.getCell(i, 43).formattedValue,
-
-                },
-                "role":           sheet.getCell(i, 11).formattedValue.split(","),
-                "workload":       sheet.getCell(i, 12).formattedValue,
-                "pointStandard":  sheet.getCell(i, 13).formattedValue, //FINISHE / RECEIVED
-                "teamLocal":      sheet.getCell(i, 14).formattedValue.split(","),
-                "dedicated":      sheet.getCell(i, 15).formattedValue,
-                "blueprint_id":   sheet.getCell(i, 16).formattedValue,
-                "blueprint_nm":   sheet.getCell(i, 17).formattedValue,
-                "clickup_id":     sheet.getCell(i, 18).formattedValue,
-                "clickup_nm":     sheet.getCell(i, 19).formattedValue,
-                "effectDateFrom": sheet.getCell(i, 20).formattedValue,
-                "effectDateTo":   sheet.getCell(i, 21).formattedValue,
-                "preReviewDate":  sheet.getCell(i, 22).formattedValue,
-                "nextReviewDate": sheet.getCell(i, 23).formattedValue,
-                "phone":          sheet.getCell(i, 24).formattedValue,
-                "clvEmail":       sheet.getCell(i, 25).formattedValue,
-                "leaveTeam":      sheet.getCell(i, 26).formattedValue,
-                "leaveCompany":   sheet.getCell(i, 27).formattedValue,
-                "maxLevelTaskGap":sheet.getCell(i, 32).formattedValue,
-                "minPoint"        :sheet.getCell(i, 33).formattedValue,
-                "maxPoint"        :sheet.getCell(i, 34).formattedValue,
-                "target"        :sheet.getCell(i, 36).formattedValue,
-            }
-            arrMember.push(mem);
-      }
-      
-    }
-    // console.log("arrMember", arrMember);
-    return new Promise((resolve, reject) => {
-      resolve(arrMember);
-    });
-      
-      
-    //Sheet End
-   
-  }
   const selectTaskByUser = async (memSelect: any) => {
     setLoading(true);
 
@@ -535,36 +358,6 @@ export default function JiraTaskLogtime(props) {
         }
     });
     return map;
-  }
-
-  const onRowDoubleClicked = (rowData) => {
-    console.log("onRowDoubleClicked", rowData);
-    const url = `https://blueprint.cyberlogitec.com.vn/UI_PIM_001_1/${rowData.reqId}`;
-    let enabledMgmt = false;
-    let enabled = false;
-    window['chrome'].storage?.local.set({enabledMgmt});
-    window['chrome'].storage?.local.set({enabled});
-
-    window.open(url, "ADD POINT", "width="+screen.availWidth+",height="+screen.availHeight); //to open new page
-  }
-  const onChangeDate = async (date: any, type: any) => {
-    if('START' == type) {
-      setStartDate(date);
-
-    } else {
-      setEndDate(date)
-      
-    }
-   
-
-    await selectTaskByUser(memberSelect);
-  }
-  
-  const onChangeMember = async (option: any) => {
-    console.log("option", option);
-    setMemberSelect(option);
-    selectTaskByUser();
-
   }
 
   //formatPrice(item.pointOnHour.expect * workday * 8 ,0)
@@ -739,9 +532,10 @@ export default function JiraTaskLogtime(props) {
             onRowDoubleClicked = { event => onRowDoubleClicked (event)}
             selectableRows
             selectableRowsHighlight
+            className="rdt_Table_custom"
         />
       </div>
-      <div className="grid grid-flow-row gap-1 px-2">
+      <div className="grid grid-flow-row gap-1 px-2 soild-2p">
         <DataTable
             columns = {columnsDefect}
             theme="default"
@@ -753,6 +547,7 @@ export default function JiraTaskLogtime(props) {
             onRowDoubleClicked = { event => onRowDoubleClicked (event)}
             selectableRows
             selectableRowsHighlight
+            className="rdt_Table_custom"
         />
       </div>
       <ScaleLoader

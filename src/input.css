@@ -240,8 +240,11 @@ div.ReactModalPortal .ReactModal__Content.ReactModal__Content--after-open {
   font-weight: bold;
   background-color: green;
   color: #FFFFFF;
+  background: forestgreen !important;
 } 
-
+.rdt_Table_custom .rdt_TableHead{
+  border-bottom: 2px solid green !important;
+} 
 
 /* .ReactModal__Content--after-open[aria-label='document_list'] {
   background-color: #FFFFFF !important;
@@ -255,4 +258,9 @@ div.ReactModalPortal .ReactModal__Content.ReactModal__Content--after-open {
 
 div[class*="-container"] div[id*="listbox"]  {
   z-index: 9999;
+}
+
+
+.soild-2p {
+  border: 2px solid darkred !important;
 }
