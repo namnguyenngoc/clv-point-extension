@@ -134,19 +134,3 @@ export const FORMAT_NUMBER = function (value, decimals) {
   }).format(value);
 }
 
-
-// await axios
-//         .post(`${config.API_WORKING.JR_API_JIRA}/api/jiraProjects`, this.efforJsonList)
-//         .then(async function (response) {
-//           // seft.hotSettings.data = response.data.data;
-//           console.log('itemsProject', response.data);
-//           // seft.pimDATA = response.data.data;
-//           seft.itemsProject = response.data.data;
-//           seft.overlay = false;
-//           // seft.btnDisable = false;
-//           //Set refix defalt = first
-//           if(response.data && response.data.data.length > 0){
-//             seft.prefixCodeProject = response.data.data[0]; //seft.itemsProject[0].key
-//           } 
-
-//       });
