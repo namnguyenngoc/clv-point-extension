@@ -298,6 +298,11 @@ export default function JiraTaskLogtime(props) {
       column_prop:""
     },
     {
+      column_name: "TotalReworkRateValue",
+      grid_name: "",
+      column_prop:""
+    },
+    {
       column_name: "RatioRework",
       grid_name: "",
       column_prop:""
@@ -412,6 +417,7 @@ export default function JiraTaskLogtime(props) {
             TotaLogRow:item.TotaLogRow,
             TotaLogRowValue: item.TotaLogRowValue,
             TotalReworkRate: item.TotalReworkRate,
+            TotalReworkRateValue: item.TotalReworkRateValue,
             RatioRework: item.RatioRework,
             RatioReworkValue: item.RatioReworkValue
           }
@@ -608,6 +614,7 @@ export default function JiraTaskLogtime(props) {
                       TotaLogRow: string | number;
                       TotaLogRowValue: any;
                       TotalReworkRate: string;
+                      TotalReworkRateValue: any;
                       RatioRework: string | number;
                       RatioReworkValue: number;
                     }> = [];
@@ -625,14 +632,16 @@ export default function JiraTaskLogtime(props) {
                         ,"TotaLogRow": item.fields.worklog ? convertNumberToTimeString(item.fields.worklog.worklogs.reduce((n, {timeSpentSeconds}) => n + timeSpentSeconds, 0)) : 0
                         ,"TotaLogRowValue": item.fields.worklog ? item.fields.worklog.worklogs.reduce((n, {timeSpentSeconds}) => n + timeSpentSeconds, 0) : 0
                         ,"TotalReworkRate": convertNumberToTimeString(item.total_rework_time)
+                        ,"TotalReworkRateValue": item.total_rework_time
                         ,"RatioRework":  item.fields.worklog && item.fields.worklog.worklogs.reduce((n, {timeSpentSeconds}) => n + timeSpentSeconds, 0) > 0 ? FORMAT_NUMBER(item.total_rework_time/item.fields.worklog.worklogs.reduce((n, {timeSpentSeconds}) => n + timeSpentSeconds, 0), 2) : 0
                         ,"RatioReworkValue": item.fields.worklog && item.fields.worklog.worklogs.reduce((n, {timeSpentSeconds}) => n + timeSpentSeconds, 0) > 0 ? item.total_rework_time/item.fields.worklog.worklogs.reduce((n, {timeSpentSeconds}) => n + timeSpentSeconds, 0) : 0
                         ,...item
                       };
                       
                       if (item.fields.issuetype?.subtask == true) {
-                       
-                        ARR_DEFECT.push({ ...__item });
+                        if(item.fields.summary.toUpperCase().includes("[DEFECT]")){
+                          ARR_DEFECT.push({ ...__item });
+                        }
                       }
                       return  __item;
                     })
