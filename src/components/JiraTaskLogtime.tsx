@@ -388,6 +388,8 @@ export default function JiraTaskLogtime(props) {
           // see "Authentication" section in docs for more info
           client_email:  ACC_SHEET_API.client_id,
           private_key: ACC_SHEET_API.private_key,
+          scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+
         });
         // adding / removing sheets
         await doc.loadInfo(); // loads document properties and worksheets
