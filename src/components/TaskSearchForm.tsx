@@ -13,6 +13,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import { WEB_INFO } from '../const';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { JsonEditor } from 'json-edit-react';
+
 
 const InputTrongSoOption = ({
   getStyles,
@@ -161,6 +163,7 @@ export default function TaskSearchForm() {
   });
   const [prefixID, setPrefixID] = useState("86");
   const [preBPID, setPreBPID] = useState("CARISDO");
+  let [cpsMasterCode, setCpsMasterCode] = useState(null);
 
   const notify = () => toast("There is no clickup id!");
 
@@ -707,8 +710,8 @@ export default function TaskSearchForm() {
       const mst_nm = Member_List.getCell(i, 2).formattedValue;
       const mst_sub_cd = Member_List.getCell(i, 3).formattedValue;
       const mst_sub_nm = Member_List.getCell(i, 4).formattedValue;
+      const CODE_LEN = 15;
       
-      let sub_cd_ls = [];
       if(mst_sub_cd) {
         if(no && parseInt(no) > 0) {
          
@@ -716,10 +719,12 @@ export default function TaskSearchForm() {
             companyCd: company,
             code: mst_cd,
             name: mst_nm, 
-            length: mst_sub_cd,
-            description: mst_sub_nm,
+            length: CODE_LEN, 
+            description: mst_nm,
             useYn: 'Y',
-            subCodes: []
+            subCodes: [],
+            subCode: mst_sub_cd,
+            subName: mst_sub_nm,
           };
           if(mst_cd != null && mst_nm != "" && mst_sub_cd != null && mst_sub_nm != "") {
             
@@ -756,8 +761,17 @@ export default function TaskSearchForm() {
 
       arrMst.forEach(item => {
         groupedArray.forEach(group => {
-          if(item.code == group[0].code) {
-            item.subCodes = [...group];
+          if(item.code == group[0].mst_cd) {
+            const _grp = group.map(item => {
+              return {
+                subCd: item.subCd,
+                name: item.name,
+                order: item.order,
+                description: item.name,
+                useYn: item.useYn
+              } 
+            });
+            item.subCodes = [..._grp];
           }
         })
        
@@ -769,7 +783,10 @@ export default function TaskSearchForm() {
       
       console.log("genJSONSheet", arrMst);
       const jsonObject = createJsonObject(arrMst);
-      console.log("JSON", JSON.stringify(jsonObject, null, 2));
+      const unquoted =  JSON.stringify(jsonObject, null, 2).replace(/"([^"]+)":/g, '$1:');
+
+      setCpsMasterCode(unquoted);
+      console.log("JSON", unquoted);
     }
 
   }
@@ -780,11 +797,12 @@ export default function TaskSearchForm() {
       const { code, companyCd, description, length, name, subCodes, useYn } = item;
       jsonObject[code] = {
         companyCd,
-        description,
-        length,
+        code,
         name,
-        subCodes,
-        useYn
+        length,
+        description,
+        useYn,
+        subCodes
       };
     });
   
@@ -803,16 +821,25 @@ export default function TaskSearchForm() {
     });
   };
   const groupByCode = (array) => {
+    console.log("groupByCode", array);
     const map = new Map();
-    
-    array.forEach(item => {
+    let _idx = 1;
+    array.forEach((item) => {
       const code = item.code;
       if (!map.has(code)) {
         map.set(code, []);
+        _idx = 1;
       }
       const modifiedItem = removeProperty(item, 'subCodes');
-
-      map.get(code).push(modifiedItem);
+      const _subcode = {
+        mst_cd: modifiedItem.code,
+        subCd: modifiedItem.subCode,
+        name: modifiedItem.subName,
+        order: _idx ++,
+        description: modifiedItem.description,
+        useYn: modifiedItem.useYn,
+      };
+      map.get(code).push(_subcode);
     });
   
     return Array.from(map.values());
@@ -2124,6 +2151,12 @@ export default function TaskSearchForm() {
         
       </form>
       <div className="comment" dangerouslySetInnerHTML={{__html: comment}}></div>
+      <div>
+        <JsonEditor
+          data={ cpsMasterCode }
+          setData={ setCpsMasterCode } // optional 
+        />
+      </div>
       <div className="pt-8">
         <PointSuggest 
           total = { (taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0) ? taskInfo.lstReq[0].pntNo : 0}
