@@ -137,7 +137,7 @@ export default function TaskSearchForm() {
 
   const CPS_SHEET_ID = {
     sheetID: "Master Code Common",
-    range:'A3:L',
+    range:'A4:L',
     spreadID: "1OD7B3a9qHTeulOzJ8EBFuE3rZOYibUXnNlPzRwW61XM"
   }
   let [docTitle, setDocTitle] = useState();
@@ -692,18 +692,19 @@ export default function TaskSearchForm() {
     console.log(Member_List.title);
     console.log(Member_List.rowCount);
     const range = CPS_SHEET_ID.range; //'A1:AB50'
+    const start_cell = 3;
     await Member_List.loadCells(range); // loads range of cells into local cache - DOES NOT RETURN THE CELLS
 
     await DATA_LIST.loadCells(CPS_SHEET_ID.range); // loads range of cells into local cache - DOES NOT RETURN THE CELLS
     let _flag = {
-      code: Member_List.getCell(1, 1).formattedValue,
-      name: Member_List.getCell(1, 2).formattedValue,
+      code: Member_List.getCell(start_cell, 1).formattedValue,
+      name: Member_List.getCell(start_cell, 2).formattedValue,
 
     };
     let _isAddMST = false;
-
+    let _lastvalue = "";
     //Get List Master Code
-    for(let i = 1; i < Member_List.rowCount-1; i ++) {
+    for(let i = start_cell; i < Member_List.rowCount-start_cell-1; i ++ && _lastvalue != "") {
       let company = 'CLV';
       const no = Member_List.getCell(i, 0).formattedValue;
       const mst_cd = Member_List.getCell(i, 1).formattedValue;
@@ -711,7 +712,7 @@ export default function TaskSearchForm() {
       const mst_sub_cd = Member_List.getCell(i, 3).formattedValue;
       const mst_sub_nm = Member_List.getCell(i, 4).formattedValue;
       const isUse = Member_List.getCell(i, 8).formattedValue;
-
+      _lastvalue = no;
       const CODE_LEN = 15;
       
       if(mst_sub_cd) {
