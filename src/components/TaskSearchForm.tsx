@@ -13,8 +13,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { WEB_INFO } from '../const';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { JsonEditor } from 'json-edit-react';
-
+import Editor from 'react-simple-code-editor';
 
 const InputTrongSoOption = ({
   getStyles,
@@ -138,7 +137,7 @@ export default function TaskSearchForm() {
 
   const CPS_SHEET_ID = {
     sheetID: "Master Code Common",
-    range:'A3:H',
+    range:'A3:L',
     spreadID: "1OD7B3a9qHTeulOzJ8EBFuE3rZOYibUXnNlPzRwW61XM"
   }
   let [docTitle, setDocTitle] = useState();
@@ -164,6 +163,7 @@ export default function TaskSearchForm() {
   const [prefixID, setPrefixID] = useState("86");
   const [preBPID, setPreBPID] = useState("CARISDO");
   let [cpsMasterCode, setCpsMasterCode] = useState(null);
+  let [code, setCode] = useState(null);
 
   const notify = () => toast("There is no clickup id!");
 
@@ -687,14 +687,14 @@ export default function TaskSearchForm() {
     setDocTitle(doc.title);
 
     const Member_List = doc.sheetsByTitle[CPS_SHEET_ID.sheetID]; // or use doc.sheetsById[id] or doc.sheetsByTitle[title]
-    const NEW_FWD_TEAMB_TASKS = doc.sheetsByTitle[CPS_SHEET_ID.sheetID]; // or use doc.sheetsById[id] or doc.sheetsByTitle[title]
+    const DATA_LIST = doc.sheetsByTitle[CPS_SHEET_ID.sheetID]; // or use doc.sheetsById[id] or doc.sheetsByTitle[title]
 
     console.log(Member_List.title);
     console.log(Member_List.rowCount);
     const range = CPS_SHEET_ID.range; //'A1:AB50'
     await Member_List.loadCells(range); // loads range of cells into local cache - DOES NOT RETURN THE CELLS
 
-    await NEW_FWD_TEAMB_TASKS.loadCells(MGMT_TASK_RANGE_MEMBER_SHEET); // loads range of cells into local cache - DOES NOT RETURN THE CELLS
+    await DATA_LIST.loadCells(CPS_SHEET_ID.range); // loads range of cells into local cache - DOES NOT RETURN THE CELLS
     let _flag = {
       code: Member_List.getCell(1, 1).formattedValue,
       name: Member_List.getCell(1, 2).formattedValue,
@@ -710,10 +710,12 @@ export default function TaskSearchForm() {
       const mst_nm = Member_List.getCell(i, 2).formattedValue;
       const mst_sub_cd = Member_List.getCell(i, 3).formattedValue;
       const mst_sub_nm = Member_List.getCell(i, 4).formattedValue;
+      const isUse = Member_List.getCell(i, 8).formattedValue;
+
       const CODE_LEN = 15;
       
       if(mst_sub_cd) {
-        if(no && parseInt(no) > 0) {
+        if(no && parseInt(no) > 0 && isUse && isUse == 'Yes') {
          
           let _item = {
             companyCd: company,
@@ -786,10 +788,49 @@ export default function TaskSearchForm() {
       const unquoted =  JSON.stringify(jsonObject, null, 2).replace(/"([^"]+)":/g, '$1:');
 
       setCpsMasterCode(unquoted);
-      console.log("JSON", unquoted);
+     
+      // Loop through the properties of the jsonObject
+      for (const [key, value] of Object.entries(jsonObject)) {
+        processProperty(key, value);
+      }
+      
+      // Alternatively, using for...in loop
+      let arr: string[] = [];
+      let _key_arr: string[] = [];
+      for (const key in jsonObject) {
+        if (jsonObject.hasOwnProperty(key)) {
+          let _item = processProperty(key, jsonObject[key]);
+          
+          arr.push(_item);
+          _key_arr.push(key);
+        }
+      }
+
+      let __newKey = _key_arr.join(', ');
+      
+      arr.push(`const SEED_DATA_MASTER_CODE =  [${ __newKey}];`);
+      let __newCode = arrayToString(arr);
+
+      setCode(__newCode);
+      console.log("__newCode", __newCode);
+
+
     }
 
   }
+
+  const arrayToString = (array) => {
+    return array.join(';\n');
+  };
+  const processProperty = (key, value) => {
+    // Your logic to process each property
+    // console.log(`const ${key} =  ${JSON.stringify(value)};\n`);
+    let _value = `const ${key} =  ${ JSON.stringify(value, null, 2).replace(/"([^"]+)":/g, '$1:')}`;
+    return _value;
+  };
+  
+  
+
   const createJsonObject = (array) => {
     const jsonObject = {};
   
@@ -849,6 +890,30 @@ export default function TaskSearchForm() {
     const { [prop]: _, ...rest } = obj;
     return rest;
   }
+
+  const transformObject = (input) => {
+    const { companyCd, code, name, length, description, useYn, subCodes } = input;
+  
+    const transformedObject = {
+      companyCd,
+      code,
+      name,
+      length,
+      description,
+      useYn,
+      subCodes: subCodes.map((subCode, index) => ({
+        mst_cd: code,
+        subCd: subCode.subCd,
+        name: subCode.name,
+        order: index + 1,
+        description: subCode.description,
+        useYn: subCode.useYn,
+      }))
+    };
+  
+    return transformedObject;
+  };
+
   const logWorkFinish = async (usrId) => {
     //https://blueprint.cyberlogitec.com.vn/api/task-details/add-actual-effort-point
     // Req
@@ -2151,12 +2216,7 @@ export default function TaskSearchForm() {
         
       </form>
       <div className="comment" dangerouslySetInnerHTML={{__html: comment}}></div>
-      <div>
-        <JsonEditor
-          data={ cpsMasterCode }
-          setData={ setCpsMasterCode } // optional 
-        />
-      </div>
+     
       <div className="pt-8">
         <PointSuggest 
           total = { (taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0) ? taskInfo.lstReq[0].pntNo : 0}
@@ -2168,7 +2228,9 @@ export default function TaskSearchForm() {
           memberList = { memberList }
         />
       </div>
-    
+      <div className="w-full border border-gray-500">
+        <textarea value={code} className="w-full"/>
+      </div>
     </div>
   );
 }
