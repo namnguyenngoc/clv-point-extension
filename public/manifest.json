@@ -9,7 +9,8 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "css": ["dist/index.4eeece91.css"],
+      "css": [ "dist/index.1fc7f4f6.css",
+              "dist/index.4eeece91.css"],
       "js": ["dist/index.6099912e.js"]
     }
   ],

@@ -4,7 +4,10 @@ import Button from './components/Button';
 import TaskSearchForm from './components/TaskSearchForm';
 import TaskEffortByUser from './components/TaskEffortByUser';
 import SearchTask from './components/SearchTask';
-
+import { WEB_INFO } from './const';
+import '@wojtekmaj/react-datetimerange-picker/dist/DateTimeRangePicker.css';
+import 'react-calendar/dist/Calendar.css';
+import 'react-clock/dist/Clock.css';
 
 export default function Panel({ onWidthChange, initialEnabled }: { onWidthChange: (value: number) => void, initialEnabled: boolean }): ReactElement {
   const [enabled, setEnabled] = useState(initialEnabled);
@@ -12,6 +15,20 @@ export default function Panel({ onWidthChange, initialEnabled }: { onWidthChange
   const [sidePanelHeight, setSidePanelHeight] = useState(enabled ? APP_EXTEND_HEIGHT: APP_COLLAPSE_HEIGHT);
   const [tabIndex, setTabIndex] = useState(0);
   const [showWorkList, setShowWorkList] = useState(false);
+
+  let _info = {
+    isLoadGoogleSheet: true,
+    WORKING_API: WEB_INFO.WORKING_API,
+    TASK_MEMBER_API: WEB_INFO.TASK_MEMBER_API,
+    TASK_MEMBER_API_BIZ: WEB_INFO.TASK_MEMBER_API_BIZ,
+    TASK_BP_APD:  WEB_INFO.TASK_BP_APD,
+
+  }
+
+  if(!localStorage.getItem("API_INFO")) {
+    localStorage.setItem("API_INFO", JSON.stringify(_info));
+
+  }
 
   function handleOnToggle(enabled: boolean) {
     const value = enabled ? APP_EXTEND_WIDTH : APP_COLLAPSE_WIDTH;

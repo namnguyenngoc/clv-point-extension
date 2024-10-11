@@ -9,11 +9,14 @@ import ScaleLoader from "react-spinners/ScaleLoader";
 import Modal from 'react-modal';
 import moment from 'moment';
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import { WEB_INFO } from '../const';
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import Editor from 'react-simple-code-editor';
+import { addDays, endOfDay, startOfDay, endOfMonth, startOfMonth } from 'date-fns';
+import 'react-datepicker/dist/react-datepicker.css';
+import 'react-date-range/dist/styles.css'; // main style file
+import 'react-date-range/dist/theme/default.css';
+import DateTimeRangePicker from '@wojtekmaj/react-datetimerange-picker';
+
 
 const InputTrongSoOption = ({
   getStyles,
@@ -65,6 +68,60 @@ const props = {
     </components.Option>
   );
 };
+
+const pharseOption = ({
+  getStyles,
+  Icon,
+  isDisabled,
+  isFocused,
+  isSelected,
+  children,
+  innerProps,
+  ...rest
+}) => {
+const [isActive, setIsActive] = useState(false);
+const onMouseDown = () => setIsActive(true);
+const onMouseUp = () => setIsActive(false);
+const onMouseLeave = () => setIsActive(false);
+
+// styles
+let bg = "transparent";
+if (isFocused) bg = "#eee";
+if (isActive) bg = "#B2D4FF";
+
+const style = {
+  alignItems: "center",
+  backgroundColor: bg,
+  color: "inherit",
+  display: "flex "
+};
+
+// prop assignment
+const props = {
+  ...innerProps,
+  onMouseDown,
+  onMouseUp,
+  onMouseLeave,
+  style
+};
+type ValuePiece = Date | null;
+
+type Value = ValuePiece | [ValuePiece, ValuePiece];
+  return (
+    <components.Option
+      {...rest}
+      isDisabled={isDisabled}
+      isFocused={isFocused}
+      isSelected={isSelected}
+      getStyles={getStyles}
+      innerProps={props}
+    >
+      <input type="checkbox" checked={isSelected} className="mr-4" />
+      {children}
+    </components.Option>
+  );
+};
+
 const override: CSSProperties = {
   display: "block",
   margin: "0 auto",
@@ -103,12 +160,7 @@ export default function TaskSearchForm() {
   let [memberTaskList, setMemberTaskList] = useState({});
   
   let [comment, setComment] = useState("");
-  let [config, setConfig] = useState({
-    isLoadGoogleSheet: true,
-    WORKING_API: WEB_INFO.WORKING_API,
-    TASK_MEMBER_API: WEB_INFO.TASK_MEMBER_API,
-    TASK_MEMBER_API_BIZ: WEB_INFO.TASK_MEMBER_API_BIZ
-  });
+  let [config, setConfig] = useState(null);
 
   let [isShowDetailEffortTable, setIsShowDetailEffortTable] = useState(true);
   let [isCheckEffort, setIsCheckEffort] = useState(false);
@@ -160,17 +212,31 @@ export default function TaskSearchForm() {
   const [capaInfo, setCapaInfo] = useState({
     background: '#F08080'
   });
+  
   const [prefixID, setPrefixID] = useState("86");
   const [preBPID, setPreBPID] = useState("CARISDO");
   let [cpsMasterCode, setCpsMasterCode] = useState(null);
   let [code, setCode] = useState(null);
+  let [commentLogWork, setCommentLogWork] = useState(null);
+  let [logWordTime, setLogWordTime] = useState(30); //30 minutes
 
+  const [phaseList, setPhaseList] = useState([]);
+  let [dfPharse , setDfPharse] = useState(null);
+  let [pharseSelect , setPharseSelect] = useState(null);
+
+  const [jobDataList, setJobDataList] = useState([]);
+  const [jobSelect, setJobSelect] = useState(null);
+  const selectionRange = useState({
+    startDate: new Date(),
+    endDate: new Date(),
+    key: 'selection',
+  });
+  const [value, onChange] = useState<Value>([new Date(), new Date()]);
   const notify = () => toast("There is no clickup id!");
 
   const onChangeLevel = (option: any) => {
     setTaskLevel(option);
   }
-
   const arr = currentURL.split("/");
   if(arr && arr.length > 0){
     // const reqId = arr[arr.length-1];
@@ -230,6 +296,10 @@ export default function TaskSearchForm() {
   };   
   const searchRequirement = async () => {
     openModal();
+    const API_INFO = localStorage.getItem("API_INFO");
+    if (API_INFO) {
+      setConfig(JSON.parse(API_INFO));
+    }
        // https://blueprint.cyberlogitec.com.vn/api/uiPim001/searchRequirement
     //https://blueprint.cyberlogitec.com.vn/api/task-details/get-actual-effort-point?reqId=${lsReq[i].reqId}
     const requirementDetail = await  axios.get(`${url}/searchRequirementDetails?reqId=${reqId}`)
@@ -620,6 +690,10 @@ export default function TaskSearchForm() {
   const handleSubmit = async (event) => {
     openModal();
     event.preventDefault();
+    const API_INFO = localStorage.getItem("API_INFO");
+    if (API_INFO) {
+      setConfig(JSON.parse(API_INFO));
+    }
     let isCheckEst = true;
     if(isOpenConfirm) {
       if (confirm("Bạn có muốn check estimate task không?") == true) {
@@ -920,7 +994,12 @@ export default function TaskSearchForm() {
     // Req
     // {"usrId":"namnnguyen","wrkDt":"20230621","reqId":"PRQ20230607000000031","pjtId":"PJT20211119000000001","subPjtId":"PJT20211119000000001","cmt":"Done task.","jbId":"JOB20211125000000001","phsCd":"PIM_PHS_CDFIN","phsNm":"Finish","jbNm":"Skill","wrkTm":" 20 Minute","dt":"Jun 21, 2023","addSts":true,"type":"actual","actEfrtMnt":20,"cmtCtnt":"<div class=\"system-comment\">Added time worked:</div><div style=\"margin-left: 10px\"> <b><i> &nbsp; Phase Name: </i></b>Finish</div><div style=\"margin-left: 10px\"> <b><i> &nbsp; Job Category: </i></b>Skill</div><div style=\"margin-left: 10px\"> <b><i> &nbsp; Time Worked : </i></b> 20 Minute</div><div style=\"margin-left: 10px\"> <b><i> &nbsp; Date: </i></b>Jun 21, 2023</div>","pstTpCd":"PST_TP_CDACT"}
     let w_date_log = moment(logWorkDate).format("ll");
-    let url = `${isLiveServer ? config.TASK_MEMBER_API_BIZ : config.TASK_MEMBER_API}/memberList`;
+    const API_INFO = localStorage.getItem("API_INFO");
+    if (API_INFO) {
+      setConfig(JSON.parse(API_INFO));
+    }
+
+    let url = `${isLiveServer ? config.TASK_BP_APD : config.TASK_MEMBER_API}/memberList`;
     let memberResponse = await axios.get(url)
       .then(async function (response) {
         let data =  response.data.data;
@@ -931,12 +1010,27 @@ export default function TaskSearchForm() {
 
     let timeLog = 20;
     let cmt = "Done Task.";
-    let currentUser = memberResponse.filter(item => item.userId == usrId);
-    if(currentUser && currentUser.length > 0) {
-      currentUser = currentUser[0];
-      timeLog = parseInt(currentUser.pharsetimestandard_min);
-      cmt = currentUser.description;
+    if(commentLogWork) {
+      cmt = commentLogWork;
+      
     }
+    if(logWordTime) {
+      timeLog = parseInt(logWordTime);
+    }
+
+    let currentUser = memberResponse.filter(item => item.userId == usrId);
+      if(currentUser && currentUser.length > 0) {
+        currentUser = currentUser[0];
+        if(!logWordTime) {
+          timeLog = parseInt(currentUser.pharsetimestandard_min);
+        }
+
+        if(!commentLogWork) {
+          cmt = currentUser.description;
+        }
+      }
+
+    logWordTime
     let ro = {
         "usrId": usrId,
         "wrkDt": moment(logWorkDate).format("YYYYMMDD"),  
@@ -944,10 +1038,10 @@ export default function TaskSearchForm() {
         "pjtId": reqDetail.detailReqVO.pjtId,
         "subPjtId": reqDetail.detailReqVO.subPjtId,
         "cmt": cmt,
-        "jbId": "JOB20211125000000001",
-        "phsCd": "PIM_PHS_CDFIN",
-        "phsNm": "Finish",
-        "jbNm":  "Skill",
+        "jbId": jobSelect.id,
+        "phsCd": pharseSelect.value,
+        "phsNm": pharseSelect.label,
+        "jbNm": jobSelect.label,
         "wrkTm": ` ${timeLog} Minute`,
         "dt": w_date_log,
         "addSts": true,
@@ -961,7 +1055,7 @@ export default function TaskSearchForm() {
     if(cnt) {
       ro.cmtCtnt = cnt;
       console.log("commnt", cnt);
-      let response = axios.post(`${url}/task-details/add-actual-effort-point`, ro).then(async function (response) {
+      let response = axios.post(`${config.TASK_BP_APD}/task-details/add-actual-effort-point`, ro).then(async function (response) {
         const msg =   response.data.saveFlg;//saveFlg: 'SAVE_SUCCEED', pstId: 'PST20230303000001056'}
 
           alert(msg);
@@ -1130,6 +1224,10 @@ export default function TaskSearchForm() {
     }
   }
   const selectMember_TaskList = async (requirementRP) => {
+    const API_INFO = localStorage.getItem("API_INFO");
+    if (API_INFO) {
+      setConfig(JSON.parse(API_INFO));
+    }
     if(1 == 1) {
       //Call API
       let url = `${isLiveServer ? config.TASK_MEMBER_API_BIZ : config.TASK_MEMBER_API}/memberList`;
@@ -1723,6 +1821,10 @@ export default function TaskSearchForm() {
   }
 
   const getTaskInfo = async (server, id) =>  {
+    const API_INFO = localStorage.getItem("API_INFO");
+    if (API_INFO) {
+      setConfig(JSON.parse(API_INFO));
+    }
     console.log("getTaskInfo");
     if(server.includes("CLICKUP")){
       let data = await axios.get(`${config.WORKING_API}/clickup/getTask/${id}`)
@@ -1890,14 +1992,67 @@ export default function TaskSearchForm() {
     });
   }
 
+  const setJobList = async (_reqDetail) => {
+    let ro =
+    {
+      "pjtId": _reqDetail.detailReqVO.pjtId,
+      "isSearchDeleted":"N",
+      "reqId": _reqDetail.detailReqVO.reqId
+    };
+
+    const response = await axios.post(`${url}/searchJobDetailsList`, ro).then(async function (response) {
+      let jobList = response.data;
+      let _newLst = jobList.map(itm => (
+        {
+          "label": itm.jbNm,
+          "id":  itm.jbId,
+          "value": itm.jbTpCd
+        }
+      ))
+      setJobDataList(_newLst);
+      console.log("statusList", jobList);
+    });
+  };
+
+  const statusList = async () => {
+    // https://blueprint.cyberlogitec.com.vn/api/search-requirement-status
+    const reqDetail = await  axios.get(`${url}/searchRequirementDetails?reqId=${reqId}`)
+    .then(async(res) => {
+      setReqDetail(res.data);
+      // selectMember_TaskList();
+      let reqDetail = res.data;
+      let _lsPharseMember = [...reqDetail.lstSkdUsr];
+      
+      let _newLst = _lsPharseMember.map(itm => (
+        {
+          "label": itm.phsNm,
+          "id":  itm.procPhsId,
+          "value": itm.phsCd
+        }
+      ))
+      console.log("___lsPharseMember", _newLst);
+      setPhaseList(_newLst);
+      console.log("statusList", reqDetail);
+      setJobList(reqDetail)
+    });
+
+  };
+
+  const  handleSelect = (ranges) => {
+    console.log(ranges);
+    // {
+    //   selection: {
+    //     startDate: [native Date Object],
+    //     endDate: [native Date Object],
+    //   }
+    // }
+  }
   useEffect(()=>{
     console.log("Request searchRequirement");
-    // let apiObject = {
-    //   WORKING_API: WEB_INFO.WORKING_API,
-    // }
-    // setApi(apiObject);
-
+    const API_INFO = localStorage.getItem("API_INFO");
+  
     let isCheckEst = true;
+    statusList();
     if(isOpenConfirm) {
       if (confirm("Bạn có muốn check estimate task không?") == true) {
         
@@ -1925,7 +2080,8 @@ export default function TaskSearchForm() {
     // setTimeout(() => {
     //   setIsOpen(false);
     // }, 5000);
-  },[])
+  },[]);
+
 
   return (
     <div className="grid grid-flow-row sweet-loading">
@@ -1943,6 +2099,9 @@ export default function TaskSearchForm() {
                 { (taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0 ? `(${taskInfo.lstReq[0].seqNo}) ${taskInfo.lstReq[0].reqTitNm}` : "") }
               </h4>
             </label>
+          </div>
+          <div>
+          <DateTimeRangePicker onChange={onChange} value={value} />
           </div>
           <table className="w-full border border-gray-500">
             <thead>
@@ -2015,6 +2174,61 @@ export default function TaskSearchForm() {
                 
               </tr>
             </thead>
+          </table>
+          <table className="border-gray-500">
+            <tr>
+              <td>
+                xxx
+              </td>
+            </tr>
+            <tr>
+              
+            <td>
+                <Select
+                  closeMenuOnSelect={false}
+                  hideSelectedOptions={false}
+                  onChange={(options) => {
+                      setPharseSelect(options);
+                    }
+                  } 
+                  options={phaseList}
+                  components={{
+                    Option: pharseOption
+                  }}
+                />
+              </td>
+              <td>
+                <Select
+                  closeMenuOnSelect={false}
+                  hideSelectedOptions={false}
+                  onChange={(options) => {
+                      setJobSelect(options);
+                    }
+                  } 
+                  options={jobDataList}
+                  components={{
+                    Option: pharseOption
+                  }}
+                />
+              </td>
+              
+              <td>
+                <input 
+                  type="text"
+                  id="Time (minutes)"
+                  value={logWordTime}
+                  className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-full"/>
+
+              </td>
+              <td>
+                <input 
+                  type="text"
+                  id="commentLogWork"
+                  value={commentLogWork}
+                  className="col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-full"/>
+
+              </td>
+            </tr>
           </table>
           <table className="border-gray-500">
             <thead>

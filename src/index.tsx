@@ -4,6 +4,9 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import Panel from './Panel';
 import { APP_COLLAPSE_WIDTH, APP_EXTEND_WIDTH } from './const';
+import '@wojtekmaj/react-datetimerange-picker/dist/DateTimeRangePicker.css';
+import 'react-calendar/dist/Calendar.css';
+import 'react-clock/dist/Clock.css';
 
 async function loadChromeStorage() {
   let initialEnabled = true;

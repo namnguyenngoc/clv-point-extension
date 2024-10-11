@@ -64,9 +64,10 @@ export const WEB_INFO = {
     }
    
   },
-  WORKING_API: "http://localhost:81/workingapi/api",
-  TASK_MEMBER_API: "http://localhost:81/fapi/working",
-  TASK_MEMBER_API_BIZ: "http://anvatchibeo.ddns.net:81/fapi/working",
+  WORKING_API: "http://cameranamnguyentch.ddns.net:81/workingapi/api",
+  TASK_MEMBER_API: "http://cameranamnguyentch.ddns.net:81/fapi/working",
+  TASK_MEMBER_API_BIZ: "http://cameranamnguyentch.ddns.net:81/fapi/working",
+  TASK_BP_APD: "https://blueprint.cyberlogitec.com.vn/api",
 
   CLICKUP: {
     SPACE_ID: 26265831,
