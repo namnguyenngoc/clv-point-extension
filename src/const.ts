@@ -64,9 +64,9 @@ export const WEB_INFO = {
     }
    
   },
-  WORKING_API: "http://cameranamnguyentch.ddns.net:81/workingapi/api",
-  TASK_MEMBER_API: "http://cameranamnguyentch.ddns.net:81/fapi/working",
-  TASK_MEMBER_API_BIZ: "http://cameranamnguyentch.ddns.net:81/fapi/working",
+  WORKING_API: "http://nguyennamserver.local:3000/working",
+  TASK_MEMBER_API: "http://nguyennamserver.local:3000/working",
+  TASK_MEMBER_API_BIZ: "http://nguyennamserver.local:3000/working",
   TASK_BP_APD: "https://blueprint.cyberlogitec.com.vn/api",
 
   CLICKUP: {
