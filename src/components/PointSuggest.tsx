@@ -92,6 +92,45 @@ export default function PointSuggest(props) {
     }
     return comment;
   } 
+  const findJob = (jobs: any[], { jbTpCd, jbNm }: { jbTpCd: string; jbNm: string; }) => {
+    if (!Array.isArray(jobs)) return null;
+
+    return jobs.find(job => {
+      const matchType = jbTpCd ? job.jbTpCd === jbTpCd : true;
+      const matchName = jbNm ? job.jbNm.toLowerCase() === jbNm.toLowerCase() : true;
+      return matchType && matchName;
+    }) || null;
+  }
+
+  // === Helper: chỉ giữ lại duy nhất "Complexity" có utPnt = 3 ===
+  const enforceComplexity = (pointList) => {
+    
+    console.log("Enforce Complexity Rule", detailReqVO);
+    const complexitySelectedValue = detailReqVO.complexityLvl.value || '2'; //Nếu ko có lấy value 2
+    const isComplexity = (it) =>
+      (it?.jbNm && it.jbNm.toLowerCase() === 'complexity') ||
+      (it?.category && it.category.toLowerCase() === 'complexity');
+
+    // 🔹 Tìm tất cả item "Complexity" có utPnt = 3
+    const hits = pointList.filter(it => isComplexity(it) && Number(it.utPnt) === Number(complexitySelectedValue));
+
+    if (hits.length === 0) {
+      alert("Không tồn tại Complexity có utPnt = " + complexitySelectedValue + ". Vui lòng kiểm tra lại dữ liệu!");
+      return pointList; // Giữ nguyên list, không thay đổi
+    }
+
+    const keeper = hits[0]; // Giữ lại item đầu tiên có utPnt = 3
+
+    // 🔹 Xóa hết các item “Complexity” khác (kể cả utPnt khác 3)
+    for (let i = pointList.length - 1; i >= 0; i--) {
+      if (isComplexity(pointList[i]) && pointList[i] !== keeper) {
+        pointList.splice(i, 1);
+      }
+    }
+
+    return pointList;
+  };
+
 
   const datasuggestList = async () => {
    
@@ -116,13 +155,23 @@ export default function PointSuggest(props) {
     const listJobDetail = await axios.post(`${url}/searchJobDetailsList`, param)
     .then(async (res) => {
       const result = [...res.data];
-      let pointList = [];
+      let pointList: any[] = [];
       if(result){
         let lsFilter = result.filter(item => (effortPointCategory.includes(item.jbNm)));
         if(lsFilter == undefined || lsFilter == null || lsFilter.length == 0){
           lsFilter = [...res.data];
           
         }
+
+        //Kiểm tra complexity
+        const complexityItem = findJob(result, { jbTpCd: 'REQ_JOB_TPNEW', jbNm: 'Complexity' });
+        console.log("complexityItem", complexityItem);
+        if(!complexityItem) {
+          alert("Please set Complexity job point for this requirement before suggest point!");
+          return;
+
+        }
+        console.log("lsFilter", lsFilter);
         setSuggetPrtList(lsFilter);
         
         for(let i = 0; i < lsFilter.length; i ++){
@@ -150,9 +199,10 @@ export default function PointSuggest(props) {
           });
          
         }
-        
-
+        //Check rule phải có 1 complexity
+        pointList = enforceComplexity(pointList, complexityItem); // <-- thêm dòng này
         pointList = pointList.sort(comparePointFn);
+        console.log("pointList", pointList);
         const suggestListDate = genListPoint(pointList);
         return suggestListDate;
         
@@ -249,6 +299,10 @@ export default function PointSuggest(props) {
         lstPrt.push(itemPrt[0]);  
       }
     }
+
+    console.log("suggestList", suggestList);
+    //REMOVE SAU KHI TEST DONE
+    // return;
     
     // RO
     // {"categoryList":[{"utPnt":0,"jbId":"JOB20211125000000139","jbNm":"Inbound","itmAmt":0,"$parent":0},{"utPnt":50,"jbId":"JOB20211125000000144","jbNm":"COARRI","itmAmt":1,"$parent":"JOB20211125000000139","prntNm":"Inbound"},{"utPnt":0,"jbId":"JOB20211125000000086","jbNm":"UI Layout","itmAmt":0,"$parent":0},{"utPnt":5,"jbId":"JOB20211125000000095","jbNm":"Change Label Charater","itmAmt":1,"$parent":"JOB20211125000000086","prntNm":"UI Layout"},{"utPnt":0,"jbId":"JOB20211125000000033","jbNm":"SQL","itmAmt":0,"$parent":0},{"utPnt":50,"jbId":"JOB20211125000000036","jbNm":"Change delete logic","itmAmt":1,"$parent":"JOB20211125000000033"},{"utPnt":0,"jbId":"JOB20211125000000006","jbNm":"Data Correction","itmAmt":0,"$parent":0},{"utPnt":10,"jbId":"JOB20211125000000008","jbNm":"Updated Column","itmAmt":1,"$parent":1677656482208},{"utPnt":5,"jbId":"JOB20211125000000007","jbNm":"Related table","itmAmt":1,"$parent":1677656482208},{"utPnt":0,"jbId":"JOB20211125000000011","jbNm":"UI Logic","itmAmt":0,"$parent":0},{"utPnt":10,"jbId":"JOB20211125000000013","jbNm":"Data Mapping/Unmapping","itmAmt":1,"$parent":1677656482210},{"utPnt":25,"jbId":"JOB20211125000000015","jbNm":"Change component status","itmAmt":1,"$parent":1677656482210},{"utPnt":50,"jbId":"JOB20211125000000018","jbNm":"Change UI Action","itmAmt":1,"$parent":1677656482210},{"utPnt":15,"jbId":"JOB20211125000000019","jbNm":"Recall function","itmAmt":1,"$parent":1677656482210},{"utPnt":0,"jbId":"JOB20211125000000044","jbNm":"Data model","itmAmt":0,"$parent":0},{"utPnt":30,"jbId":"JOB20211125000000045","jbNm":"Change length","itmAmt":1,"$parent":1677656482215,"prntNm":"Data model"},{"utPnt":5,"jbId":"JOB20211125000000046","jbNm":"Add column","itmAmt":1,"$parent":1677656482215}],"totalPoint":285,"reqId":"PRQ20230301000000085","cmtCtnt":"<div class=\\"system-comment\\"> • Added Point: </div>   <div style=\\"margin-left: 10px\\"> <b>&nbsp;Inbound:</b></div>  <div style=\\"margin-left: 10px\\"><i> &nbsp;&nbsp;COARRI: </i>50 </div>  <div style=\\"margin-left: 10px\\"> <b>&nbsp;UI Layout:</b></div>  <div style=\\"margin-left: 10px\\"><i> &nbsp;&nbsp;Change Label Charater: </i>5 </div>  <div style=\\"margin-left: 10px\\"> <b>&nbsp;Data model:</b></div>  <div style=\\"margin-left: 10px\\"><i> &nbsp;&nbsp;Change length: </i>30 </div> ","pjtId":"PJT20211119000000001","subPjtId":"PJT20211119000000001","action":"REQ_WTC_EFRT"}
@@ -358,37 +412,56 @@ export default function PointSuggest(props) {
     return sum;
   }
 
-  const genListPoint = (pointList: Array<Object>) => {
-    let tmpTotalPoint = (props.actualtotal + parseInt(increasePoint)) - props.total;
-    let lsPoint = [];
-    //1. Tim point lon nhat ma total%max = 0;
-    // let pointMax = findMaxPoint(pointList, tmpTotalPoint);
+  /**
+   * Gen List point bắt buộc fai có complexity
+   * @param pointList 
+   * @returns 
+   */
+  const genListPoint = (pointList: Array<any>) => {
+    let tmpTotalPoint =
+      (props.actualtotal + parseInt(increasePoint)) - props.total;
+    let lsPoint: any[] = [];
+
     while (tmpTotalPoint > 0) {
       const pointMax = findMaxPoint(pointList, tmpTotalPoint);
       lsPoint.push(pointMax);
-      tmpTotalPoint = tmpTotalPoint - pointMax.utPnt;
+      tmpTotalPoint -= pointMax.utPnt;
     }
-    //Merge List
+
     let countList = [...lsPoint.filter(unique)];
-    
     let subTotal = 0;
-    for(let i = 0; i < countList.length; i ++) {
-      const count = countInArray(lsPoint, countList[i].jbId, false);
-      if(count) {
-        countList[i].itmAmt = count;
-        countList[i].volumeTotal = count * countList[i].utPnt;
+
+    const isComplexity = (it: any) =>
+      (it?.jbNm && String(it.jbNm).toLowerCase() === "complexity") ||
+      (it?.category && String(it.category).toLowerCase() === "complexity");
+
+    for (let i = 0; i < countList.length; i++) {
+      const cur = countList[i];
+      const count = countInArray(lsPoint, cur.jbId, false) || 0;
+
+      if (isComplexity(cur)) {
+        // ✅ Nếu là Complexity → chỉ đếm 1
+        cur.itmAmt = 1;
+        cur.volumeTotal = 1;
+      } else {
+        // ✅ Các item khác tính bình thường
+        cur.itmAmt = count;
+        cur.volumeTotal = count * Number(cur.utPnt || 0);
       }
-      subTotal += countList[i].volumeTotal;
+
+      subTotal += cur.volumeTotal;
     }
+
     setTotalPoint(subTotal);
-  
     return countList;
-  }
+  };
+
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    console.log("Submit suggest point");
+    
     datasuggestList();
-
     // cfmEditPoint(true, true);
 
   };

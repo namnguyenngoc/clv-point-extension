@@ -63,7 +63,10 @@ const props = {
       getStyles={getStyles}
       innerProps={props}
     >
-      <input type="checkbox" checked={isSelected} className="mr-4" />
+      <input 
+        type="checkbox" 
+        checked={isSelected} 
+        className="mr-4" />
       {children}
     </components.Option>
   );
@@ -147,6 +150,66 @@ const customStyles = {
   },
 };
 
+//JOB NAME COMPLEXITY: JOB20250710000000008
+type JobDetailsVO = {
+  jbId: string;
+  jbNm: string;
+  utPnt?: number;
+  prntJbId?: string;
+  [k: string]: any;
+};
+
+interface FetchArgs {
+  baseUrl: string;                 // ví dụ: "https://blueprint.cyberlogitec.com.vn/api"
+  pjtId: string;                   // ví dụ: "PJT20250701000000003"
+  reqId: string;                   // ví dụ: "PRQ20251013000000150"
+  axiosInst?: AxiosInstance;       // optional: truyền sẵn axios có header token
+}
+    // selectMember_TaskList();
+/**
+ * Trả về mảng subJobDtlsLst của parent job có jbNm = "Complexity".
+ * Nếu không tìm thấy parent "Complexity" → trả về [].
+ */
+export async function fetchComplexitySubJobs({
+  baseUrl,
+  pjtId,
+  reqId,
+  axiosInst
+}: FetchArgs): Promise<JobDetailsVO[]> {
+  const http = axiosInst ?? axios.create({
+    baseURL: baseUrl,
+    // headers: { Authorization: `Bearer ${token}` } // nếu cần
+  });
+
+  // 1) Lấy tất cả job details (API1)
+  const listRes = await http.post<JobDetailsVO[]>(
+    `/searchJobDetailsList`,
+    { pjtId, isSearchDeleted: "N", reqId }
+  );
+
+  const allJobs = Array.isArray(listRes.data) ? listRes.data : [];
+
+  // 2) Tìm parent có tên đúng "Complexity" (case-insensitive), thường prntJbId = "0"
+  const parent = allJobs.find(
+    j =>
+      (j.jbNm ?? "").toLowerCase() === "complexity" &&
+      (j.prntJbId === "0" || j.prntJbId === 0 || j.prntJbId == null)
+  );
+
+  if (!parent) {
+    // Không có parent "Complexity"
+    return [];
+  }
+
+  // 3) Lấy sub jobs theo parent.jbId (API2)
+  const detailRes = await http.post<{
+    jobDtlsLst?: JobDetailsVO[];
+    subJobDtlsLst?: JobDetailsVO[];
+  }>(`/searchJobDetailsListByParentJobId`, { reqId, prntJobId: parent.jbId });
+
+  return detailRes.data?.subJobDtlsLst ?? [];
+}
+//END JOB
 export default function TaskSearchForm() {
   let [reqId, setReqId] = useState("");
   let [sprintNumber, setSprintNumber] = useState("");
@@ -166,17 +229,41 @@ export default function TaskSearchForm() {
   let [isCheckEffort, setIsCheckEffort] = useState(false);
   let [isCurrentMonth, setIsCurrentMonth] = useState(true);
 
-  
-  const prjId = "PJT20211119000000001";
+  let comboSelections = localStorage.getItem('comboSelections');
+  const API_INFO = localStorage.getItem("API_INFO");
+  console.log("API_INFO", API_INFO);
+
+  // Parse stored API_INFO JSON and validate its PRJ_ID property
+  let apiConfig: any = null;
+  try {
+    apiConfig = API_INFO ? JSON.parse(API_INFO) : null;
+  } catch (e) {
+    apiConfig = null;
+  }
+
+  if (!apiConfig) {
+    alert("Chưa setup biến môi trường");
+    return;
+  }
+
+  // if (apiConfig.PRJ_ID == undefined || apiConfig.PRJ_ID == null || apiConfig.PRJ_ID === "") {
+  //   alert("Chưa có PRJ ID!");
+  //   return;   
+  // }
+
+  const prjId = apiConfig.PRJ_ID; //si-erp
+
 
   const url = 'https://blueprint.cyberlogitec.com.vn/api';
   const currentURL = window.location.href // returns the absolute URL of a page
   // const pointDefaultByPharse = myData.pointDefaultByPharse; 
   // const lsMember = myData.memList;
 
-  const taskLevelList = myData.taskLevel;
+  // const taskLevelList = myData.taskLevel;
+  const[taskLevelList, setTaskLevelList] = useState([]);
+
   const defaultTrongSo = taskLevelList[0];
-  const [taskLevel, setTaskLevel] = useState(taskLevelList[0]);
+  const [taskLevel, setTaskLevel] = useState([]);
   const SHEET_ID = "Member_List";
   const RANGE_MEMBER_SHEET = 'A1:AQ50';
   const SPREADSHEET_ID = "10WPahmoB6Im1PyCdUZ_uda3fYijC8jKtHnRBasnTK3Y";
@@ -296,10 +383,11 @@ export default function TaskSearchForm() {
   };   
   const searchRequirement = async () => {
     openModal();
-    const API_INFO = localStorage.getItem("API_INFO");
+    let API_INFO = localStorage.getItem("API_INFO");
     if (API_INFO) {
       setConfig(JSON.parse(API_INFO));
     }
+    console.log("reqId", reqId);
        // https://blueprint.cyberlogitec.com.vn/api/uiPim001/searchRequirement
     //https://blueprint.cyberlogitec.com.vn/api/task-details/get-actual-effort-point?reqId=${lsReq[i].reqId}
     const requirementDetail = await  axios.get(`${url}/searchRequirementDetails?reqId=${reqId}`)
@@ -307,6 +395,85 @@ export default function TaskSearchForm() {
       setReqDetail(res.data);
       // selectMember_TaskList();
       let reqDetail = res.data;
+      console.log("reqDetail", reqDetail);
+
+      // === Update API_INFO trong localStorage ===
+      let levelGetByTask = null;
+      try {
+        // 1️⃣ Lấy API_INFO hiện tại (nếu có)
+        const API_INFO = localStorage.getItem("API_INFO");
+
+        // 2️⃣ Parse sang object (fallback nếu lỗi)
+        let parsed: any = {};
+        try {
+          parsed = API_INFO ? JSON.parse(API_INFO) : {};
+        } catch {
+          parsed = {};
+        }
+
+      const complexitySubs = await fetchComplexitySubJobs({
+        baseUrl: url,
+        pjtId: reqDetail.detailReqVO.pjtId,
+        reqId: reqId
+      });
+      console.log("complexitySubs", complexitySubs);
+      setTaskLevelList([...complexitySubs]);
+      //Set task level nếu tồn tại trong list, ngược lại để mặc dịnhh level 1
+      levelGetByTask = reqDetail.lstJbDetails;
+       console.log("levelGetByTask", levelGetByTask);
+
+        // 3️⃣ Giữ nguyên các property cũ, chỉ thêm/cập nhật 2 prop mới
+        parsed = {
+          ...parsed, // giữ nguyên toàn bộ key/value cũ
+          PRJ_ID: reqDetail.detailReqVO.pjtId,          // thêm / cập nhật project id
+          TASK_COMPLEXITY: complexitySubs       // thêm / cập nhật list jobdetail
+        };
+
+        // 4️⃣ Ghi đè lại localStorage
+        localStorage.setItem("API_INFO", JSON.stringify(parsed));
+
+        // 5️⃣ Cập nhật state nếu có
+        setConfig(parsed);
+
+      } catch (err) {
+        console.error("❌ Lỗi khi cập nhật API_INFO:", err);
+      }
+     
+       const jobsWithMeta = (levelGetByTask || []).map((item: JobDetailsVO) => ({
+                      ...item,
+                      id: item.jbId,
+                      label: item.jbNm,
+                      value: item.jbId
+                      }));
+
+      setTaskLevelList(jobsWithMeta);
+      let levelFound = levelGetByTask.find((itmLvl: { jbNm: string | string[]; }) => 
+          itmLvl.jbNm.includes("Complexity") && 
+        itmLvl.prntJbId != undefined && 
+        itmLvl.prntJbId != null && 
+        itmLvl.prntJbId != "" && 
+        itmLvl.prntJbId != "0"
+      );
+      if(levelFound) {
+        setTaskLevel(levelFound);
+        console.log("levelFound", levelFound);
+
+      }
+
+      //TASK LIST
+      //Start list task complexity
+      // https://blueprint.cyberlogitec.com.vn/api/searchJobDetailsListByParentJobId
+      // https://blueprint.cyberlogitec.com.vn/api/searchJobDetailsListByParentJobId
+    //   let paramCategoryComplexity = {
+    //     prntJobId: "JOB20250710000000008",
+    //     reqId: reqId
+    //   } 
+    //   await axios.post(`${url}/searchJobDetailsListByParentJobId`, paramCategoryComplexity)
+    //     .then(async function (response) {
+    //       console.log("response complexity", response.data);
+    // });
+      //End
+
       const data = {
         "pjtId": reqDetail.detailReqVO.pjtId,
           "reqNm": reqDetail.detailReqVO.reqTitNm,
@@ -610,10 +777,12 @@ export default function TaskSearchForm() {
                 }
               }
               requirementRP.totalPoint = totalPoint;
+              requirementRP.complexityLvl = taskLevel;
               setTaskInfo(requirementRP);
               setEffortInfo({
                 totalPoint: totalPoint
               })
+             
               // setOrgTaskInfo(requirementRP);
               let picFinish = [...tmpResult].filter(item => "PIM_PHS_CDFIN" == item.phsCd);
               if(picFinish) {
@@ -687,7 +856,12 @@ export default function TaskSearchForm() {
     return val;
   }
 
+  /**
+   * Submit for Calc Point
+   * @param event 
+   */
   const handleSubmit = async (event) => {
+    console.log("handleSubmit--calc point");
     openModal();
     event.preventDefault();
     const API_INFO = localStorage.getItem("API_INFO");
@@ -1231,6 +1405,7 @@ export default function TaskSearchForm() {
     if(1 == 1) {
       //Call API
       let url = `${isLiveServer ? config.TASK_MEMBER_API_BIZ : config.TASK_MEMBER_API}/memberList`;
+      console.log("selectMember_TaskList - API CALL", url);
       let memberResponse = await axios.get(url)
       .then(async function (response) {
         let data =  response.data.data;
@@ -2020,6 +2195,8 @@ export default function TaskSearchForm() {
     .then(async(res) => {
       setReqDetail(res.data);
       // selectMember_TaskList();
+      console.log("res.data", res.data);
+      
       let reqDetail = res.data;
       let _lsPharseMember = [...reqDetail.lstSkdUsr];
       
@@ -2148,7 +2325,8 @@ export default function TaskSearchForm() {
                     onChange={(options) => {
                       console.log("options", options);
                       setTaskLevel(options);
-                      searchRequirement();
+                      
+                      // searchRequirement();
                     }
                     } 
                     options={taskLevelList}

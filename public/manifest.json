@@ -11,9 +11,17 @@
       "matches": ["<all_urls>"],
       "css": [ "dist/index.1fc7f4f6.css",
               "dist/index.4eeece91.css"],
-      "js": ["dist/index.6099912e.js"]
+      "js": ["dist/index.6099912e.js"],
+      "run_at": "document_idle"
     }
   ],
-  "permissions": ["storage", "scripting", "tabs"],
+  "permissions": ["storage", "scripting", "tabs", "activeTab"],
+  "host_permissions": [
+    "http://nguyennamserver.local:3000/*"
+  ],
+  "web_accessible_resources": [{
+    "resources": ["*.js", "*.css"],
+    "matches": ["http://nguyennamserver.local:3000/*"]
+  }],
   "icons": {}
 }

@@ -63,9 +63,9 @@ export default function BPTableGridNew (props) {
   let [effortInfo, setEffortInfo] = useState({});
   let [effortWithMember, setEffortWithMember] = useState([]);
   let [memberTaskList, setMemberTaskList] = useState({});
-  const taskLevelList = myData.taskLevel;
-  const defaultTrongSo = taskLevelList[0];
-  const [taskLevel, setTaskLevel] = useState(taskLevelList[0]);
+  // const taskLevelList = myData.taskLevel;
+  // const defaultTrongSo = taskLevelList[0];
+  // const [taskLevel, setTaskLevel] = useState(taskLevelList[0]);
   const [onlySubmit, setOnlySubmit] = useState(false);
   const [prefixID, setPrefixID] = useState("86");
 
