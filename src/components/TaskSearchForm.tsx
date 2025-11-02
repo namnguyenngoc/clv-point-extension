@@ -7,6 +7,7 @@ import { GoogleSpreadsheet } from 'google-spreadsheet';
 import ACC_SHEET_API from '../credentials.json';
 import ScaleLoader from "react-spinners/ScaleLoader";
 import Modal from 'react-modal';
+
 import moment from 'moment';
 import DatePicker from "react-datepicker";
 import { WEB_INFO } from '../const';
@@ -65,7 +66,7 @@ const props = {
     >
       <input 
         type="checkbox" 
-        checked={isSelected} 
+        defaultChecked={isSelected} 
         className="mr-4" />
       {children}
     </components.Option>
@@ -119,7 +120,7 @@ type Value = ValuePiece | [ValuePiece, ValuePiece];
       getStyles={getStyles}
       innerProps={props}
     >
-      <input type="checkbox" checked={isSelected} className="mr-4" />
+  <input type="checkbox" defaultChecked={isSelected} className="mr-4" />
       {children}
     </components.Option>
   );
@@ -382,6 +383,7 @@ export default function TaskSearchForm() {
     return wfirst + Math.floor(days) + wlast - holidays; // get the total
   };   
   const searchRequirement = async () => {
+    debugger;
     openModal();
     let API_INFO = localStorage.getItem("API_INFO");
     if (API_INFO) {
@@ -436,6 +438,8 @@ export default function TaskSearchForm() {
         setConfig(parsed);
 
       } catch (err) {
+        debugger;
+
         console.error("❌ Lỗi khi cập nhật API_INFO:", err);
       }
      
@@ -495,7 +499,13 @@ export default function TaskSearchForm() {
       ).then(async (res) => {
         let requirementRP = res.data;
         console.log("----------------lsMember");
-       
+        const IS_LEVEL_COMPLEXITY = localStorage.getItem("IS_LEVEL_COMPLEXITY");
+        let levelDefine = 1;
+
+        //Set task level nếu tính theo complexity
+        if(taskLevel && taskLevel.jbNm && IS_LEVEL_COMPLEXITY == true){
+          levelDefine = taskLevel.utPnt;
+        }
         // console.log("lstUserInTeam", lstUserInTeam);
         const detail = await axios.get(`${url}/task-details/get-actual-effort-point?reqId=${reqId}`)
           .then(async (res) => {
@@ -733,11 +743,11 @@ export default function TaskSearchForm() {
                   //   setTaskLevel(taskLevelList[0]);
                   // }
                   if(item.bpAdddpoint > 0){
-                    item.bpAdddpoint = NaNToZero(item.bpAdddpoint + (expectPoint * taskLevel.value));
+                    item.bpAdddpoint = NaNToZero(item.bpAdddpoint + (expectPoint * levelDefine));
 
                   }
                   if(item.point > 0){
-                    item.point = NaNToZero(item.point + (expectPoint * taskLevel.value));
+                    item.point = NaNToZero(item.point + (expectPoint * levelDefine));
 
                   }
 
@@ -2464,12 +2474,13 @@ export default function TaskSearchForm() {
         </div>
         <div>
           <Modal
-              isOpen={modalIsOpen}
-              onAfterOpen={afterOpenModal}
-              onRequestClose={closeModal}
-              style={customStyles}
-              contentLabel="Example Modal"
-          >   
+        isOpen={modalIsOpen}
+        onAfterOpen={afterOpenModal}
+        onRequestClose={closeModal}
+        style={customStyles}
+        contentLabel="Example Modal"
+        ariaHideApp={false}
+      >
               <div className="grid grid-flow-row gap-1">
                 <div>
                   <ScaleLoader
@@ -2567,8 +2578,8 @@ export default function TaskSearchForm() {
               </tr>
             </thead>
             <tbody>
-              {effortWithMember.map((result) => (
-                <tr key={result.usrId} className={result.effortHours > result.estHours || (result.point - result.efrtNo) != 0 ? "border-t bg-misty" : (result.effortHours < result.estHours ? "border-t bg-misty-2" : "border-t")}>
+              {effortWithMember.map((result, idx) => (
+                <tr key={`${result.usrId}-${result.phsNm ?? idx}`} className={result.effortHours > result.estHours || (result.point - result.efrtNo) != 0 ? "border-t bg-misty" : (result.effortHours < result.estHours ? "border-t bg-misty-2" : "border-t")}> 
                   <td className="px-4 py-2">{result.usrNm}</td>
                   <td className="px-4 py-2">{result.phsNm}</td>
                   <td className="px-4 py-2 text-right">{formatTime(result.effortHours)}</td>

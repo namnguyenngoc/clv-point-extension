@@ -9,7 +9,7 @@
     "start": "parce --dist-dir ./public/dist",
     "prebuild": "yarn style && rm -rf ./public/dist",
     "build": "parcel build --dist-dir ./public/dist --no-content-hash",
-    "dev-build": "cross-env NODE_ENV=development parcel watch --dist-dir ./public/dist --no-content-hash",
+    "dev-build": "cross-env NODE_ENV=development parcel watch src/manifest.json --dist-dir ./public/dist --no-content-hash",
     "style": "npx tailwindcss -i ./src/input.css -o ./src/tailwindcss-output.css",
     "style:watch": "yarn style -- --watch"
   },
@@ -57,7 +57,7 @@
     "events": "^3.1.0",
     "https-browserify": "^1.0.0",
     "os-browserify": "^0.3.0",
-    "parcel": "^2.16.0",
+    "parcel": "^2.12.0",
     "path-browserify": "^1.0.0",
     "postcss": "^8.4.16",
     "postcss-nested": "^5.0.6",
