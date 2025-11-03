@@ -724,15 +724,15 @@ export default function TaskSearchForm() {
 
                         //THEM BIEN DE TINH TOAN
                           pointSuggest = estByMember > 0 ? estByMember : (total*1.0) / (60 * 1.0);
-                          item.pointEST = Math.ceil(parseFloat(pointSuggest) * expectPoint);
+                          item.pointEST = Math.ceil(parseFloat(pointSuggest) * expectPoint * 1.0);
                         }
                         console.log("TESTER ITEM",item);
                         
                       } else {
                         item.effortHours = total; 
-                        item.point = NaNToZero(Math.ceil(parseFloat((total / (60 * 1.0)) * expectPoint)));
-                        item.pointEST = Math.ceil(parseFloat((total / (60 * 1.0)) * expectPoint));
-                        item.pointACT = Math.ceil(parseFloat((total / (60 * 1.0)) * expectPoint));
+                        item.point = NaNToZero(Math.ceil(parseFloat((total / (60 * 1.0)) * expectPoint * 1.0)));
+                        item.pointEST = Math.ceil(parseFloat((total / (60 * 1.0)) * expectPoint* 1.0));
+                        item.pointACT = Math.ceil(parseFloat((total / (60 * 1.0)) * expectPoint* 1.0));
                       }
                       
                       
@@ -743,17 +743,17 @@ export default function TaskSearchForm() {
                   //   setTaskLevel(taskLevelList[0]);
                   // }
                   if(item.bpAdddpoint > 0){
-                    item.bpAdddpoint = NaNToZero(item.bpAdddpoint + (expectPoint * levelDefine));
+                    item.bpAdddpoint = NaNToZero(item.bpAdddpoint + (expectPoint * levelDefine* 1.0));
 
                   }
                   if(item.point > 0){
-                    item.point = NaNToZero(item.point + (expectPoint * levelDefine));
+                    item.point = NaNToZero(item.point + (expectPoint * levelDefine* 1.0));
 
                   }
 
                   //set effort
                   item.isBurnPointEstimate = isBurnPointEstimate;
-                  tmpResult.effortPoint = NaNToZero(item.effortPoint);
+                  tmpResult.effortPoint = parseFloat(NaNToZero(item.effortPoint * 1.0).toFixed(1));
 
                  
                   tmpResult.push(item);
@@ -776,7 +776,7 @@ export default function TaskSearchForm() {
               //Check total 
               requirementRP.lstReq = requirementRP.lstReq.filter(item => item.reqId == reqId);
               
-              const gapPoint = NaNToZero(requirementRP.lstReq[0].pntNo) - totalPoint; //pntNo
+              const gapPoint = parseFloat((NaNToZero(requirementRP.lstReq[0].pntNo) - totalPoint).toFixed(1)); //pntNo
               // console.log("totalPoint", totalPoint);
               // console.log("requirement.lstReq[0]", requirementRP.lstReq[0].pntNo);
 
@@ -1408,9 +1408,19 @@ export default function TaskSearchForm() {
     }
   }
   const selectMember_TaskList = async (requirementRP) => {
+    // Always get fresh config from localStorage
+    let config = null;
     const API_INFO = localStorage.getItem("API_INFO");
     if (API_INFO) {
-      setConfig(JSON.parse(API_INFO));
+      try {
+        config = JSON.parse(API_INFO);
+      } catch (e) {
+        config = null;
+      }
+    }
+    if (!config) {
+      alert("Chưa setup biến môi trường hoặc thiếu API_INFO");
+      return { arrMember: [], taskList: [] };
     }
     if(1 == 1) {
       //Call API
@@ -1419,9 +1429,7 @@ export default function TaskSearchForm() {
       let memberResponse = await axios.get(url)
       .then(async function (response) {
         let data =  response.data.data;
-        
         return data;
-
       });
 
     

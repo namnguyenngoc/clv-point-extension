@@ -103,10 +103,10 @@ export default function PointSuggest(props) {
   }
 
   // === Helper: chỉ giữ lại duy nhất "Complexity" có utPnt = 3 ===
-  const enforceComplexity = (pointList) => {
+  const enforceComplexity = (pointList, itemComplexity) => {
     
     console.log("Enforce Complexity Rule", detailReqVO);
-    const complexitySelectedValue = detailReqVO.complexityLvl.value || '2'; //Nếu ko có lấy value 2
+    let complexitySelectedValue = detailReqVO.complexityLvl.value || '2'; //Nếu ko có lấy value 2
     const isComplexity = (it) =>
       (it?.jbNm && it.jbNm.toLowerCase() === 'complexity') ||
       (it?.category && it.category.toLowerCase() === 'complexity');
@@ -115,7 +115,10 @@ export default function PointSuggest(props) {
     const hits = pointList.filter(it => isComplexity(it) && Number(it.utPnt) === Number(complexitySelectedValue));
 
     if (hits.length === 0) {
-      alert("Không tồn tại Complexity có utPnt = " + complexitySelectedValue + ". Vui lòng kiểm tra lại dữ liệu!");
+      if(itemComplexity == undefined || itemComplexity == null) {
+        alert("Không tồn tại Complexity có utPnt = " + complexitySelectedValue + ". Vui lòng kiểm tra lại dữ liệu!");
+        return;
+      }
       return pointList; // Giữ nguyên list, không thay đổi
     }
 
@@ -191,7 +194,7 @@ export default function PointSuggest(props) {
               
               //Check exist in array
               const isExist = checkExist(pointList, subItem.utPnt);
-              if(!isExist) {
+              if(!isExist && subItem.category != "Complexity") {
                 pointList.push(subItem);
                 
               }
@@ -369,8 +372,9 @@ export default function PointSuggest(props) {
     let tmpMax = pointList[0];
     let flag = false;
     // console.log("TIM_POINT CHO MAX:", tmpTotalPoint);
+    const COMPLEXITY_CODE = "Complexity";
     for(let idx = 0; idx < pointList.length; idx ++) {
-      if(pointList[idx].utPnt <= tmpTotalPoint){
+      if(pointList[idx].category != COMPLEXITY_CODE && pointList[idx].utPnt <= tmpTotalPoint){
         tmpMax = pointList[idx];
         flag = true;
         break;
