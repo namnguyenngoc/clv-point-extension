@@ -33077,6 +33077,7 @@ function TaskSearchForm() {
     const selectMember_TaskList = async (requirementRP)=>{
         // Always get fresh config from localStorage
         let config = null;
+        console.log("selectMember_TaskList - requirementRP", requirementRP);
         const API_INFO = localStorage.getItem("API_INFO");
         if (API_INFO) try {
             config = JSON.parse(API_INFO);
@@ -33667,17 +33668,17 @@ function TaskSearchForm() {
                                         children: taskInfo && taskInfo.lstReq && taskInfo.lstReq.length > 0 ? `(${taskInfo.lstReq[0].seqNo}) ${taskInfo.lstReq[0].reqTitNm}` : ""
                                     }, void 0, false, {
                                         fileName: "src/components/TaskSearchForm.tsx",
-                                        lineNumber: 2293,
+                                        lineNumber: 2294,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "src/components/TaskSearchForm.tsx",
-                                    lineNumber: 2288,
+                                    lineNumber: 2289,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "src/components/TaskSearchForm.tsx",
-                                lineNumber: 2286,
+                                lineNumber: 2287,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -33686,12 +33687,12 @@ function TaskSearchForm() {
                                     value: value
                                 }, void 0, false, {
                                     fileName: "src/components/TaskSearchForm.tsx",
-                                    lineNumber: 2299,
+                                    lineNumber: 2300,
                                     columnNumber: 11
                                 }, this)
                             }, void 0, false, {
                                 fileName: "src/components/TaskSearchForm.tsx",
-                                lineNumber: 2298,
+                                lineNumber: 2299,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("table", {
@@ -33709,12 +33710,12 @@ function TaskSearchForm() {
                                                     className: "col-span-2 border border-gray-500 px-4 py-2 rounded-lg  w-full"
                                                 }, void 0, false, {
                                                     fileName: "src/components/TaskSearchForm.tsx",
-                                                    lineNumber: 2305,
+                                                    lineNumber: 2306,
                                                     columnNumber: 19
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "src/components/TaskSearchForm.tsx",
-                                                lineNumber: 2304,
+                                                lineNumber: 2305,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("th", {
@@ -33731,7 +33732,7 @@ function TaskSearchForm() {
                                                         className: "col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-150"
                                                     }, void 0, false, {
                                                         fileName: "src/components/TaskSearchForm.tsx",
-                                                        lineNumber: 2313,
+                                                        lineNumber: 2314,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
@@ -33740,18 +33741,18 @@ function TaskSearchForm() {
                                                             children: taskServer.includes("CLICKUP") ? clickTaskInfo ? clickTaskInfo.data.status.status : "" : pimTaskInfo ? pimTaskInfo.fields.status.name : ""
                                                         }, void 0, false, {
                                                             fileName: "src/components/TaskSearchForm.tsx",
-                                                            lineNumber: 2324,
+                                                            lineNumber: 2325,
                                                             columnNumber: 23
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "src/components/TaskSearchForm.tsx",
-                                                        lineNumber: 2323,
+                                                        lineNumber: 2324,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "src/components/TaskSearchForm.tsx",
-                                                lineNumber: 2312,
+                                                lineNumber: 2313,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("th", {
@@ -33763,12 +33764,12 @@ function TaskSearchForm() {
                                                     className: "col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-50 text-right"
                                                 }, void 0, false, {
                                                     fileName: "src/components/TaskSearchForm.tsx",
-                                                    lineNumber: 2331,
+                                                    lineNumber: 2332,
                                                     columnNumber: 19
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "src/components/TaskSearchForm.tsx",
-                                                lineNumber: 2330,
+                                                lineNumber: 2331,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("th", {
@@ -33788,12 +33789,12 @@ function TaskSearchForm() {
                                                     }
                                                 }, void 0, false, {
                                                     fileName: "src/components/TaskSearchForm.tsx",
-                                                    lineNumber: 2339,
+                                                    lineNumber: 2340,
                                                     columnNumber: 19
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "src/components/TaskSearchForm.tsx",
-                                                lineNumber: 2338,
+                                                lineNumber: 2339,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("th", {
@@ -33807,7 +33808,7 @@ function TaskSearchForm() {
                                                             className: "w-150"
                                                         }, void 0, false, {
                                                             fileName: "src/components/TaskSearchForm.tsx",
-                                                            lineNumber: 2358,
+                                                            lineNumber: 2359,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -33817,7 +33818,7 @@ function TaskSearchForm() {
                                                             children: "(+)Log Work FN"
                                                         }, void 0, false, {
                                                             fileName: "src/components/TaskSearchForm.tsx",
-                                                            lineNumber: 2359,
+                                                            lineNumber: 2360,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -33827,34 +33828,34 @@ function TaskSearchForm() {
                                                             children: "Master Code"
                                                         }, void 0, false, {
                                                             fileName: "src/components/TaskSearchForm.tsx",
-                                                            lineNumber: 2363,
+                                                            lineNumber: 2364,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "src/components/TaskSearchForm.tsx",
-                                                    lineNumber: 2357,
+                                                    lineNumber: 2358,
                                                     columnNumber: 19
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "src/components/TaskSearchForm.tsx",
-                                                lineNumber: 2356,
+                                                lineNumber: 2357,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "src/components/TaskSearchForm.tsx",
-                                        lineNumber: 2303,
+                                        lineNumber: 2304,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "src/components/TaskSearchForm.tsx",
-                                    lineNumber: 2302,
+                                    lineNumber: 2303,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "src/components/TaskSearchForm.tsx",
-                                lineNumber: 2301,
+                                lineNumber: 2302,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("table", {
@@ -33865,12 +33866,12 @@ function TaskSearchForm() {
                                             children: "xxx"
                                         }, void 0, false, {
                                             fileName: "src/components/TaskSearchForm.tsx",
-                                            lineNumber: 2376,
+                                            lineNumber: 2377,
                                             columnNumber: 15
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "src/components/TaskSearchForm.tsx",
-                                        lineNumber: 2375,
+                                        lineNumber: 2376,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("tr", {
@@ -33888,12 +33889,12 @@ function TaskSearchForm() {
                                                     }
                                                 }, void 0, false, {
                                                     fileName: "src/components/TaskSearchForm.tsx",
-                                                    lineNumber: 2383,
+                                                    lineNumber: 2384,
                                                     columnNumber: 17
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "src/components/TaskSearchForm.tsx",
-                                                lineNumber: 2382,
+                                                lineNumber: 2383,
                                                 columnNumber: 13
                                             }, this),
                                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("td", {
@@ -33909,12 +33910,12 @@ function TaskSearchForm() {
                                                     }
                                                 }, void 0, false, {
                                                     fileName: "src/components/TaskSearchForm.tsx",
-                                                    lineNumber: 2397,
+                                                    lineNumber: 2398,
                                                     columnNumber: 17
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "src/components/TaskSearchForm.tsx",
-                                                lineNumber: 2396,
+                                                lineNumber: 2397,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("td", {
@@ -33925,12 +33926,12 @@ function TaskSearchForm() {
                                                     className: "col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-full"
                                                 }, void 0, false, {
                                                     fileName: "src/components/TaskSearchForm.tsx",
-                                                    lineNumber: 2412,
+                                                    lineNumber: 2413,
                                                     columnNumber: 17
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "src/components/TaskSearchForm.tsx",
-                                                lineNumber: 2411,
+                                                lineNumber: 2412,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("td", {
@@ -33941,24 +33942,24 @@ function TaskSearchForm() {
                                                     className: "col-span-2 border border-gray-500 px-4 py-2 rounded-lg w-full"
                                                 }, void 0, false, {
                                                     fileName: "src/components/TaskSearchForm.tsx",
-                                                    lineNumber: 2420,
+                                                    lineNumber: 2421,
                                                     columnNumber: 17
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "src/components/TaskSearchForm.tsx",
-                                                lineNumber: 2419,
+                                                lineNumber: 2420,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "src/components/TaskSearchForm.tsx",
-                                        lineNumber: 2380,
+                                        lineNumber: 2381,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "src/components/TaskSearchForm.tsx",
-                                lineNumber: 2374,
+                                lineNumber: 2375,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("table", {
@@ -33975,7 +33976,7 @@ function TaskSearchForm() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "src/components/TaskSearchForm.tsx",
-                                                lineNumber: 2432,
+                                                lineNumber: 2433,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("th", {
@@ -33986,7 +33987,7 @@ function TaskSearchForm() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "src/components/TaskSearchForm.tsx",
-                                                lineNumber: 2435,
+                                                lineNumber: 2436,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("th", {
@@ -33997,7 +33998,7 @@ function TaskSearchForm() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "src/components/TaskSearchForm.tsx",
-                                                lineNumber: 2439,
+                                                lineNumber: 2440,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("th", {
@@ -34008,7 +34009,7 @@ function TaskSearchForm() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "src/components/TaskSearchForm.tsx",
-                                                lineNumber: 2443,
+                                                lineNumber: 2444,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("th", {
@@ -34022,19 +34023,19 @@ function TaskSearchForm() {
                                                             onChange: ()=>setIsLiveServer(!isLiveServer)
                                                         }, void 0, false, {
                                                             fileName: "src/components/TaskSearchForm.tsx",
-                                                            lineNumber: 2449,
+                                                            lineNumber: 2450,
                                                             columnNumber: 21
                                                         }, this),
                                                         "Live"
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "src/components/TaskSearchForm.tsx",
-                                                    lineNumber: 2448,
+                                                    lineNumber: 2449,
                                                     columnNumber: 19
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "src/components/TaskSearchForm.tsx",
-                                                lineNumber: 2447,
+                                                lineNumber: 2448,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("th", {
@@ -34050,7 +34051,7 @@ function TaskSearchForm() {
                                                         children: "CAPA"
                                                     }, void 0, false, {
                                                         fileName: "src/components/TaskSearchForm.tsx",
-                                                        lineNumber: 2459,
+                                                        lineNumber: 2460,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -34059,7 +34060,7 @@ function TaskSearchForm() {
                                                         children: "Calc Point"
                                                     }, void 0, false, {
                                                         fileName: "src/components/TaskSearchForm.tsx",
-                                                        lineNumber: 2467,
+                                                        lineNumber: 2468,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -34070,35 +34071,35 @@ function TaskSearchForm() {
                                                         children: "Insert Point"
                                                     }, void 0, false, {
                                                         fileName: "src/components/TaskSearchForm.tsx",
-                                                        lineNumber: 2470,
+                                                        lineNumber: 2471,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "src/components/TaskSearchForm.tsx",
-                                                lineNumber: 2458,
+                                                lineNumber: 2459,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "src/components/TaskSearchForm.tsx",
-                                        lineNumber: 2431,
+                                        lineNumber: 2432,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "src/components/TaskSearchForm.tsx",
-                                    lineNumber: 2430,
+                                    lineNumber: 2431,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "src/components/TaskSearchForm.tsx",
-                                lineNumber: 2429,
+                                lineNumber: 2430,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "src/components/TaskSearchForm.tsx",
-                        lineNumber: 2285,
+                        lineNumber: 2286,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -34121,22 +34122,22 @@ function TaskSearchForm() {
                                             "data-testid": "loader"
                                         }, void 0, false, {
                                             fileName: "src/components/TaskSearchForm.tsx",
-                                            lineNumber: 2494,
+                                            lineNumber: 2495,
                                             columnNumber: 19
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "src/components/TaskSearchForm.tsx",
-                                        lineNumber: 2493,
+                                        lineNumber: 2494,
                                         columnNumber: 17
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "src/components/TaskSearchForm.tsx",
-                                    lineNumber: 2492,
+                                    lineNumber: 2493,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "src/components/TaskSearchForm.tsx",
-                                lineNumber: 2484,
+                                lineNumber: 2485,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _scaleLoaderDefault.default), {
@@ -34147,7 +34148,7 @@ function TaskSearchForm() {
                                 "data-testid": "loader"
                             }, void 0, false, {
                                 fileName: "src/components/TaskSearchForm.tsx",
-                                lineNumber: 2506,
+                                lineNumber: 2507,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -34155,18 +34156,18 @@ function TaskSearchForm() {
                                 children: "Notify!"
                             }, void 0, false, {
                                 fileName: "src/components/TaskSearchForm.tsx",
-                                lineNumber: 2513,
+                                lineNumber: 2514,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _reactToastify.ToastContainer), {}, void 0, false, {
                                 fileName: "src/components/TaskSearchForm.tsx",
-                                lineNumber: 2514,
+                                lineNumber: 2515,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "src/components/TaskSearchForm.tsx",
-                        lineNumber: 2483,
+                        lineNumber: 2484,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -34187,7 +34188,7 @@ function TaskSearchForm() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "src/components/TaskSearchForm.tsx",
-                                                lineNumber: 2520,
+                                                lineNumber: 2521,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("th", {
@@ -34198,7 +34199,7 @@ function TaskSearchForm() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "src/components/TaskSearchForm.tsx",
-                                                lineNumber: 2525,
+                                                lineNumber: 2526,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("th", {
@@ -34215,14 +34216,14 @@ function TaskSearchForm() {
                                                                 onChange: ()=>setIsShowDetailEffortTable(!isShowDetailEffortTable)
                                                             }, void 0, false, {
                                                                 fileName: "src/components/TaskSearchForm.tsx",
-                                                                lineNumber: 2531,
+                                                                lineNumber: 2532,
                                                                 columnNumber: 21
                                                             }, this),
                                                             "Show Detail"
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "src/components/TaskSearchForm.tsx",
-                                                        lineNumber: 2530,
+                                                        lineNumber: 2531,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
@@ -34234,14 +34235,14 @@ function TaskSearchForm() {
                                                                 onChange: ()=>setIsCheckEffort(!isCheckEffort)
                                                             }, void 0, false, {
                                                                 fileName: "src/components/TaskSearchForm.tsx",
-                                                                lineNumber: 2539,
+                                                                lineNumber: 2540,
                                                                 columnNumber: 21
                                                             }, this),
                                                             "Check Effort"
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "src/components/TaskSearchForm.tsx",
-                                                        lineNumber: 2538,
+                                                        lineNumber: 2539,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
@@ -34254,20 +34255,20 @@ function TaskSearchForm() {
                                                                 disabled: !isCheckEffort
                                                             }, void 0, false, {
                                                                 fileName: "src/components/TaskSearchForm.tsx",
-                                                                lineNumber: 2547,
+                                                                lineNumber: 2548,
                                                                 columnNumber: 21
                                                             }, this),
                                                             "In current month"
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "src/components/TaskSearchForm.tsx",
-                                                        lineNumber: 2546,
+                                                        lineNumber: 2547,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "src/components/TaskSearchForm.tsx",
-                                                lineNumber: 2528,
+                                                lineNumber: 2529,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("th", {
@@ -34284,36 +34285,36 @@ function TaskSearchForm() {
                                                                 onChange: ()=>setIsOpenConfirm(!isOpenConfirm)
                                                             }, void 0, false, {
                                                                 fileName: "src/components/TaskSearchForm.tsx",
-                                                                lineNumber: 2559,
+                                                                lineNumber: 2560,
                                                                 columnNumber: 21
                                                             }, this),
                                                             "Confirm Loading..."
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "src/components/TaskSearchForm.tsx",
-                                                        lineNumber: 2558,
+                                                        lineNumber: 2559,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "src/components/TaskSearchForm.tsx",
-                                                lineNumber: 2556,
+                                                lineNumber: 2557,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "src/components/TaskSearchForm.tsx",
-                                        lineNumber: 2519,
+                                        lineNumber: 2520,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "src/components/TaskSearchForm.tsx",
-                                    lineNumber: 2518,
+                                    lineNumber: 2519,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "src/components/TaskSearchForm.tsx",
-                                lineNumber: 2517,
+                                lineNumber: 2518,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("table", {
@@ -34328,7 +34329,7 @@ function TaskSearchForm() {
                                                     children: "Member"
                                                 }, void 0, false, {
                                                     fileName: "src/components/TaskSearchForm.tsx",
-                                                    lineNumber: 2572,
+                                                    lineNumber: 2573,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("th", {
@@ -34336,7 +34337,7 @@ function TaskSearchForm() {
                                                     children: "Pharse Name"
                                                 }, void 0, false, {
                                                     fileName: "src/components/TaskSearchForm.tsx",
-                                                    lineNumber: 2573,
+                                                    lineNumber: 2574,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("th", {
@@ -34344,7 +34345,7 @@ function TaskSearchForm() {
                                                     children: "Time Worked"
                                                 }, void 0, false, {
                                                     fileName: "src/components/TaskSearchForm.tsx",
-                                                    lineNumber: 2574,
+                                                    lineNumber: 2575,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("th", {
@@ -34352,7 +34353,7 @@ function TaskSearchForm() {
                                                     children: "EST (H)"
                                                 }, void 0, false, {
                                                     fileName: "src/components/TaskSearchForm.tsx",
-                                                    lineNumber: 2575,
+                                                    lineNumber: 2576,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("th", {
@@ -34360,7 +34361,7 @@ function TaskSearchForm() {
                                                     children: "Exp P/H"
                                                 }, void 0, false, {
                                                     fileName: "src/components/TaskSearchForm.tsx",
-                                                    lineNumber: 2576,
+                                                    lineNumber: 2577,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("th", {
@@ -34368,7 +34369,7 @@ function TaskSearchForm() {
                                                     children: "Effort Point"
                                                 }, void 0, false, {
                                                     fileName: "src/components/TaskSearchForm.tsx",
-                                                    lineNumber: 2577,
+                                                    lineNumber: 2578,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("th", {
@@ -34376,7 +34377,7 @@ function TaskSearchForm() {
                                                     children: "BP Point"
                                                 }, void 0, false, {
                                                     fileName: "src/components/TaskSearchForm.tsx",
-                                                    lineNumber: 2578,
+                                                    lineNumber: 2579,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("th", {
@@ -34384,20 +34385,12 @@ function TaskSearchForm() {
                                                     children: "Estimate"
                                                 }, void 0, false, {
                                                     fileName: "src/components/TaskSearchForm.tsx",
-                                                    lineNumber: 2579,
-                                                    columnNumber: 17
-                                                }, this),
-                                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("th", {
-                                                    className: "px-4 py-2 text-right",
-                                                    children: "Eff Month"
-                                                }, void 0, false, {
-                                                    fileName: "src/components/TaskSearchForm.tsx",
                                                     lineNumber: 2580,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("th", {
                                                     className: "px-4 py-2 text-right",
-                                                    children: "Fin/In"
+                                                    children: "Eff Month"
                                                 }, void 0, false, {
                                                     fileName: "src/components/TaskSearchForm.tsx",
                                                     lineNumber: 2581,
@@ -34405,7 +34398,7 @@ function TaskSearchForm() {
                                                 }, this),
                                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("th", {
                                                     className: "px-4 py-2 text-right",
-                                                    children: "Eff Month"
+                                                    children: "Fin/In"
                                                 }, void 0, false, {
                                                     fileName: "src/components/TaskSearchForm.tsx",
                                                     lineNumber: 2582,
@@ -34413,7 +34406,7 @@ function TaskSearchForm() {
                                                 }, this),
                                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("th", {
                                                     className: "px-4 py-2 text-right",
-                                                    children: "Eff/AVG(m)"
+                                                    children: "Eff Month"
                                                 }, void 0, false, {
                                                     fileName: "src/components/TaskSearchForm.tsx",
                                                     lineNumber: 2583,
@@ -34421,21 +34414,29 @@ function TaskSearchForm() {
                                                 }, this),
                                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("th", {
                                                     className: "px-4 py-2 text-right",
-                                                    children: "Target"
+                                                    children: "Eff/AVG(m)"
                                                 }, void 0, false, {
                                                     fileName: "src/components/TaskSearchForm.tsx",
                                                     lineNumber: 2584,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("th", {
+                                                    className: "px-4 py-2 text-right",
+                                                    children: "Target"
+                                                }, void 0, false, {
+                                                    fileName: "src/components/TaskSearchForm.tsx",
+                                                    lineNumber: 2585,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "src/components/TaskSearchForm.tsx",
-                                            lineNumber: 2571,
+                                            lineNumber: 2572,
                                             columnNumber: 15
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "src/components/TaskSearchForm.tsx",
-                                        lineNumber: 2570,
+                                        lineNumber: 2571,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("tbody", {
@@ -34447,7 +34448,7 @@ function TaskSearchForm() {
                                                         children: result.usrNm
                                                     }, void 0, false, {
                                                         fileName: "src/components/TaskSearchForm.tsx",
-                                                        lineNumber: 2591,
+                                                        lineNumber: 2592,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("td", {
@@ -34455,7 +34456,7 @@ function TaskSearchForm() {
                                                         children: result.phsNm
                                                     }, void 0, false, {
                                                         fileName: "src/components/TaskSearchForm.tsx",
-                                                        lineNumber: 2592,
+                                                        lineNumber: 2593,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("td", {
@@ -34463,7 +34464,7 @@ function TaskSearchForm() {
                                                         children: formatTime(result.effortHours)
                                                     }, void 0, false, {
                                                         fileName: "src/components/TaskSearchForm.tsx",
-                                                        lineNumber: 2593,
+                                                        lineNumber: 2594,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("td", {
@@ -34471,7 +34472,7 @@ function TaskSearchForm() {
                                                         children: formatTime(result.estHours)
                                                     }, void 0, false, {
                                                         fileName: "src/components/TaskSearchForm.tsx",
-                                                        lineNumber: 2594,
+                                                        lineNumber: 2595,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("td", {
@@ -34479,7 +34480,7 @@ function TaskSearchForm() {
                                                         children: formatNumber(result.expectPoint, 1)
                                                     }, void 0, false, {
                                                         fileName: "src/components/TaskSearchForm.tsx",
-                                                        lineNumber: 2595,
+                                                        lineNumber: 2596,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("td", {
@@ -34487,7 +34488,7 @@ function TaskSearchForm() {
                                                         children: result.point
                                                     }, void 0, false, {
                                                         fileName: "src/components/TaskSearchForm.tsx",
-                                                        lineNumber: 2596,
+                                                        lineNumber: 2597,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("td", {
@@ -34495,7 +34496,7 @@ function TaskSearchForm() {
                                                         children: result.efrtNo /** BP Point*/ 
                                                     }, void 0, false, {
                                                         fileName: "src/components/TaskSearchForm.tsx",
-                                                        lineNumber: 2597,
+                                                        lineNumber: 2598,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("td", {
@@ -34508,17 +34509,17 @@ function TaskSearchForm() {
                                                                 onChange: ()=>changeEstimateOrActual(result, !result.isBurnPointEstimate)
                                                             }, void 0, false, {
                                                                 fileName: "src/components/TaskSearchForm.tsx",
-                                                                lineNumber: 2600,
+                                                                lineNumber: 2601,
                                                                 columnNumber: 23
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "src/components/TaskSearchForm.tsx",
-                                                            lineNumber: 2599,
+                                                            lineNumber: 2600,
                                                             columnNumber: 21
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "src/components/TaskSearchForm.tsx",
-                                                        lineNumber: 2598,
+                                                        lineNumber: 2599,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("td", {
@@ -34526,7 +34527,7 @@ function TaskSearchForm() {
                                                         children: result._month_full
                                                     }, void 0, false, {
                                                         fileName: "src/components/TaskSearchForm.tsx",
-                                                        lineNumber: 2607,
+                                                        lineNumber: 2608,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("td", {
@@ -34538,7 +34539,7 @@ function TaskSearchForm() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "src/components/TaskSearchForm.tsx",
-                                                        lineNumber: 2608,
+                                                        lineNumber: 2609,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("td", {
@@ -34546,7 +34547,7 @@ function TaskSearchForm() {
                                                         children: result._month_full
                                                     }, void 0, false, {
                                                         fileName: "src/components/TaskSearchForm.tsx",
-                                                        lineNumber: 2609,
+                                                        lineNumber: 2610,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("td", {
@@ -34561,7 +34562,7 @@ function TaskSearchForm() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "src/components/TaskSearchForm.tsx",
-                                                        lineNumber: 2610,
+                                                        lineNumber: 2611,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("td", {
@@ -34569,36 +34570,36 @@ function TaskSearchForm() {
                                                         children: result.target
                                                     }, void 0, false, {
                                                         fileName: "src/components/TaskSearchForm.tsx",
-                                                        lineNumber: 2619,
+                                                        lineNumber: 2620,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, `${result.usrId}-${result.phsNm ?? idx}`, true, {
                                                 fileName: "src/components/TaskSearchForm.tsx",
-                                                lineNumber: 2590,
+                                                lineNumber: 2591,
                                                 columnNumber: 17
                                             }, this))
                                     }, void 0, false, {
                                         fileName: "src/components/TaskSearchForm.tsx",
-                                        lineNumber: 2588,
+                                        lineNumber: 2589,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "src/components/TaskSearchForm.tsx",
-                                lineNumber: 2569,
+                                lineNumber: 2570,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "src/components/TaskSearchForm.tsx",
-                        lineNumber: 2516,
+                        lineNumber: 2517,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "src/components/TaskSearchForm.tsx",
-                lineNumber: 2283,
+                lineNumber: 2284,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -34608,7 +34609,7 @@ function TaskSearchForm() {
                 }
             }, void 0, false, {
                 fileName: "src/components/TaskSearchForm.tsx",
-                lineNumber: 2630,
+                lineNumber: 2631,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -34623,33 +34624,149 @@ function TaskSearchForm() {
                     memberList: memberList
                 }, void 0, false, {
                     fileName: "src/components/TaskSearchForm.tsx",
-                    lineNumber: 2633,
+                    lineNumber: 2634,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "src/components/TaskSearchForm.tsx",
-                lineNumber: 2632,
+                lineNumber: 2633,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
                 className: "w-full border border-gray-500",
-                children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("textarea", {
-                    value: code,
-                    className: "w-full"
-                }, void 0, false, {
-                    fileName: "src/components/TaskSearchForm.tsx",
-                    lineNumber: 2644,
-                    columnNumber: 9
-                }, this)
-            }, void 0, false, {
+                children: [
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                        className: "w-1/2",
+                        children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("table", {
+                            className: "w-full border border-gray-500 mt-2",
+                            children: [
+                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("thead", {
+                                    children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("tr", {
+                                        className: "bg-gray-200",
+                                        children: [
+                                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("th", {
+                                                className: "px-2 py-1 border border-gray-400",
+                                                children: "jbNm"
+                                            }, void 0, false, {
+                                                fileName: "src/components/TaskSearchForm.tsx",
+                                                lineNumber: 2649,
+                                                columnNumber: 17
+                                            }, this),
+                                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("th", {
+                                                className: "px-2 py-1 border border-gray-400",
+                                                children: "utPnt"
+                                            }, void 0, false, {
+                                                fileName: "src/components/TaskSearchForm.tsx",
+                                                lineNumber: 2650,
+                                                columnNumber: 17
+                                            }, this),
+                                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("th", {
+                                                className: "px-2 py-1 border border-gray-400",
+                                                children: "itmAmt"
+                                            }, void 0, false, {
+                                                fileName: "src/components/TaskSearchForm.tsx",
+                                                lineNumber: 2651,
+                                                columnNumber: 17
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "src/components/TaskSearchForm.tsx",
+                                        lineNumber: 2648,
+                                        columnNumber: 15
+                                    }, this)
+                                }, void 0, false, {
+                                    fileName: "src/components/TaskSearchForm.tsx",
+                                    lineNumber: 2647,
+                                    columnNumber: 13
+                                }, this),
+                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("tbody", {
+                                    children: Array.isArray(taskLevelList) && taskLevelList.length > 0 ? taskLevelList.map((item1, idx)=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("tr", {
+                                            children: [
+                                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("td", {
+                                                    className: "px-2 py-1 border border-gray-300",
+                                                    children: item1.jbNm ?? ''
+                                                }, void 0, false, {
+                                                    fileName: "src/components/TaskSearchForm.tsx",
+                                                    lineNumber: 2658,
+                                                    columnNumber: 21
+                                                }, this),
+                                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("td", {
+                                                    className: "px-2 py-1 border border-gray-300",
+                                                    children: item1.utPnt ?? ''
+                                                }, void 0, false, {
+                                                    fileName: "src/components/TaskSearchForm.tsx",
+                                                    lineNumber: 2659,
+                                                    columnNumber: 21
+                                                }, this),
+                                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("td", {
+                                                    className: "px-2 py-1 border border-gray-300",
+                                                    children: item1.itmAmt ?? ''
+                                                }, void 0, false, {
+                                                    fileName: "src/components/TaskSearchForm.tsx",
+                                                    lineNumber: 2660,
+                                                    columnNumber: 21
+                                                }, this)
+                                            ]
+                                        }, idx, true, {
+                                            fileName: "src/components/TaskSearchForm.tsx",
+                                            lineNumber: 2657,
+                                            columnNumber: 19
+                                        }, this)) : /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("tr", {
+                                        children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("td", {
+                                            colSpan: 3,
+                                            className: "text-center text-gray-400",
+                                            children: "No data"
+                                        }, void 0, false, {
+                                            fileName: "src/components/TaskSearchForm.tsx",
+                                            lineNumber: 2664,
+                                            columnNumber: 21
+                                        }, this)
+                                    }, void 0, false, {
+                                        fileName: "src/components/TaskSearchForm.tsx",
+                                        lineNumber: 2664,
+                                        columnNumber: 17
+                                    }, this)
+                                }, void 0, false, {
+                                    fileName: "src/components/TaskSearchForm.tsx",
+                                    lineNumber: 2654,
+                                    columnNumber: 13
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "src/components/TaskSearchForm.tsx",
+                            lineNumber: 2646,
+                            columnNumber: 11
+                        }, this)
+                    }, void 0, false, {
+                        fileName: "src/components/TaskSearchForm.tsx",
+                        lineNumber: 2645,
+                        columnNumber: 9
+                    }, this),
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                        className: "w-1/2",
+                        children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("textarea", {
+                            className: "w-full",
+                            value: code
+                        }, void 0, false, {
+                            fileName: "src/components/TaskSearchForm.tsx",
+                            lineNumber: 2670,
+                            columnNumber: 11
+                        }, this)
+                    }, void 0, false, {
+                        fileName: "src/components/TaskSearchForm.tsx",
+                        lineNumber: 2669,
+                        columnNumber: 9
+                    }, this)
+                ]
+            }, void 0, true, {
                 fileName: "src/components/TaskSearchForm.tsx",
-                lineNumber: 2643,
+                lineNumber: 2644,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "src/components/TaskSearchForm.tsx",
-        lineNumber: 2282,
+        lineNumber: 2283,
         columnNumber: 5
     }, this);
 }

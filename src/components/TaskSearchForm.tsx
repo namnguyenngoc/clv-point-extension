@@ -1410,6 +1410,7 @@ export default function TaskSearchForm() {
   const selectMember_TaskList = async (requirementRP) => {
     // Always get fresh config from localStorage
     let config = null;
+    console.log("selectMember_TaskList - requirementRP", requirementRP);
     const API_INFO = localStorage.getItem("API_INFO");
     if (API_INFO) {
       try {
@@ -2641,7 +2642,34 @@ export default function TaskSearchForm() {
         />
       </div>
       <div className="w-full border border-gray-500">
-        <textarea value={code} className="w-full"/>
+        <div  className="w-1/2">
+          <table className="w-full border border-gray-500 mt-2">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="px-2 py-1 border border-gray-400">jbNm</th>
+                <th className="px-2 py-1 border border-gray-400">utPnt</th>
+                <th className="px-2 py-1 border border-gray-400">itmAmt</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Array.isArray(taskLevelList) && taskLevelList.length > 0 ? (
+                (taskLevelList as Array<{jbNm?: string; utPnt?: string | number; itmAmt?: string | number}>).map((item, idx) => (
+                  <tr key={idx}>
+                    <td className="px-2 py-1 border border-gray-300">{item.jbNm ?? ''}</td>
+                    <td className="px-2 py-1 border border-gray-300">{item.utPnt ?? ''}</td>
+                    <td className="px-2 py-1 border border-gray-300">{item.itmAmt ?? ''}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr><td colSpan={3} className="text-center text-gray-400">No data</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+        <div  className="w-1/2">
+          <textarea className="w-full" value={code}/>
+        </div>
+        
       </div>
     </div>
   );
